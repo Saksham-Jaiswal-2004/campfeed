@@ -1,103 +1,112 @@
+import Footer from "@/components/Footer";
+import Navbar from "@/components/Navbar";
+import { PinContainer, PinPerspective } from "@/components/ui/3d-pin";
+import { AnimatedTestimonials } from "@/components/ui/animated-testimonials";
+import { BackgroundBeams } from "@/components/ui/background-beams";
+import { FocusCards } from "@/components/ui/focus-cards";
+import { FaRobot } from "react-icons/fa";
+import { FaCalendar } from "react-icons/fa";
+import { GoPeople } from "react-icons/go";
+import { CiCalendar } from "react-icons/ci";
+import { RiRobot2Line } from "react-icons/ri";
 import Image from "next/image";
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              app/page.js
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  const cards = [
+    {
+      title: "Centralized Announcements",
+      src: "/images/featureImg-1.jpg",
+      desc: "Never miss a campus update — from exam notices to GDG meetups.",
+    },
+    {
+      title: "Event Hub",
+      src: "/images/featureImg-2.jpg",
+      desc: "View, RSVP, and participate in all your college events from one clean dashboard.",
+    },
+    {
+      title: "AI-Powered CampusBot",
+      src: "/images/featureImg-3.jpg",
+      desc: "Get instant answers to your campus-related questions using Gemini AI.",
+    },
+  ];
+
+  const testimonials = [
+    {
+      quote: "CampFeed is a game-changer for IIIT Kalyani! From club meetups to hackathons, I finally know what’s happening *before* it ends.",
+      name: "Aarav Das",
+      designation: "CSE 3rd Year, IIIT Kalyani",
+      src: "/images/testImg-1.jpg"
+    },
+    {
+      quote: "Managing events for our coding club has become 10x easier. We post once, and the whole campus sees it—love the reach!",
+      name: "Sneha Roy",
+      designation: "Lead, CodeCell IIIT Kalyani",
+      src: "/images/testImg-3.jpg"
+    },
+    {
+      quote: "Honestly, I used to miss half the campus events. Now? CampFeed’s reminders make sure I don’t miss out on free pizza and cool workshops.",
+      name: "Ritik Ghosh",
+      designation: "ECE 2nd Year, IIIT Kalyani",
+      src: "/images/testImg-2.jpg"
+    }
+  ];
+
+  return (
+    <>
+      <Navbar />
+      <BackgroundBeams className="z-[-1]" />
+
+      <div className="min-h-[100vh] h-fit flex flex-col justify-center items-center">
+
+        <h1 className="title text-7xl mb-6 campfeed-title">CampFeed</h1>
+        <h3 className="subTitle mb-2 text-[#64748b] text-[0.95rem]">Your Smart Campus Assistant</h3>
+        <p className="contentText w-[40%] text-center text-base">Get real-time updates on events, announcements, and more — all in one place, powered by AI.</p>
+
+        <div className="mt-8 flex justify-center items-center gap-6">
+          <button className='cursor-pointer btnText btn-gradient text-sm flex justify-center items-center gap-2'><FaRobot className="text-xl" /> Ask CampBot</button>
+          <button className='cursor-pointer btnText btn-gradient2 text-sm flex justify-center items-center gap-2'><FaCalendar className="text-base" /> View Events</button>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
+
+        <div className="flex justify-center items-center gap-16 text-sm mt-10 contentText">
+          <div className="flex justify-center items-center gap-2"><GoPeople className="text-xl" /> 2500+ Students</div>
+
+          <div className="flex justify-center items-center gap-2"><CiCalendar className="text-xl" /> 150+ Events</div>
+
+          <div className="flex justify-center items-center gap-2"><RiRobot2Line className="text-xl" /> AI Powered</div>
+        </div>
+      </div>
+
+      <div className="w-full h-fit flex flex-col justify-center items-center mt-28">
+        <h2 className="subTitle text-3xl font-semibold mb-3">Why CampFeed? Seriously?</h2>
+        <p className="contentText w-1/2 text-center text-sm mb-10">You&apos;re still chasing event posters across 5 WhatsApp groups, begging for updates from CRs, and asking “Is today a holiday?” in class groups?</p>
+        <FocusCards cards={cards} />
+      </div>
+
+      <div className="w-full h-fit flex flex-col justify-center items-center mt-52">
+        <h2 className="subTitle text-3xl font-semibold mb-3 text-center">Still Not Convinced?<br />Don&apos;t Take Our Word for It...</h2>
+        <p className="contentText w-1/2 text-center text-sm mb-2">We didn&apos;t bribe them (much). CampFeed just makes student life smarter — and slightly less painful.</p>
+        <AnimatedTestimonials testimonials={testimonials} />
+      </div>
+
+      <PinContainer title="Launch CampFeed" href="/Dashboard">
+        <div className="w-[70vw] h-[45vh] relative rounded-xl overflow-hidden shadow-lg flex gap-8">
           <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
+            src="/images/ctaImg.jpg"
+            alt="Event 1"
+            width={400}
+            height={400}
+            className="object-cover"
           />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+
+          <div className="flex flex-col justify-center items-start">
+            <h2 className="title text-3xl mb-4 w-[60%]">Ready to streamline your campus?</h2>
+            <p className="contentText text-base w-[80%]">CampFeed makes student life smarter, simpler, and more connected.</p>
+          </div>
+        </div>
+      </PinContainer>
+
+      <Footer />
+    </>
   );
 }

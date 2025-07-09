@@ -24,7 +24,9 @@ const Navbar = () => {
                 </div>
 
                 <div className="auth">
+                    <Link href={"/auth/Login"}>
                     <button className='cursor-pointer btnText btn-gradient text-sm'>Login</button>
+                    </Link>
                 </div>
             </div>
         </div>

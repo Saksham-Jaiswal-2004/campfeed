@@ -29,7 +29,7 @@ const LatestAnnouncements = () => {
                                     <p className='border border-gray-700 bg-cyan-500/60 !text-white contentText py-1 px-2 rounded-lg'>Study</p>
                                     <p className='border border-gray-700 bg-cyan-500/60 !text-white contentText py-1 px-2 rounded-lg'>Hours</p>
                                 </div>
-
+                                
                                 <p className='absolute top-0 right-0 text-xs flex justify-center items-center gap-1 text-red-400 bg-red-500/20 p-1 rounded-lg border border-red-800/30'><CgDanger /> High Priority</p>
                             </div>
 
@@ -48,7 +48,7 @@ const LatestAnnouncements = () => {
                         <div className='w-full h-full flex flex-col justify-between p-5'>
                             <div className='relative'>
                                 <h3 className='subtitle text-lg mb-1'>GSoC 2025 Application Workshop</h3>
-                                <p className='contentText text-xs w-[95%] flex gap-2 items-center'>Dr. Sarah Johnson <span>•</span> <span className='border border-gray-700 contentText py-[0.15rem] px-2 rounded-lg !text-white'>Facultys</span> <span>•</span> Jan 14, 07:45 PM</p>
+                                <p className='contentText text-xs w-[95%] flex gap-2 items-center'>Dr. Sarah Johnson <span>•</span> <span className='border border-gray-700 contentText py-[0.15rem] px-2 rounded-lg !text-white'>Faculty</span> <span>•</span> Jan 14, 07:45 PM</p>
                                 <div className='flex gap-2 text-xs mt-3'>
                                     <p className='border border-gray-700 bg-cyan-500/60 !text-white contentText py-1 px-2 rounded-lg'>GSOC</p>
                                     <p className='border border-gray-700 bg-cyan-500/60 !text-white contentText py-1 px-2 rounded-lg'>Workshop</p>

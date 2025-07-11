@@ -1,0 +1,119 @@
+"use client"
+import React, { useState } from 'react'
+import { CiSearch } from "react-icons/ci";
+import { Progress } from "@/components/ui/progress"
+import { SlClock } from "react-icons/sl";
+import { IoLocationOutline } from "react-icons/io5";
+import { GoPeople } from "react-icons/go";
+import { FaRegCalendar } from "react-icons/fa6";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import users from '@/Data/users'
+import events from '@/Data/events';
+import Link from 'next/link';
+import Navbar from '@/components/Navbar';
+
+const Page = () => {
+    const [role, setRole] = useState("Select Role")
+    const [department, setDepartment] = useState("Select Department")
+
+    const filteredUsers = users.filter((user) => {
+        const roleMatch = role === "All Roles" || role === "Select Role" || user.role === role;
+        const deptMatch = department === "All Departments" || department === "Select Department" || user.department === department;
+        return roleMatch && deptMatch;
+    });
+
+    const handleReset = () => {
+        setRole("Select Role");
+        setDepartment("Select Department")
+    }
+
+    return (
+        <div className='w-full h-screen overflow-y-scroll flex flex-col justify-start items-center'>
+            <Navbar />
+
+            <div className='flex gap-1 justify-between items-center w-[92vw] px-5 mt-32'>
+                <div className='flex flex-col'>
+                    <h2 className='subtitle text-3xl'>Upcoming Events</h2>
+                    <p className='contentText'>Discover and join exciting campus events</p>
+                </div>
+            </div>
+
+            <div className='flex justify-start w-[92vw] my-6 relative'>
+                <CiSearch className='absolute contentText top-[28%] left-[1.6%]' />
+                <input type="search" name="events" id="events" placeholder='Search Events...' className='w-[40%] text-sm mx-2 contentText !text-white rounded-sm pl-8 pr-4 py-2 border border-gray-700 focus:!border-gray-500 outline-none' />
+
+                <DropdownMenu>
+                    <DropdownMenuTrigger>{role}</DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                        <DropdownMenuItem onClick={() => setRole("All Roles")}>All Roles</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => setRole("Admin")}>Admin</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => setRole("Faculty")}>Faculty</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => setRole("Student Club")}>Student Club</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => setRole("Student")}>Student</DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+
+                <DropdownMenu>
+                    <DropdownMenuTrigger>{department}</DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                        <DropdownMenuItem onClick={() => { setDepartment("All Departments") }}>All Departments</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => { setDepartment("CSE") }}>CSE</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => { setDepartment("ECE") }}>ECE</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => { setDepartment("AI/ML") }}>AI/ML</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => { setDepartment("Cybersecurity") }}>Cybersecurity</DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+
+                <button className='contextText border border-gray-700 px-4 py-2 rounded-sm hover:bg-gray-700/20 transition-all duration-200 ease-in-out mx-2' onClick={() => { handleReset() }}>Reset</button>
+            </div>
+
+            <div className='w-[92vw] h-fit p-4 rounded-lg'>
+                <div className='mb-4'>
+                    <h2 className='navText text-xl'>Total Events - {events.length}</h2>
+                </div>
+
+                <div className='grid grid-cols-3 justify-center items-center gap-8 w-full mb-10'>
+                    {events.map((event, index) => (
+                        <div key={index} className='w-full h-[550px] border border-gray-700 rounded-xl overflow-hidden'>
+                            <div className='h-[40%] w-full bg-gray-800'></div>
+
+                            <div className='h-[60%] w-full flex flex-col justify-between p-5'>
+                                <div>
+                                    <h3 className='subtitle text-lg mb-1'>{event.name}</h3>
+                                    <p className='contentText text-sm w-[95%]'>{event.description.slice(0, 50)}...</p>
+                                    <div className='flex gap-2 text-xs mt-2'>
+                                        <p className='border border-gray-700 contentText py-1 px-2 rounded-lg'>{event.tags[0]}</p>
+                                        <p className='border border-gray-700 contentText py-1 px-2 rounded-lg'>{event.tags[1]}</p>
+                                        <p className='border border-gray-700 contentText py-1 px-2 rounded-lg'>{event.tags[2]}</p>
+                                    </div>
+                                </div>
+
+                                <div className='flex flex-col w-full justify-center items-center gap-2'>
+                                    <div className='flex flex-col items-start w-full px-2 gap-2'>
+                                        <p className='flex justify-center items-center gap-2 text-xs navText text-[#8194ad]'><FaRegCalendar className='text-base' /> {new Date(event.startDate).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric", })}</p>
+                                        <p className='flex justify-center items-center gap-2 text-xs navText text-[#8194ad]'><SlClock className='text-base' /> {new Date(event.startDate).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true, })}</p>
+                                        <p className='flex justify-center items-center gap-2 text-xs navText text-[#8194ad]'><IoLocationOutline className='text-base' /> {event.venue}</p>
+                                        <p className='flex justify-center items-center gap-2 text-xs navText text-[#8194ad]'><GoPeople className='text-base' /> {event.registered}/{event.capacity} Registered</p>
+                                    </div>
+                                    <div className='w-full px-2'>
+                                        <Progress value={(event.registered / event.capacity) * 100} />
+                                    </div>
+                                    <Link href={event.registrationLink} className='w-full'><button className={`w-full bg-indigo-600 hover:bg-indigo-700 py-2 rounded-lg text-sm transition-all duration-200 ease-in-out ${event.registered >= event.capacity ? "!bg-indigo-900 cursor-not-allowed" : ""}`} disabled={event.registered >= event.capacity}>{event.registered >= event.capacity ? "Event Full" : "Register Now"}</button></Link>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </div>
+    )
+}
+
+export default Page

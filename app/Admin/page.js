@@ -18,6 +18,8 @@ import Events from "@/components/Events";
 import Announcements from "@/components/Announcements";
 import Users from "@/components/Users";
 import Settings from "@/components/Settings";
+import PostAnnouncement from "@/components/PostAnnouncement";
+import PostEvent from "@/components/PostEvent";
 
 const Page = () => {
 
@@ -59,11 +61,13 @@ const Page = () => {
       </SidebarBody>
 
       <div className="min-h-[100vh] w-[84vw] overflow-x-hidden fixed right-0 h-fit flex justify-center items-center">
-        {selectedView === "Dash" && <Dash />}
-        {selectedView === "Events" && <Events />}
-        {selectedView === "Announcements" && <Announcements />}
+        {selectedView === "Dash" && <Dash setSelectedView={setSelectedView} />}
+        {selectedView === "Events" && <Events setSelectedView={setSelectedView} />}
+        {selectedView === "Announcements" && <Announcements setSelectedView={setSelectedView} />}
         {selectedView === "Users" && <Users />}
         {selectedView === "Settings" && <Settings />}
+        {selectedView === "PostAnnouncement" && <PostAnnouncement />}
+        {selectedView === "PostEvent" && <PostEvent />}
       </div>
     </Sidebar>
   )

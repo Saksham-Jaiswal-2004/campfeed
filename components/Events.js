@@ -9,7 +9,7 @@ import { FaRegEdit } from "react-icons/fa";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { CiSearch } from "react-icons/ci";
 
-const Events = () => {
+const Events = ({setSelectedView}) => {
   return (
     <div className='w-[84vw] h-screen overflow-y-scroll flex flex-col justify-start items-center'>
       <div className='flex gap-1 justify-between items-center w-full px-5 mt-6'>
@@ -19,7 +19,7 @@ const Events = () => {
         </div>
 
         <div className='flex gap-4'>
-          <button className='cursor-pointer btnText bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-sm text-sm transition-all duration-200 ease-in-out flex justify-center items-center gap-2'><IoAddOutline className='text-lg' /> Add Event</button>
+          <button onClick={() => {setSelectedView("PostEvent")}} className='cursor-pointer btnText bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-sm text-sm transition-all duration-200 ease-in-out flex justify-center items-center gap-2'><IoAddOutline className='text-lg' /> Add Event</button>
         </div>
       </div>
 

@@ -4,6 +4,7 @@ import { IoIosArrowDown } from "react-icons/io";
 import { CgDanger } from "react-icons/cg";
 import { MdOutlineInfo } from "react-icons/md";
 import { FiCheckCircle } from "react-icons/fi";
+import Link from 'next/link';
 
 const LatestAnnouncements = () => {
   return (
@@ -14,7 +15,7 @@ const LatestAnnouncements = () => {
                         <p className='contentText'>Stay updated with important campus news</p>
                     </div>
     
-                    <button className='border border-gray-700 px-4 py-2 rounded-sm text-sm flex justify-center items-center gap-3 hover:bg-gray-700/20 transition-all duration-200 ease-in-out'>View All <IoIosArrowForward /></button>
+                    <Link href={"/Announcements"}><button className='border border-gray-700 px-4 py-2 rounded-sm text-sm flex justify-center items-center gap-3 hover:bg-gray-700/20 transition-all duration-200 ease-in-out'>View All <IoIosArrowForward /></button></Link>
                 </div>
     
                 <div className='flex flex-col justify-center items-center gap-6 w-full my-10'>  

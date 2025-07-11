@@ -5,6 +5,7 @@ import { SlClock } from "react-icons/sl";
 import { IoLocationOutline } from "react-icons/io5";
 import { GoPeople } from "react-icons/go";
 import { FaRegCalendar } from "react-icons/fa6";
+import Link from 'next/link';
 
 const UpcomingEvents = () => {
     return (
@@ -15,7 +16,7 @@ const UpcomingEvents = () => {
                     <p className='contentText'>Don&apos;t miss out on these exciting campus events</p>
                 </div>
 
-                <button className='border border-gray-700 px-4 py-2 rounded-sm text-sm flex justify-center items-center gap-3 hover:bg-gray-700/20 transition-all duration-200 ease-in-out'>View All <IoIosArrowForward /></button>
+                <Link href={"/Events"}><button className='border border-gray-700 px-4 py-2 rounded-sm text-sm flex justify-center items-center gap-3 hover:bg-gray-700/20 transition-all duration-200 ease-in-out'>View All <IoIosArrowForward /></button></Link>
             </div>
 
             <div className='flex justify-center items-center gap-8 w-full my-10'>

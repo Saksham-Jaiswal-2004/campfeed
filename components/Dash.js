@@ -5,7 +5,7 @@ import { AiOutlineRise } from "react-icons/ai";
 import { FiUsers } from "react-icons/fi";
 import { IoAddOutline } from "react-icons/io5";
 
-const Dash = () => {
+const Dash = ({setSelectedView}) => {
     return (
         <div className='w-[84vw] min-h-screen h-fit flex flex-col justify-start items-center'>
             <div className='flex gap-1 justify-between items-center w-full px-5 mt-6'>
@@ -15,8 +15,8 @@ const Dash = () => {
                 </div>
 
                 <div className='flex gap-4'>
-                    <button className='cursor-pointer btnText bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-sm text-sm transition-all duration-200 ease-in-out flex justify-center items-center gap-2'><IoAddOutline className='text-lg' /> Add Event</button>
-                    <button className='cursor-pointer btnText bg-indigo-600/30 hover:bg-indigo-600/50 px-4 py-2 rounded-sm text-sm transition-all duration-200 ease-in-out flex justify-center items-center gap-2'><IoAddOutline className='text-lg' /> New Announcement</button>
+                    <button onClick = {() => {setSelectedView("PostEvent")}} className='cursor-pointer btnText bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-sm text-sm transition-all duration-200 ease-in-out flex justify-center items-center gap-2'><IoAddOutline className='text-lg' /> Add Event</button>
+                    <button onClick = {() => {setSelectedView("PostAnnouncement")}} className='cursor-pointer btnText bg-indigo-600/30 hover:bg-indigo-600/50 px-4 py-2 rounded-sm text-sm transition-all duration-200 ease-in-out flex justify-center items-center gap-2'><IoAddOutline className='text-lg' /> New Announcement</button>
                 </div>
             </div>
 

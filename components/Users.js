@@ -43,7 +43,7 @@ const Users = () => {
 
   const filteredUsers = users.filter((user) => {
     const roleMatch = role === "All Roles" || role === "Select Role" || user.role === role;
-    const deptMatch = department === "All Departments" || department === "Select Department" || user.department === department;
+    const deptMatch = department === "All Departments" || department === "Select Department" || user.branch === department;
     return roleMatch && deptMatch;
   });
 
@@ -158,9 +158,14 @@ const Users = () => {
         ) : (
           filteredUsers.map((user, index) => (
             <div key={index} className='flex gap-2 justify-center items-center px-5 my-2 border-t-[0.1px] py-2 border-gray-600'>
-              <div className='w-[28%] text-base flex flex-col'>
-                <p>{user.name}</p>
-                <p className='text-[#64748b] text-sm'>{user.email}</p>
+              <div className='w-[28%] text-base flex justify-start items-center gap-2'>
+                <div>
+                  <img src={user.profilePic} alt={user.name} className='rounded-full w-10 h-10' />
+                </div>
+                <div className='flex flex-col'>
+                  <p>{user.name}</p>
+                  <p className='text-[#64748b] text-sm'>{user.email}</p>
+                </div>
               </div>
 
               {user.role === "Admin" && <p className='w-[12%] text-xs text-violet-500'><span className='flex items-center gap-1 bg-violet-800/10 border border-violet-800 w-fit px-2 py-1 rounded-full'><FiShield />{user.role}</span></p>}
@@ -170,7 +175,7 @@ const Users = () => {
 
               <p className='w-[15%] text-sm'>{user.branch}</p>
               <p className='w-[15%] text-sm'>{new Date(user.metadata.creationTime).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", hour12: true })}</p>
-              <p className='w-[15%] text-sm'>{new Date(user.metadata.creationTime).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", hour12: true })}</p>
+              <p className='w-[15%] text-sm'>{new Date(user.metadata.lastSignInTime).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", hour12: true })}</p>
               <p className='w-[15%] text-sm'>
                 <select name="" id="" className='bg-[#020818] outline-none px-2 py-1 rounded-md border border-gray-700'>
                   <option value="">{user.role}</option>

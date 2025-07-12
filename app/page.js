@@ -10,6 +10,7 @@ import { GoPeople } from "react-icons/go";
 import { CiCalendar } from "react-icons/ci";
 import { RiRobot2Line } from "react-icons/ri";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function Home() {
 
@@ -64,8 +65,8 @@ export default function Home() {
         <p className="contentText w-[40%] text-center text-base">Get real-time updates on events, announcements, and more — all in one place, powered by AI.</p>
 
         <div className="mt-8 flex justify-center items-center gap-6">
-          <button className='cursor-pointer btnText btn-gradient text-sm flex justify-center items-center gap-2'><FaRobot className="text-xl" /> Ask CampBot</button>
-          <button className='cursor-pointer btnText btn-gradient2 text-sm flex justify-center items-center gap-2'><FaCalendar className="text-base" /> View Events</button>
+          <Link href={"/Chatbot"}><button className='cursor-pointer btnText btn-gradient text-sm flex justify-center items-center gap-2'><FaRobot className="text-xl" /> Ask CampBot</button></Link>
+          <Link href={"/Events"}><button className='cursor-pointer btnText btn-gradient2 text-sm flex justify-center items-center gap-2'><FaCalendar className="text-base" /> View Events</button></Link>
         </div>
 
         <div className="flex justify-center items-center gap-16 text-sm mt-10 contentText">

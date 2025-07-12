@@ -21,16 +21,19 @@ import Navbar from '@/components/Navbar';
 const Page = () => {
   const [role, setRole] = useState("Select Role")
   const [priority, setPriority] = useState("Select Priority")
+  const [audience, setAudience] = useState("Select Audience")
 
   const filteredAnnouncements = announcements.filter((announcement) => {
     const roleMatch = role === "All Roles" || role === "Select Role" || announcement.role === role;
     const priorityMatch = priority === "All Priorities" || priority === "Select Priority" || announcement.priority === priority;
-    return roleMatch && priorityMatch;
+    const audienceMatch = audience === "All Audience" || audience === "Select Audience" || announcement.targetAudience === audience;
+    return roleMatch && priorityMatch && audienceMatch;
   });
 
   const handleReset = () => {
     setRole("Select Role");
-    setPriority("Select Priority")
+    setPriority("Select Priority");
+    setAudience("Select Audience");
   }
 
   return (
@@ -65,6 +68,20 @@ const Page = () => {
             <DropdownMenuItem onClick={() => { setPriority("High") }}>High Priority</DropdownMenuItem>
             <DropdownMenuItem onClick={() => { setPriority("Medium") }}>Medium Priority</DropdownMenuItem>
             <DropdownMenuItem onClick={() => { setPriority("Low") }}>Low Priority</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        <DropdownMenu>
+          <DropdownMenuTrigger>{audience}</DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuItem onClick={() => { setAudience("All Audience") }}>All Audience</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => { setAudience("Students") }}>Student</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => { setAudience("Faculty") }}>Faculty</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => { setAudience("Student Clubs") }}>Student Clubs</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => { setAudience("CSE") }}>CSE Department</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => { setAudience("ECE") }}>ECE Department</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => { setAudience("AI/ML") }}>AI/ML Department</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => { setAudience("Cybersecurity") }}>Cybersecurity Department</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
 

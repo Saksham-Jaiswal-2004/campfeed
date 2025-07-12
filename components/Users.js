@@ -14,16 +14,19 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-// import users from '@/Data/users'
 import { db } from "@/lib/firebase";
 import { collection, getDocs } from "firebase/firestore";
+import { doc, updateDoc } from "firebase/firestore";
+import { useUser } from "@/context/userContext";
 
 const Users = () => {
 
   const [role, setRole] = useState("Select Role");
+  const [newRole, setNewRole] = useState("");
   const [department, setDepartment] = useState("Select Department");
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { userData } = useUser();
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -40,6 +43,19 @@ const Users = () => {
 
     fetchUsers();
   }, []);
+
+  const updateUserRole = async (uid, newRole) => {
+    try {
+      const userRef = doc(db, "users", uid);
+      await updateDoc(userRef, {
+        role: newRole,
+      });
+      alert(`Role updated to ${newRole}`);
+    } catch (error) {
+      console.error("Error updating role:", error);
+      alert("Failed to update role");
+    }
+  };
 
   const filteredUsers = users.filter((user) => {
     const roleMatch = role === "All Roles" || role === "Select Role" || user.role === role;
@@ -177,12 +193,21 @@ const Users = () => {
               <p className='w-[15%] text-sm'>{new Date(user.metadata.creationTime).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", hour12: true })}</p>
               <p className='w-[15%] text-sm'>{new Date(user.metadata.lastSignInTime).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", hour12: true })}</p>
               <p className='w-[15%] text-sm'>
-                <select name="" id="" className='bg-[#020818] outline-none px-2 py-1 rounded-md border border-gray-700'>
-                  <option value="">{user.role}</option>
-                  <option value="">Admin</option>
-                  <option value="">Faculty</option>
-                  <option value="">Student Club</option>
-                  <option value="">Student</option>
+                <select name="role" id={`role-${user.uid}`} defaultValue={user.role} onChange={(e) => {
+                  const newRole = e.target.value;
+                  if (userData.role === "Admin") {
+                    const confirmed = confirm(`Are you sure you want to change ${user.name}'s role to "${newRole}"?`);
+                    if (confirmed) {
+                      updateUserRole(user.uid, newRole);
+                    }
+                  } else {
+                    alert("Only Admins can Change User Roles")
+                  }
+                }} className='bg-[#020818] outline-none px-2 py-1 rounded-md border border-gray-700'>
+                  <option value="Admin">Admin</option>
+                  <option value="Faculty">Faculty</option>
+                  <option value="Student Club">Student Club</option>
+                  <option value="Student">Student</option>
                 </select>
               </p>
             </div>

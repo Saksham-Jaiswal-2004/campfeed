@@ -1,5 +1,5 @@
 "use client"
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { CiSearch } from "react-icons/ci";
 import { FiUsers } from "react-icons/fi";
 import { FiShield } from "react-icons/fi";
@@ -14,12 +14,32 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import users from '@/Data/users'
+// import users from '@/Data/users'
+import { db } from "@/lib/firebase";
+import { collection, getDocs } from "firebase/firestore";
 
 const Users = () => {
 
-  const [role, setRole] = useState("Select Role")
-  const [department, setDepartment] = useState("Select Department")
+  const [role, setRole] = useState("Select Role");
+  const [department, setDepartment] = useState("Select Department");
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, "users"));
+        const userList = querySnapshot.docs.map((doc) => doc.data());
+        setUsers(userList);
+      } catch (err) {
+        console.error("Error fetching users:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUsers();
+  }, []);
 
   const filteredUsers = users.filter((user) => {
     const roleMatch = role === "All Roles" || role === "Select Role" || user.role === role;
@@ -131,32 +151,38 @@ const Users = () => {
           <p className='w-[15%] contentText text-xs'>Actions</p>
         </div>
 
-        {filteredUsers.map((user, index) => (
-          <div key={index} className='flex gap-2 justify-center items-center px-5 my-2 border-t-[0.1px] py-2 border-gray-600'>
-            <div className='w-[28%] text-base flex flex-col'>
-              <p>{user.name}</p>
-              <p className='text-[#64748b] text-sm'>{user.email}</p>
-            </div>
-
-            {user.role === "Admin" && <p className='w-[12%] text-xs text-violet-500'><span className='flex items-center gap-1 bg-violet-800/10 border border-violet-800 w-fit px-2 py-1 rounded-full'><FiShield />{user.role}</span></p>}
-            {user.role === "Faculty" && <p className='w-[12%] text-xs text-indigo-500'><span className='flex items-center gap-1 bg-indigo-800/10 border border-indigo-800 w-fit px-2 py-1 rounded-full'><FaChalkboardTeacher />{user.role}</span></p>}
-            {user.role === "Student Club" && <p className='w-[12%] text-xs text-yellow-500'><span className='flex items-center gap-1 bg-yellow-800/10 border border-yellow-800/80 w-fit px-2 py-1 rounded-full'><CiFlag1 />{user.role}</span></p>}
-            {user.role === "Student" && <p className='w-[12%] text-xs text-green-500'><span className='flex items-center gap-1 bg-green-800/10 border border-green-800 w-fit px-2 py-1 rounded-full'><PiStudentFill  />{user.role}</span></p>}
-
-            <p className='w-[15%] text-sm'>{user.department}</p>
-            <p className='w-[15%] text-sm'>{user.joined}</p>
-            <p className='w-[15%] text-sm'>{user.lastActive}</p>
-            <p className='w-[15%] text-sm'>
-              <select name="" id="" className='bg-[#020818] outline-none px-2 py-1 rounded-md border border-gray-700'>
-                <option value="">{user.role}</option>
-                <option value="">Admin</option>
-                <option value="">Faculty</option>
-                <option value="">Student Club</option>
-                <option value="">Student</option>
-              </select>
-            </p>
+        {loading ? (
+          <div className='w-full h-full flex justify-center items-center'>
+            <p className="text-white text-sm px-4 py-2">Loading users...</p>
           </div>
-        ))}
+        ) : (
+          filteredUsers.map((user, index) => (
+            <div key={index} className='flex gap-2 justify-center items-center px-5 my-2 border-t-[0.1px] py-2 border-gray-600'>
+              <div className='w-[28%] text-base flex flex-col'>
+                <p>{user.name}</p>
+                <p className='text-[#64748b] text-sm'>{user.email}</p>
+              </div>
+
+              {user.role === "Admin" && <p className='w-[12%] text-xs text-violet-500'><span className='flex items-center gap-1 bg-violet-800/10 border border-violet-800 w-fit px-2 py-1 rounded-full'><FiShield />{user.role}</span></p>}
+              {user.role === "Faculty" && <p className='w-[12%] text-xs text-indigo-500'><span className='flex items-center gap-1 bg-indigo-800/10 border border-indigo-800 w-fit px-2 py-1 rounded-full'><FaChalkboardTeacher />{user.role}</span></p>}
+              {user.role === "Student Club" && <p className='w-[12%] text-xs text-yellow-500'><span className='flex items-center gap-1 bg-yellow-800/10 border border-yellow-800/80 w-fit px-2 py-1 rounded-full'><CiFlag1 />{user.role}</span></p>}
+              {user.role === "Student" && <p className='w-[12%] text-xs text-green-500'><span className='flex items-center gap-1 bg-green-800/10 border border-green-800 w-fit px-2 py-1 rounded-full'><PiStudentFill />{user.role}</span></p>}
+
+              <p className='w-[15%] text-sm'>{user.branch}</p>
+              <p className='w-[15%] text-sm'>{new Date(user.metadata.creationTime).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", hour12: true })}</p>
+              <p className='w-[15%] text-sm'>{new Date(user.metadata.creationTime).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", hour12: true })}</p>
+              <p className='w-[15%] text-sm'>
+                <select name="" id="" className='bg-[#020818] outline-none px-2 py-1 rounded-md border border-gray-700'>
+                  <option value="">{user.role}</option>
+                  <option value="">Admin</option>
+                  <option value="">Faculty</option>
+                  <option value="">Student Club</option>
+                  <option value="">Student</option>
+                </select>
+              </p>
+            </div>
+          ))
+        )}
       </div>
     </div>
   )

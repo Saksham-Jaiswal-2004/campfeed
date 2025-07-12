@@ -13,7 +13,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import users from '@/Data/users'
 import announcements from '@/Data/announcements';
 import Link from 'next/link';
 import Navbar from '@/components/Navbar';

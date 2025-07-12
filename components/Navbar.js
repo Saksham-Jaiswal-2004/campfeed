@@ -7,52 +7,18 @@ import { FaChalkboardTeacher } from "react-icons/fa";
 import { CiFlag1 } from "react-icons/ci";
 import { PiStudentFill } from "react-icons/pi";
 import { MdKeyboardArrowDown } from "react-icons/md";
-import { auth, db } from "@/lib/firebase";
-import { doc, getDoc } from "firebase/firestore";
+import { useUser } from "@/context/userContext";
 import { useRouter } from "next/navigation";
-import { signOut } from "firebase/auth";
 
 const Navbar = () => {
-    const [user, setUser] = useState(null);
-    const [userData, setUserData] = useState(null);
+    const { user, userData, login, logout, loading } = useUser();
     const router = useRouter();
     const [show, setShow] = useState(false)
 
-    useEffect(() => {
-        const unsub = auth.onAuthStateChanged((u) => {
-            if (u) {
-                setUser(u);
-            }
-        });
-        return () => unsub();
-    }, []);
-
-    useEffect(() => {
-        if (!user) return;
-
-        const fetchUserData = async () => {
-            try {
-                const userRef = doc(db, "users", user.uid);
-                const docSnap = await getDoc(userRef);
-
-                if (docSnap.exists()) {
-                    const data = docSnap.data();
-                    setUserData(data);
-                    console.log("User Data: ", data);
-                } else {
-                    console.warn("User data not found in Firestore.");
-                }
-            } catch (error) {
-                console.error("Error fetching user data:", error);
-            }
-        };
-
-        fetchUserData();
-    }, [user]);
-
     const handleLogout = async () => {
-        await signOut(auth);
+        await logout();
         router.push("/");
+        router.refresh;
     };
 
     return (
@@ -72,7 +38,7 @@ const Navbar = () => {
                         <li className='cursor-pointer hover:text-[#3b82f6] transition-all duration-200 ease-in-out'><Link href={"/"}>Home</Link></li>
                         <li className='cursor-pointer hover:text-[#3b82f6] transition-all duration-200 ease-in-out'><Link href={"/Dashboard"}>Dashboard</Link></li>
                         <li className='cursor-pointer hover:text-[#3b82f6] transition-all duration-200 ease-in-out'><Link href={"/Chatbot"}>AI Chat</Link></li>
-                        {userData?.role !== "student" && <li className='cursor-pointer hover:text-[#3b82f6] transition-all duration-200 ease-in-out'><Link href={"/Admin"}>Admin</Link></li>}
+                        {userData && userData?.role !== "Student" && <li className='cursor-pointer hover:text-[#3b82f6] transition-all duration-200 ease-in-out'><Link href={"/Admin"}>Admin</Link></li>}
                     </ul>
                 </div>
 
@@ -84,10 +50,10 @@ const Navbar = () => {
                     ) : (
                         <>
                             <div className='flex justify-center items-center gap-2'>
-                                {userData?.role === "admin" && <p className='w-fit text-xs text-violet-500'><span className='flex items-center gap-1 bg-violet-800/10 border border-violet-800 w-fit px-2 py-1 rounded-full'><FiShield />{userData.role}</span></p>}
-                                {userData?.role === "faculty" && <p className='w-fit text-xs text-indigo-500'><span className='flex items-center gap-1 bg-indigo-800/10 border border-indigo-800 w-fit px-2 py-1 rounded-full'><FaChalkboardTeacher />{userData.role}</span></p>}
-                                {userData?.role === "studentclub" && <p className='w-fit text-xs text-yellow-500'><span className='flex items-center gap-1 bg-yellow-800/10 border border-yellow-800/80 w-fit px-2 py-1 rounded-full'><CiFlag1 />{userData.role}</span></p>}
-                                {userData?.role === "student" && <p className='w-fit text-xs text-green-500'><span className='flex items-center gap-1 bg-green-800/10 border border-green-800 w-fit px-2 py-1 rounded-full'><PiStudentFill />{userData.role}</span></p>}
+                                {userData?.role === "Admin" && <p className='w-fit text-xs text-violet-500'><span className='flex items-center gap-1 bg-violet-800/10 border border-violet-800 w-fit px-2 py-1 rounded-full'><FiShield />Admin</span></p>}
+                                {userData?.role === "Faculty" && <p className='w-fit text-xs text-indigo-500'><span className='flex items-center gap-1 bg-indigo-800/10 border border-indigo-800 w-fit px-2 py-1 rounded-full'><FaChalkboardTeacher />Faculty</span></p>}
+                                {userData?.role === "Student Club" && <p className='w-fit text-xs text-yellow-500'><span className='flex items-center gap-1 bg-yellow-800/10 border border-yellow-800/80 w-fit px-2 py-1 rounded-full'><CiFlag1 />Student Club</span></p>}
+                                {userData?.role === "Student" && <p className='w-fit text-xs text-green-500'><span className='flex items-center gap-1 bg-green-800/10 border border-green-800 w-fit px-2 py-1 rounded-full'><PiStudentFill />Student</span></p>}
 
                                 <div onClick={() => { setShow(!show) }} className='px-4 py-2 bg-indigo-700/20 rounded-lg flex justify-center items-center cursor-pointer relative'>
                                     <img src={userData?.profilePic} alt="Profile" className="w-6 h-6 rounded-full mr-3" />

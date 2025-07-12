@@ -1,13 +1,28 @@
+"use client"
 import Navbar from '@/components/Navbar'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { FaRegCalendar } from "react-icons/fa6";
 import { CiChat1 } from "react-icons/ci";
 import { AiOutlineRise } from "react-icons/ai";
 import { FiUsers } from "react-icons/fi";
 import UpcomingEvents from '@/components/UpcomingEvents';
 import LatestAnnouncements from '@/components/LatestAnnouncements';
+import { useUser } from "@/context/userContext";
+import { useRouter } from "next/navigation";
 
-const page = () => {
+const Page = () => {
+
+    const { user, userData, login, logout, loading } = useUser();
+    const router = useRouter();
+
+    useEffect(() => {
+        if (!loading && !user) {
+            router.push("/auth/Login");
+        }
+    }, [loading, user]);
+
+    if (loading || !userData) return <div className="h-screen flex items-center justify-center">Loading...</div>;
+
     return (
         <div className="min-h-[100vh] h-fit flex flex-col justify-start items-center">
             <Navbar />
@@ -64,4 +79,4 @@ const page = () => {
     )
 }
 
-export default page
+export default Page

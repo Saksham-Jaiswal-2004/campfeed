@@ -1,44 +1,32 @@
 "use client";
-import React from 'react'
+import React, { useEffect } from 'react'
 import Link from 'next/link'
 import { BackgroundBeamsWithCollision } from '@/components/ui/background-beams-with-collision'
 import { FaGoogle } from "react-icons/fa";
-import { auth, provider, db } from "@/lib/firebase";
-import { signInWithPopup, signOut } from "firebase/auth";
-import { useEffect, useState } from "react";
-import { doc, getDoc } from "firebase/firestore";
+import { useUser } from "@/context/userContext";
 import { useRouter } from "next/navigation";
 
 const Page = () => {
-    const [user, setUser] = useState(null);
-    const [loading, setLoading] = useState(false);
+
+    const { user, userData, login, logout, loading } = useUser();
     const router = useRouter();
 
-    const loginWithGoogle = async () => {
-        setLoading(true);
-        try {
-            const result = await signInWithPopup(auth, provider);
-            const user = result.user;
+    useEffect(() => {
+        if (loading && !user) return;
 
-            const userRef = doc(db, "users", user.uid);
-            const docSnap = await getDoc(userRef);
-
-            if (!docSnap.exists()) {
-                
-                router.replace("/auth/ProfilePage");
-            } else {
-                
-                router.replace("/Dashboard");
-            }
-        } catch (err) {
-            console.error("Login Error", err);
+        if (user && userData === null) {
+            router.push("/auth/ProfilePage");
+        } else if (user && userData) {
+            router.push("/Dashboard");
         }
-        setLoading(false);
-    };
+    }, [loading, user, userData, router]);
 
-    const handleLogout = async () => {
-        await signOut(auth);
-        router.push("/auth/Login");
+    const handleLogin = async () => {
+        try {
+            await login();
+        } catch (err) {
+            console.error("Login failed:", err);
+        }
     };
 
     return (
@@ -54,7 +42,7 @@ const Page = () => {
                     <h1 className='title sm:text-3xl text-2xl mb-1 bg-gradient-to-r from-indigo-500 to-cyan-400 bg-clip-text text-transparent'>Welcome to CampFeed</h1>
                     <p className='text-base text-gray-400'>Your AI-powered campus companion</p>
 
-                    <button onClick={loginWithGoogle} className={`${loading ? "cursor-not-allowed !bg-indigo-700" : ""} bg-gradient-to-r from-indigo-500 to-cyan-400 hover:bg-gradient-to-br transition-all duration-200 ease-in-out w-full py-2 rounded-lg text-lg my-5 flex justify-center items-center gap-5`} disabled={loading}><FaGoogle className='text-2xl' /> {loading ? "Logging In..." : "Continue with Google"}</button>
+                    <button onClick={handleLogin} className={`${loading ? "cursor-not-allowed !bg-indigo-700 text-base" : ""} bg-gradient-to-r from-indigo-500 to-cyan-400 hover:bg-gradient-to-br transition-all duration-200 ease-in-out w-full py-2 rounded-lg text-lg my-5 flex justify-center items-center gap-5`} disabled={loading}><FaGoogle className='text-2xl' /> {loading ? "Logging In..." : "Continue with Google"}</button>
 
                     <p className='text-xs contentText my-1'>CampusPulse uses secure authentication to protect your data</p>
                     <p className='text-xs contentText my-1'>By continuing, you agree to our Terms of Service and Privacy Policy</p>

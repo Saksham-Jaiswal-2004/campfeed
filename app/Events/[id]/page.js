@@ -11,6 +11,7 @@ import { Progress } from "@/components/ui/progress"
 import Link from "next/link";
 import RSVPButton from "@/components/RSVPButton";
 import { IoIosArrowForward } from "react-icons/io";
+import ShareButton from "@/components/ShareButton";
 
 export async function generateMetadata({ params }) {
 
@@ -32,6 +33,7 @@ export default async function EventPage({ params }) {
 
     const docRef = doc(db, "events", id);
     const snap = await getDoc(docRef);
+    const fullUrl = `https://campfeed.vercel.app/Announcements/${id}`;
 
     if (!snap.exists()) return notFound();
 
@@ -52,7 +54,9 @@ export default async function EventPage({ params }) {
                         </p>
                     </div>
 
-                    <div></div>
+                    <div>
+                        <ShareButton title={data.name} url={fullUrl} text={`Check out this Event: ${data.name}`} />
+                    </div>
                 </div>
 
                 <div className="w-[100%] h-[50vh] bg-gray-600 rounded-lg overflow-hidden"></div>

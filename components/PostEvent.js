@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { db } from '@/lib/firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { useUser } from '@/context/userContext';
+import { toast } from "sonner"
 
 const PostEvent = () => {
 
@@ -63,7 +64,7 @@ const PostEvent = () => {
                 eventPosterURL: null,
             });
 
-            alert("Event posted successfully!");
+            toast("Event Posted Successfully")
             setFormData({
                 name: "",
                 organiser: "",

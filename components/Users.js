@@ -21,8 +21,8 @@ import { useUser } from "@/context/userContext";
 
 const Users = () => {
 
+  const [searchQuery, setSearchQuery] = useState("");
   const [role, setRole] = useState("Select Role");
-  const [newRole, setNewRole] = useState("");
   const [department, setDepartment] = useState("Select Department");
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -58,12 +58,14 @@ const Users = () => {
   };
 
   const filteredUsers = users.filter((user) => {
+    const matchesSearch = user.name?.toLowerCase().includes(searchQuery.toLowerCase()) || user.email?.toLowerCase().includes(searchQuery.toLowerCase()) || user.branch?.toLowerCase().includes(searchQuery.toLowerCase());
     const roleMatch = role === "All Roles" || role === "Select Role" || user.role === role;
     const deptMatch = department === "All Departments" || department === "Select Department" || user.branch === department;
-    return roleMatch && deptMatch;
+    return matchesSearch && roleMatch && deptMatch;
   });
 
   const handleReset = () => {
+    setSearchQuery("");
     setRole("Select Role");
     setDepartment("Select Department")
   }
@@ -126,7 +128,7 @@ const Users = () => {
 
       <div className='flex justify-start w-full my-6 relative'>
         <CiSearch className='absolute contentText top-[28%] left-[1.6%]' />
-        <input type="search" name="events" id="events" placeholder='Search Users...' className='w-[40%] text-sm mx-2 contentText !text-white rounded-sm pl-8 pr-4 py-2 border border-gray-700 focus:!border-gray-500 outline-none' />
+        <input type="search" name="users" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} id="events" placeholder='Search Users by Name, Email or Branch...' className='w-[40%] text-sm mx-2 contentText !text-white rounded-sm pl-8 pr-4 py-2 border border-gray-700 focus:!border-gray-500 outline-none' />
 
         <DropdownMenu>
           <DropdownMenuTrigger>{role}</DropdownMenuTrigger>
@@ -169,14 +171,18 @@ const Users = () => {
 
         {loading ? (
           <div className='w-full h-full flex justify-center items-center'>
-            <p className="text-white text-sm px-4 py-2">Loading users...</p>
+            <p className="text-white text-xl px-4 py-2">Loading users...</p>
+          </div>
+        ) : filteredUsers.length === 0 ? (
+          <div className='w-full h-full flex justify-center items-center'>
+            <p className="text-white text-xl px-4 py-2">No Users Found</p>
           </div>
         ) : (
           filteredUsers.map((user, index) => (
             <div key={index} className='flex gap-2 justify-center items-center px-5 my-2 border-t-[0.1px] py-2 border-gray-600'>
               <div className='w-[28%] text-base flex justify-start items-center gap-2'>
-                <div>
-                  <img src={user.profilePic} alt={user.name} className='rounded-full w-10 h-10' />
+                <div className='bg-gray-500 w-10 h-10 rounded-full flex justify-center items-center'>
+                  {user.profilePic ? <img src={user.profilePic} alt={user.name} className='rounded-full w-10 h-10' /> : <span>{user?.name[0]}</span>}
                 </div>
                 <div className='flex flex-col'>
                   <p>{user.name}</p>

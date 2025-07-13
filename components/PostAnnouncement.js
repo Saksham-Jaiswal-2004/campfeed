@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { db } from '@/lib/firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { useUser } from '@/context/userContext';
+import { toast } from "sonner"
 
 const PostAnnouncement = () => {
     const { user, userData } = useUser();
@@ -9,7 +10,7 @@ const PostAnnouncement = () => {
     const [formData, setFormData] = useState({
         title: "",
         description: "",
-        targetAudience: "",
+        targetAudience: "All",
         priority: "",
         tags: "",
         expiryDate: "",
@@ -36,7 +37,7 @@ const PostAnnouncement = () => {
 
             await addDoc(collection(db, "announcements"), data);
 
-            alert("Announcement posted successfully!");
+            toast("Announcement Posted Successfully")
             handleResetForm();
         } catch (err) {
             console.error("Error posting announcement:", err);

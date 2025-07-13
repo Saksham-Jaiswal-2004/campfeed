@@ -85,8 +85,8 @@ const UpcomingEvents = () => {
 
                                     <div className='flex flex-col w-full justify-center items-center gap-2'>
                                         <div className='flex flex-col items-start w-full px-2 gap-2'>
-                                            <p className='flex justify-center items-center gap-2 text-xs navText text-[#8194ad]'><FaRegCalendar className='text-base' /> {new Date(event.startDate).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric", })}</p>
-                                            <p className='flex justify-center items-center gap-2 text-xs navText text-[#8194ad]'><SlClock className='text-base' /> {new Date(event.startDate).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true, })}</p>
+                                            <p className='flex justify-center items-center gap-2 text-xs navText text-[#8194ad]'><FaRegCalendar className='text-base' /> {new Date(event.startDate.toDate()).toLocaleString("en-GB", { day: "2-digit", month: "short", year: "numeric", })}</p>
+                                            <p className='flex justify-center items-center gap-2 text-xs navText text-[#8194ad]'><SlClock className='text-base' /> {new Date(event.startDate.toDate()).toLocaleString("en-GB", { hour: "2-digit", minute: "2-digit", hour12: true, })}</p>
                                             <p className='flex justify-center items-center gap-2 text-xs navText text-[#8194ad]'><IoLocationOutline className='text-base' /> {event.venue}</p>
                                             <p className='flex justify-center items-center gap-2 text-xs navText text-[#8194ad]'><GoPeople className='text-base' /> {event.registered}/{event.capacity} Registered</p>
                                         </div>

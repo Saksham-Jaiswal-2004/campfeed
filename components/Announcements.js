@@ -16,6 +16,7 @@ const Announcements = ({ setSelectedView }) => {
 
   const { user, userData } = useUser();
   const [announcements, setAnnouncements] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -41,6 +42,12 @@ const Announcements = ({ setSelectedView }) => {
     fetchMyAnnouncements();
   }, [user]);
 
+  const searchedAnnouncements = announcements.filter((announcement) => 
+    announcement.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    announcement.targetAudience?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    announcement.priority?.toLowerCase().includes(searchQuery.toLowerCase())
+);
+
   return (
     <div className='w-[84vw] h-screen overflow-y-scroll flex flex-col justify-start items-center'>
       <div className='flex gap-1 justify-between items-center w-full px-5 mt-6'>
@@ -56,7 +63,7 @@ const Announcements = ({ setSelectedView }) => {
 
       <div className='flex justify-start w-full px-2 mt-6 relative'>
         <CiSearch className='absolute contentText top-[28%] left-[1.6%]' />
-        <input type="search" name="anouncements" id="anouncements" placeholder='Search Anouncements...' className='w-[40%] text-sm contentText !text-white rounded-sm pl-8 pr-4 py-2 border border-gray-700 focus:!border-gray-500 outline-none' />
+        <input type="search" name="anouncements" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} id="anouncements" placeholder='Search Anouncements by Name, Priority or Target Audience...' className='w-[50%] text-xs contentText !text-white rounded-sm pl-8 pr-4 py-2 border border-gray-700 focus:!border-gray-500 outline-none' />
       </div>
 
       {loading ? (
@@ -65,7 +72,7 @@ const Announcements = ({ setSelectedView }) => {
         <p className="contentText mt-10">No announcements found.</p>
       ) : (
         <div className='grid grid-cols-1 justify-center items-center gap-4 w-[82vw] my-6'>
-          {announcements.map((announcement) => (
+          {searchedAnnouncements.map((announcement) => (
             <div key={announcement.id} className='w-[100%] h-[220px] border border-gray-700 rounded-xl overflow-hidden'>
               <div className='w-full h-full flex flex-col justify-between p-5'>
                 <div className='relative'>

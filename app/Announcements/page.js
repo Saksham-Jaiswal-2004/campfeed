@@ -25,6 +25,7 @@ const Page = () => {
   const { user, loading } = useUser();
   const [announcements, setAnnouncements] = useState([]);
   const [fetching, setFetching] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
   const [expanded, setExpanded] = useState({});
   const router = useRouter();
 
@@ -80,11 +81,13 @@ const Page = () => {
       const roleMatch = role === "All Roles" || role === "Select Role" || announcement.createdByUser?.role === role;
       const priorityMatch = priority === "All Priorities" || priority === "Select Priority" || announcement.priority === priority;
       const audienceMatch = audience === "All Audience" || audience === "Select Audience" || announcement.targetAudience === audience;
-      return roleMatch && priorityMatch && audienceMatch;
+      const nameMatch = announcement.title?.toLowerCase().includes(searchQuery.toLowerCase());
+      return roleMatch && priorityMatch && audienceMatch && nameMatch;
     });
-  }, [announcements, role, priority, audience]);
+  }, [announcements, role, priority, audience, searchQuery]);
 
   const handleReset = () => {
+    setSearchQuery("")
     setRole("Select Role");
     setPriority("Select Priority");
     setAudience("Select Audience");
@@ -113,6 +116,8 @@ const Page = () => {
         <input
           type="search"
           name="announcements"
+          value={searchQuery} 
+          onChange={(e) => setSearchQuery(e.target.value)}
           id="announcements"
           placeholder='Search Announcements...'
           className='w-[40%] text-sm mx-2 contentText !text-white rounded-sm pl-8 pr-4 py-2 border border-gray-700 focus:!border-gray-500 outline-none'

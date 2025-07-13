@@ -14,7 +14,6 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import users from '@/Data/users'
 import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 import { db } from "@/lib/firebase";
@@ -23,11 +22,11 @@ import { useUser } from "@/context/userContext";
 import { useRouter } from "next/navigation";
 
 const Page = () => {
-    const [role, setRole] = useState("Select Role")
-    const [department, setDepartment] = useState("Select Department")
+    const [audience, setAudience] = useState("Select Audience")
     const { user, userData, loading } = useUser();
     const [events, setEvents] = useState([]);
     const [fetching, setFetching] = useState(true);
+    const [searchQuery, setSearchQuery] = useState("");
     const router = useRouter();
 
     useEffect(() => {
@@ -58,15 +57,16 @@ const Page = () => {
         fetchMyEvents();
     }, [user]);
 
-    const filteredUsers = users.filter((user) => {
-        const roleMatch = role === "All Roles" || role === "Select Role" || user.role === role;
-        const deptMatch = department === "All Departments" || department === "Select Department" || user.department === department;
-        return roleMatch && deptMatch;
+    const searchedEvents = events.filter((event) => {
+        const nameMatch = event.name?.toLowerCase().includes(searchQuery.toLowerCase()) || event.targetAudience?.toLowerCase().includes(searchQuery.toLowerCase())
+        const roleMatch = audience === "Select Audience" || audience === "All Departments" || event.targetAudience === audience;
+
+        return nameMatch && roleMatch;
     });
 
     const handleReset = () => {
-        setRole("Select Role");
-        setDepartment("Select Department")
+        setSearchQuery("");
+        setAudience("Select Audience")
     }
 
     return (
@@ -82,27 +82,16 @@ const Page = () => {
 
             <div className='flex justify-start w-[92vw] my-6 relative'>
                 <CiSearch className='absolute contentText top-[28%] left-[1.6%]' />
-                <input type="search" name="events" id="events" placeholder='Search Events...' className='w-[40%] text-sm mx-2 contentText !text-white rounded-sm pl-8 pr-4 py-2 border border-gray-700 focus:!border-gray-500 outline-none' />
+                <input type="search" name="events" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} id="events" placeholder='Search Events by Name and Target Audience...' className='w-[40%] text-sm mx-2 contentText !text-white rounded-sm pl-8 pr-4 py-2 border border-gray-700 focus:!border-gray-500 outline-none' />
 
                 <DropdownMenu>
-                    <DropdownMenuTrigger>{role}</DropdownMenuTrigger>
+                    <DropdownMenuTrigger>{audience}</DropdownMenuTrigger>
                     <DropdownMenuContent>
-                        <DropdownMenuItem onClick={() => setRole("All Roles")}>All Roles</DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => setRole("Admin")}>Admin</DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => setRole("Faculty")}>Faculty</DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => setRole("Student Club")}>Student Club</DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => setRole("Student")}>Student</DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
-
-                <DropdownMenu>
-                    <DropdownMenuTrigger>{department}</DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                        <DropdownMenuItem onClick={() => { setDepartment("All Departments") }}>All Departments</DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => { setDepartment("CSE") }}>CSE</DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => { setDepartment("ECE") }}>ECE</DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => { setDepartment("AI/ML") }}>AI/ML</DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => { setDepartment("Cybersecurity") }}>Cybersecurity</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => { setAudience("All Departments") }}>All Departments</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => { setAudience("CSE") }}>CSE</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => { setAudience("ECE") }}>ECE</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => { setAudience("AI/ML") }}>AI/ML</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => { setAudience("Cybersecurity") }}>Cybersecurity</DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
 
@@ -118,13 +107,13 @@ const Page = () => {
                     <div className='w-full h-full flex justify-center items-center navText text-3xl'>
                         Fetching All Events...
                     </div>
-                ) : events.length === 0 ? (
+                ) : searchedEvents.length === 0 ? (
                     <div className='w-full h-full flex justify-center items-center navText text-3xl'>
                         No Upcoming Events
                     </div>
                 ) : (
                     <div className='grid grid-cols-3 justify-center items-center gap-8 w-full mb-10'>
-                        {events.map((event, index) => (
+                        {searchedEvents.map((event, index) => (
                             <div key={index} className='w-full h-[550px] cursor-pointer border border-gray-700 rounded-xl overflow-hidden'>
                                 <div className='h-[40%] w-full bg-gray-800'></div>
 
@@ -146,8 +135,16 @@ const Page = () => {
 
                                     <div className='flex flex-col w-full justify-center items-center gap-2'>
                                         <div className='flex flex-col items-start w-full px-2 gap-2'>
-                                            <p className='flex justify-center items-center gap-2 text-xs navText text-[#8194ad]'><FaRegCalendar className='text-base' /> {new Date(event.startDate).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric", })}</p>
-                                            <p className='flex justify-center items-center gap-2 text-xs navText text-[#8194ad]'><SlClock className='text-base' /> {new Date(event.startDate).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true, })}</p>
+                                            <p className='flex justify-center items-center gap-2 text-xs navText text-[#8194ad]'><FaRegCalendar className='text-base' /> {new Date(event.startDate.toDate()).toLocaleString("en-GB", {
+                                                day: "2-digit",
+                                                month: "short",
+                                                year: "numeric",
+                                            })}</p>
+                                            <p className='flex justify-center items-center gap-2 text-xs navText text-[#8194ad]'><SlClock className='text-base' /> {new Date(event.startDate.toDate()).toLocaleString("en-GB", {
+                                                hour: "2-digit",
+                                                minute: "2-digit",
+                                                hour12: true,
+                                            })}</p>
                                             <p className='flex justify-center items-center gap-2 text-xs navText text-[#8194ad]'><IoLocationOutline className='text-base' /> {event.venue}</p>
                                             <p className='flex justify-center items-center gap-2 text-xs navText text-[#8194ad]'><GoPeople className='text-base' /> {event.registered}/{event.capacity} Registered</p>
                                         </div>

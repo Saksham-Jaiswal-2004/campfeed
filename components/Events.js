@@ -14,6 +14,7 @@ import { useUser } from "@/context/userContext";
 const Events = ({ setSelectedView }) => {
   const { user, userData } = useUser();
   const [events, setEvents] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -39,6 +40,11 @@ const Events = ({ setSelectedView }) => {
     fetchMyEvents();
   }, [user]);
 
+  const searchedEvents = events.filter((event) => 
+    event.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    event.targetAudience?.toLowerCase().includes(searchQuery.toLowerCase())
+);
+
   return (
     <div className="w-[84vw] h-screen overflow-y-scroll flex flex-col justify-start items-center">
       <div className="flex gap-1 justify-between items-center w-full px-5 mt-6">
@@ -62,9 +68,11 @@ const Events = ({ setSelectedView }) => {
         <input
           type="search"
           name="events"
+          value={searchQuery} 
+          onChange={(e) => setSearchQuery(e.target.value)}
           id="events"
-          placeholder="Search Events..."
-          className="w-[40%] text-sm contentText !text-white rounded-sm pl-8 pr-4 py-2 border border-gray-700 focus:!border-gray-500 outline-none"
+          placeholder="Search Events by Name or Target Audience..."
+          className="w-[50%] text-xs contentText !text-white rounded-sm pl-8 pr-4 py-2 border border-gray-700 focus:!border-gray-500 outline-none"
         />
       </div>
 
@@ -74,7 +82,7 @@ const Events = ({ setSelectedView }) => {
         <p className="contentText mt-10">No events found.</p>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 w-full px-5 my-8 h-fit">
-          {events.map((event) => (
+          {searchedEvents.map((event) => (
             <div
               key={event.id}
               className="w-full h-[350px] border border-gray-700 rounded-md overflow-hidden relative"
@@ -110,11 +118,11 @@ const Events = ({ setSelectedView }) => {
                   <div className="flex flex-col items-start w-full px-2 gap-2">
                     <p className="flex items-center gap-2 text-xs navText text-[#8194ad]">
                       <FaRegCalendar className="text-base" />{" "}
-                      {new Date(event.startDate?.seconds * 1000).toLocaleDateString()}
+                      {new Date(event.startDate.toDate()).toLocaleString("en-GB", { day: "2-digit", month: "short", year: "numeric", })}
                     </p>
                     <p className="flex items-center gap-2 text-xs navText text-[#8194ad]">
                       <SlClock className="text-base" />{" "}
-                      {new Date(event.startDate?.seconds * 1000).toLocaleTimeString()}
+                      {new Date(event.startDate.toDate()).toLocaleString("en-GB", { hour: "2-digit", minute: "2-digit", hour12: true, })}
                     </p>
                     <p className="flex items-center gap-2 text-xs navText text-[#8194ad]">
                       <IoLocationOutline className="text-base" /> {event.venue}

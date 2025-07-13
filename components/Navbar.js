@@ -9,6 +9,8 @@ import { PiStudentFill } from "react-icons/pi";
 import { MdKeyboardArrowDown } from "react-icons/md";
 import { useUser } from "@/context/userContext";
 import { useRouter } from "next/navigation";
+import { CiUser } from "react-icons/ci";
+import { IoIosLogOut } from "react-icons/io";
 
 const Navbar = () => {
     const { user, userData, login, logout, loading } = useUser();
@@ -63,8 +65,8 @@ const Navbar = () => {
                             </div>
 
                             <div className={`${show ? "" : "hidden"} absolute bottom-[-76px] right-[30px] bg-indigo-700/30 w-[12.5%] rounded-lg py-3 px-2 flex flex-col justify-center items-center`}>
-                                <Link href={"/Profile"} className='w-full'><button className='navText w-full hover:bg-indigo-700/30 text-sm text-center rounded-sm py-1'>Profile</button></Link>
-                                <button onClick={handleLogout} className='navText w-full hover:bg-indigo-700/30 text-sm text-center rounded-sm py-1'>Logout</button>
+                                <Link href={"/Profile"} className='w-full'><button className='navText w-full hover:bg-indigo-700/30 text-sm text-center rounded-sm py-1 flex justify-center items-center gap-2'><CiUser className='text-lg' /> Profile</button></Link>
+                                <button onClick={handleLogout} className='navText w-full hover:bg-indigo-700/30 text-sm text-center rounded-sm py-1 flex justify-center items-center gap-2'><IoIosLogOut className='text-base' /> Logout</button>
                             </div>
                         </>
                     )}

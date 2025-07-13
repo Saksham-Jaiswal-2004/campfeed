@@ -88,10 +88,10 @@ const Page = () => {
                     <DropdownMenuTrigger>{audience}</DropdownMenuTrigger>
                     <DropdownMenuContent>
                         <DropdownMenuItem onClick={() => { setAudience("All Departments") }}>All Departments</DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => { setAudience("CSE") }}>CSE</DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => { setAudience("ECE") }}>ECE</DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => { setAudience("AI/ML") }}>AI/ML</DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => { setAudience("Cybersecurity") }}>Cybersecurity</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => { setAudience("CSE Department") }}>CSE Department</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => { setAudience("ECE Department") }}>ECE Department</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => { setAudience("AI/ML Department") }}>AI/ML Department</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => { setAudience("Cybersecurity Department") }}>Cybersecurity Department</DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
 
@@ -151,7 +151,7 @@ const Page = () => {
                                         <div className='w-full px-2'>
                                             <Progress value={(event.registered / event.capacity) * 100} />
                                         </div>
-                                        <Link href={""} className='w-full'><button className={`w-full bg-indigo-600 hover:bg-indigo-700 py-2 rounded-lg text-sm transition-all duration-200 ease-in-out ${event.registered >= event.capacity ? "!bg-indigo-900 cursor-not-allowed" : ""}`} disabled={event.registered >= event.capacity}>{event.registered >= event.capacity ? "Event Full" : "RSVP Now"}</button></Link>
+                                        <Link href={`/Events/${event.id}`} className='w-full'><button className={`w-full bg-indigo-600 hover:bg-indigo-700 py-2 rounded-lg text-sm transition-all duration-200 ease-in-out ${event.registered >= event.capacity ? "!bg-indigo-900 cursor-not-allowed" : ""}`} disabled={event.registered >= event.capacity}>{event.registered >= event.capacity ? "Event Full" : "View Event"}</button></Link>
                                     </div>
                                 </div>
                             </div>

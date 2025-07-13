@@ -9,7 +9,14 @@ import { CiSearch } from "react-icons/ci";
 import { Progress } from "@/components/ui/progress";
 import { db } from "@/lib/firebase";
 import { collection, query, where, getDocs } from "firebase/firestore";
+import { toast } from "sonner"
 import { useUser } from "@/context/userContext";
+import {
+  doc,
+  updateDoc,
+  deleteDoc,
+} from "firebase/firestore";
+import Link from "next/link";
 
 const Events = ({ setSelectedView }) => {
   const { user, userData } = useUser();
@@ -24,7 +31,7 @@ const Events = ({ setSelectedView }) => {
       try {
         const eventsRef = collection(db, "events");
         const q = query(eventsRef, where("createdBy", "==", user.uid));
-        const snapshot = await  (userData.role === "Admin" ? getDocs(eventsRef) : getDocs(q));
+        const snapshot = await (userData.role === "Admin" ? getDocs(eventsRef) : getDocs(q));
         const data = snapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
@@ -40,16 +47,29 @@ const Events = ({ setSelectedView }) => {
     fetchMyEvents();
   }, [user]);
 
-  const searchedEvents = events.filter((event) => 
+  const searchedEvents = events.filter((event) =>
     event.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
     event.targetAudience?.toLowerCase().includes(searchQuery.toLowerCase())
-);
+  );
+
+  const deleteEvent = async (id) => {
+    try {
+      const eventRef = doc(db, "events", id);
+      await deleteDoc(eventRef);
+      toast("Event Deleted Successfully, Refresh to update")
+      return { success: true };
+    } catch (error) {
+      toast("Failed To Delete Event")
+      console.error("❌ Error deleting Event:", error);
+      return { success: false, error: error.message };
+    }
+  };
 
   return (
     <div className="w-[84vw] h-screen overflow-y-scroll flex flex-col justify-start items-center">
       <div className="flex gap-1 justify-between items-center w-full px-5 mt-6">
         <div className="flex flex-col">
-          <h2 className="subtitle text-3xl">Manage {userData.role==="Admin"?"All":"Your"} Events</h2>
+          <h2 className="subtitle text-3xl">Manage {userData.role === "Admin" ? "All" : "Your"} Events</h2>
           <p className="contentText">Create and manage campus events</p>
         </div>
 
@@ -68,7 +88,7 @@ const Events = ({ setSelectedView }) => {
         <input
           type="search"
           name="events"
-          value={searchQuery} 
+          value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           id="events"
           placeholder="Search Events by Name or Target Audience..."
@@ -108,7 +128,7 @@ const Events = ({ setSelectedView }) => {
                     <button>
                       <FaRegEdit className="hover:text-cyan-600 transition-all duration-200 ease-in-out" />
                     </button>
-                    <button>
+                    <button onClick={() => { deleteEvent(event.id) }}>
                       <RiDeleteBin6Line className="hover:text-red-600 transition-all duration-200 ease-in-out" />
                     </button>
                   </div>
@@ -142,10 +162,11 @@ const Events = ({ setSelectedView }) => {
                       }
                     />
                   </div>
-
-                  <button className="w-full bg-indigo-600 hover:bg-indigo-700 py-2 rounded-lg text-sm transition-all duration-200 ease-in-out">
-                    View Event
-                  </button>
+                  <Link href={`/Events/${event.id}`} className="w-full">
+                    <button className="w-full bg-indigo-600 hover:bg-indigo-700 py-2 rounded-lg text-sm transition-all duration-200 ease-in-out">
+                      View Event
+                    </button>
+                  </Link>
                 </div>
               </div>
             </div>

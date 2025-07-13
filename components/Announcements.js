@@ -10,7 +10,13 @@ import { FaRegEdit } from "react-icons/fa";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { db } from "@/lib/firebase";
 import { collection, query, where, getDocs } from "firebase/firestore";
+import { toast } from "sonner"
 import { useUser } from "@/context/userContext";
+import {
+  doc,
+  updateDoc,
+  deleteDoc,
+} from "firebase/firestore";
 
 const Announcements = ({ setSelectedView }) => {
 
@@ -42,11 +48,24 @@ const Announcements = ({ setSelectedView }) => {
     fetchMyAnnouncements();
   }, [user]);
 
-  const searchedAnnouncements = announcements.filter((announcement) => 
+  const searchedAnnouncements = announcements.filter((announcement) =>
     announcement.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
     announcement.targetAudience?.toLowerCase().includes(searchQuery.toLowerCase()) ||
     announcement.priority?.toLowerCase().includes(searchQuery.toLowerCase())
-);
+  );
+
+  const deleteAnnouncement = async (id) => {
+    try {
+      const announcementRef = doc(db, "announcements", id);
+      await deleteDoc(announcementRef);
+      toast("Announcement Deleted Successfully, Refresh to update")
+      return { success: true };
+    } catch (error) {
+      toast("Failed To Delete Announcement")
+      console.error("❌ Error deleting announcement:", error);
+      return { success: false, error: error.message };
+    }
+  };
 
   return (
     <div className='w-[84vw] h-screen overflow-y-scroll flex flex-col justify-start items-center'>
@@ -92,7 +111,7 @@ const Announcements = ({ setSelectedView }) => {
                     {announcement.priority === "Low" && <p className='flex justify-center items-center gap-1 text-green-400 bg-green-500/20 p-1 rounded-lg border border-green-800/30'><FiCheckCircle /> Low Priority</p>}
                     <span className='border border-gray-700 contentText py-1 px-2 rounded-lg !text-white bg-blue-400/70'>{announcement.targetAudience}</span>
                     <button><FaRegEdit className='hover:text-cyan-600 transition-all duration-200 ease-in-out text-lg mx-1 ml-2' /></button>
-                    <button><RiDeleteBin6Line className='hover:text-red-600 transition-all duration-200 ease-in-out text-lg mx-1 mr-2' /></button>
+                    <button onClick={() => {deleteAnnouncement(announcement.id)}}><RiDeleteBin6Line className='hover:text-red-600 transition-all duration-200 ease-in-out text-lg mx-1 mr-2' /></button>
                   </div>
                 </div>
 

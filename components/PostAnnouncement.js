@@ -11,7 +11,7 @@ const PostAnnouncement = () => {
         title: "",
         description: "",
         targetAudience: "All",
-        priority: "",
+        priority: "Low",
         tags: "",
         expiryDate: "",
     });

@@ -74,9 +74,9 @@ const Footer = () => {
                     </div>
 
                     <div className='flex justify-center items-center text-3xl gap-5'>
-                        <a href="" target='_blank'><FaGithub className='rounded-md text-[#64748b] hover:text-[#ebebeb] transition-all duration-200 ease-in-out' /></a>
-                        <a href="" target='_blank'><FaLinkedin className='rounded-md text-[#64748b] hover:text-[#ebebeb] transition-all duration-200 ease-in-out' /></a>
-                        <a href="" target='_blank'><FaInstagramSquare className='rounded-md text-[#64748b] hover:text-[#ebebeb] transition-all duration-200 ease-in-out' /></a>
+                        <a href="https://github.com/Saksham-Jaiswal-2004" target='_blank'><FaGithub className='rounded-md text-[#64748b] hover:text-[#ebebeb] transition-all duration-200 ease-in-out' /></a>
+                        <a href="https://www.linkedin.com/in/saksham-jaiswal-220637302/" target='_blank'><FaLinkedin className='rounded-md text-[#64748b] hover:text-[#ebebeb] transition-all duration-200 ease-in-out' /></a>
+                        <a href="https://www.instagram.com/saksham__jaiswal/?next=%2F" target='_blank'><FaInstagramSquare className='rounded-md text-[#64748b] hover:text-[#ebebeb] transition-all duration-200 ease-in-out' /></a>
                     </div>
                 </div>
 

@@ -23,6 +23,7 @@ const Users = () => {
 
   const [searchQuery, setSearchQuery] = useState("");
   const [role, setRole] = useState("Select Role");
+  const [changedRole, setChangedRole] = useState();
   const [department, setDepartment] = useState("Select Department");
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -42,7 +43,7 @@ const Users = () => {
     };
 
     fetchUsers();
-  }, []);
+  }, [changedRole]);
 
   const updateUserRole = async (uid, newRole) => {
     try {
@@ -50,7 +51,8 @@ const Users = () => {
       await updateDoc(userRef, {
         role: newRole,
       });
-      alert(`Role updated to ${newRole}`);
+      setChangedRole(newRole);
+      // alert(`Role updated to ${newRole}`);
     } catch (error) {
       console.error("Error updating role:", error);
       alert("Failed to update role");
@@ -202,9 +204,19 @@ const Users = () => {
                 <select name="role" id={`role-${user.uid}`} defaultValue={user.role} onChange={(e) => {
                   const newRole = e.target.value;
                   if (userData.role === "Admin") {
-                    const confirmed = confirm(`Are you sure you want to change ${user.name}'s role to "${newRole}"?`);
-                    if (confirmed) {
-                      updateUserRole(user.uid, newRole);
+                    if (user.role === "Admin") {
+                      alert("Admin Roles Cannot be changed!")
+                    } else {
+                      const adminCode = process.env.NEXT_PUBLIC_ADMIN_CODE;
+                      const enteredCode = prompt("Enter Admin Code to Change User Roles");
+                      if (enteredCode === adminCode) {
+                        const confirmed = confirm(`Are you sure you want to change ${user.name}'s role to "${newRole}"?`);
+                        if (confirmed) {
+                          updateUserRole(user.uid, newRole);
+                        }
+                      } else {
+                        alert("Incorrect Admin Code!")
+                      }
                     }
                   } else {
                     alert("Only Admins can Change User Roles")

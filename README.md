@@ -209,7 +209,7 @@ CampusBot responds to student queries dynamically and is embedded in the dashboa
 ## 👨‍💻 Author
 
 **Saksham Jaiswal**  
-*Full Stack Developer | Open Source Contributor | GDG Campus Candidate*
+*Full Stack Developer | Open Source Contributor*
 
 [![GitHub](https://img.shields.io/badge/GitHub-sakshamjaiswal01-black?style=for-the-badge&logo=github)](https://github.com/sakshamjaiswal01)
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-sakshamjaiswal01-blue?style=for-the-badge&logo=linkedin)](https://linkedin.com/in/sakshamjaiswal01)

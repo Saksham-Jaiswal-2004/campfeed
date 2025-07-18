@@ -220,15 +220,3 @@ CampusBot responds to student queries dynamically and is embedded in the dashboa
 ## 📄 License
 
 This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
-
----
-
-<div align="center">
-
-### 🌟 Note for Reviewers
-
-*This project was submitted as part of the selection process for **GDG On Campus – July 2025 Cohort**, showcasing leadership, innovation, and technical skill using the Google developer ecosystem.*
-
-**Built with ❤️ for the campus community**
-
-</div>

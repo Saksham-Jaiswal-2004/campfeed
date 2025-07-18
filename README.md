@@ -10,8 +10,6 @@
 
 *A modern, AI-powered web platform that centralizes campus updates, events, and announcements while providing students with an intelligent chatbot assistant built using Gemini AI.*
 
-**🎯 Developed for GDG On Campus Organizer Application – July 2025 Cohort**
-
 </div>
 
 ---
@@ -39,7 +37,6 @@ College campuses often face scattered communication challenges – students miss
 - 📊 **Centralized Dashboard** - All events and announcements in one place
 - 🤖 **AI-Powered Assistant** - Instant campus-related queries with Gemini AI
 - 👥 **Role-Based Management** - Admin access for organizers and faculty
-- 🔗 **Google Integration** - Seamless experience using Google technologies
 
 ---
 
@@ -73,7 +70,6 @@ College campuses often face scattered communication challenges – students miss
 - 📅 View upcoming events and recent announcements
 - 💬 Interact with CampusBot (AI chatbot) for campus questions
 - 🎨 Personalized experience based on login
-- 📱 Mobile-responsive design
 
 ### 🤖 Gemini Chatbot – CampusBot
 Ask questions like:
@@ -127,7 +123,7 @@ Implemented using **Firebase Cloud Functions** that connect to Gemini 1.5 Pro.
 ### Prompt Example:
 ```
 "You are CampusBot, a helpful AI assistant for [Your College Name]. 
-Your job is to help students with event info, GDG activities, campus clubs, 
+Your job is to help students with event info, campus clubs, 
 and academic resources. Keep answers friendly, short, and helpful."
 ```
 
@@ -189,7 +185,7 @@ CampusBot responds to student queries dynamically and is embedded in the dashboa
 
 ## 📱 Use Cases
 
-- 🎯 **GDG On Campus Organizers** - Manage and promote events effectively
+- 🎯 **Student Clubs** - Manage and promote events effectively
 - 🎓 **Students** - 24/7 access to campus information and updates
 - 🏫 **Educational Institutions** - Central communication system between students, clubs, and faculty
 
@@ -200,10 +196,6 @@ CampusBot responds to student queries dynamically and is embedded in the dashboa
 *Screenshots will be added as the project develops*
 
 ---
-
-## 🤝 Contributing
-
-This is a solo project developed as part of the **GDG On Campus Organizer application**. Contributions are welcome after submission review is complete.
 
 ### How to Contribute
 1. Fork the repository

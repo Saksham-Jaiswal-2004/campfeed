@@ -211,8 +211,8 @@ CampusBot responds to student queries dynamically and is embedded in the dashboa
 **Saksham Jaiswal**  
 *Full Stack Developer | Open Source Contributor*
 
-[![GitHub](https://img.shields.io/badge/GitHub-Saksham-Jaiswal-2004-black?style=for-the-badge&logo=github)](https://github.com/Saksham-Jaiswal-2004)
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-Saksham-Jaiswal-2004-blue?style=for-the-badge&logo=linkedin)](https://linkedin.com/in/saksham-jaiswal-220637302)
+[![GitHub](https://img.shields.io/badge/GitHub-SakshamJaiswal2004-black?style=for-the-badge&logo=github)](https://github.com/Saksham-Jaiswal-2004)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-SakshamJaiswal2004-blue?style=for-the-badge&logo=linkedin)](https://linkedin.com/in/saksham-jaiswal-220637302)
 [![Email](https://img.shields.io/badge/Email-sakshamjaiswalofficial@gmail.com-red?style=for-the-badge&logo=gmail)](mailto:sakshamjaiswalofficial@gmail.com)
 
 ---

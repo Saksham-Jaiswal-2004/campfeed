@@ -38,7 +38,8 @@ const Navbar = () => {
                 <div className="routes">
                     <ul className='flex justify-center items-center gap-8 navText text-sm'>
                         <li className='cursor-pointer hover:text-[#3b82f6] transition-all duration-200 ease-in-out'><Link prefetch={true} href={"/"}>Home</Link></li>
-                        <li className='cursor-pointer hover:text-[#3b82f6] transition-all duration-200 ease-in-out'><Link prefetch={true} href={"/Dashboard"}>Dashboard</Link></li>
+                        <li className='cursor-pointer hover:text-[#3b82f6] transition-all duration-200 ease-in-out'><Link prefetch={true} href={"/Dashboard"}>Updates</Link></li>
+                        <li className='cursor-pointer hover:text-[#3b82f6] transition-all duration-200 ease-in-out'><Link prefetch={true} href={"/StudentDash"}>Dashboard</Link></li>
                         <li className='cursor-pointer hover:text-[#3b82f6] transition-all duration-200 ease-in-out'><Link prefetch={true} href={"/Chatbot"}>AI Chat</Link></li>
                         {userData && userData?.role !== "Student" && <li className='cursor-pointer hover:text-[#3b82f6] transition-all duration-200 ease-in-out'><Link href={"/Admin"}>Admin</Link></li>}
                     </ul>

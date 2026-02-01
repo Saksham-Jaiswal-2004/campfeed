@@ -24,7 +24,7 @@ const UpcomingEvents = () => {
 
             try {
                 const eventsRef = collection(db, "events");
-                const recentQuery = query(eventsRef, orderBy("createdAt"), limit(3));
+                const recentQuery = query(eventsRef, orderBy("createdAt"), limit(5));
                 const snapshot = await getDocs(recentQuery);
                 const data = snapshot.docs.map((doc) => ({
                     id: doc.id,

@@ -22,6 +22,7 @@ import PostAnnouncement from "@/components/PostAnnouncement";
 import PostEvent from "@/components/PostEvent";
 import { useUser } from "@/context/userContext";
 import { useRouter } from "next/navigation";
+import AdminSettings from "@/components/AdminSettings";
 
 const Page = () => {
 
@@ -102,7 +103,7 @@ const Page = () => {
         {selectedView === "Events" && <Events setSelectedView={setSelectedView} />}
         {selectedView === "Announcements" && <Announcements setSelectedView={setSelectedView} />}
         {selectedView === "Users" && <Users />}
-        {selectedView === "Settings" && <Settings />}
+        {selectedView === "Settings" && <AdminSettings />}
         {selectedView === "PostAnnouncement" && <PostAnnouncement />}
         {selectedView === "PostEvent" && <PostEvent />}
       </div>

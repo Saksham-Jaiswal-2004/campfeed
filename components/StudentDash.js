@@ -118,7 +118,7 @@ const StudentDash = ({setSelectedView}) => {
                 </div>
 
                 <div className='flex gap-4'>
-                    <button onClick = {() => {setSelectedView("PostEvent")}} className='cursor-pointer btnText bg-indigo-600/20 hover:bg-indigo-700/30 text-gray-200 hover:text-white px-3 py-2 rounded-sm text-sm transition-all duration-200 ease-in-out flex justify-center items-center gap-2'><MdNotificationsNone className='text-xl' /></button>
+                    {/* <button onClick = {() => {setSelectedView("Notifications")}} className='cursor-pointer btnText bg-indigo-600/20 hover:bg-indigo-700/30 text-gray-200 hover:text-white px-3 py-2 rounded-sm text-sm transition-all duration-200 ease-in-out flex justify-center items-center gap-2'><MdNotificationsNone className='text-xl' /></button> */}
                     <button onClick = {() => {setSelectedView("PostEvent")}} className='cursor-pointer btnText bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-sm text-sm transition-all duration-200 ease-in-out flex justify-center items-center gap-2'><TbMessageReport className='text-lg' /> Issues</button>
                     <button onClick = {() => {setSelectedView("PostAnnouncement")}} className='cursor-pointer btnText bg-indigo-600/30 hover:bg-indigo-600/50 px-4 py-2 rounded-sm text-sm transition-all duration-200 ease-in-out flex justify-center items-center gap-2'><IoAddOutline className='text-lg' /> Log an Issue</button>
                 </div>
@@ -181,7 +181,7 @@ const StudentDash = ({setSelectedView}) => {
                                 <span>•</span>
                                 <p>Upvotes</p>
                             </div>
-                            <p className='absolute top-3 right-4 text-[0.65rem] contentText'>Priority</p>
+                            <p className='absolute top-3 right-4 text-[0.65rem] contentText !text-green-500'>Priority</p>
                         </div>
 
                         <div className='relative w-full flex-col border border-gray-800/60 cursor-pointer hover:bg-[#020818] rounded-sm px-5 py-2'>
@@ -191,7 +191,7 @@ const StudentDash = ({setSelectedView}) => {
                                 <span>•</span>
                                 <p>Upvotes</p>
                             </div>
-                            <p className='absolute top-3 right-4 text-[0.65rem] contentText'>Priority</p>
+                            <p className='absolute top-3 right-4 text-[0.65rem] contentText !text-red-500'>Priority</p>
                         </div>
                         
                         <div className='relative w-full flex-col border border-gray-800/60 cursor-pointer hover:bg-[#020818] rounded-sm px-5 py-2'>
@@ -201,7 +201,7 @@ const StudentDash = ({setSelectedView}) => {
                                 <span>•</span>
                                 <p>Upvotes</p>
                             </div>
-                            <p className='absolute top-3 right-4 text-[0.65rem] contentText'>Priority</p>
+                            <p className='absolute top-3 right-4 text-[0.65rem] contentText !text-red-500'>Priority</p>
                         </div>
 
                         <div className='relative w-full flex-col border border-gray-800/60 cursor-pointer hover:bg-[#020818] rounded-sm px-5 py-2'>
@@ -211,7 +211,7 @@ const StudentDash = ({setSelectedView}) => {
                                 <span>•</span>
                                 <p>Upvotes</p>
                             </div>
-                            <p className='absolute top-3 right-4 text-[0.65rem] contentText'>Priority</p>
+                            <p className='absolute top-3 right-4 text-[0.65rem] contentText !text-yellow-500'>Priority</p>
                         </div>
 
                         <div className='relative w-full flex-col border border-gray-800/60 cursor-pointer hover:bg-[#020818] rounded-sm px-5 py-2'>
@@ -221,22 +221,131 @@ const StudentDash = ({setSelectedView}) => {
                                 <span>•</span>
                                 <p>Upvotes</p>
                             </div>
-                            <p className='absolute top-3 right-4 text-[0.65rem] contentText'>Priority</p>
+                            <p className='absolute top-3 right-4 text-[0.65rem] contentText !text-green-500'>Priority</p>
                         </div>
                     </div>
                 </div>
 
-                <div className='w-[31.25%] h-[400px] rounded-xl px-8 py-4 bg-[#020613] border border-gray-800'>
-                    <div className='flex justify-between items-center'>
+                <div className='w-[31.25%] h-[400px] rounded-xl bg-[#020613] border border-gray-800'>
+                    <div className='flex justify-between items-center mb-4 px-8 py-4'>
                         <h2 className='subtitle'>Announcements</h2>
                         <button onClick = {() => {setSelectedView("PostAnnouncement")}} className='cursor-pointer btnText bg-indigo-600/20 hover:bg-indigo-600/30 px-3 py-2 rounded-sm text-xs transition-all duration-200 ease-in-out flex justify-center items-center gap-2'>View All</button>
                     </div>
+
+                    <div className='flex flex-col justify-center items-center px-2 gap-1'>
+                        <div className='relative w-full flex-col border border-gray-800/60 cursor-pointer hover:bg-[#020818] rounded-sm px-5 py-2'>
+                            <h3 className='text-base'>E-Lafda hogya college me</h3>
+                            <div className='flex gap-1 text-xs text-[#64748b]'>
+                                <p>Department</p>
+                                <span>•</span>
+                                <p>Time</p>
+                            </div>
+                            <p className='absolute top-3 right-4 text-[0.65rem] contentText !text-green-500'>Priority</p>
+                        </div>
+
+                        <div className='relative w-full flex-col border border-gray-800/60 cursor-pointer hover:bg-[#020818] rounded-sm px-5 py-2'>
+                            <h3 className='text-base'>E-Lafda hogya college me</h3>
+                            <div className='flex gap-1 text-xs text-[#64748b]'>
+                                <p>Department</p>
+                                <span>•</span>
+                                <p>Time</p>
+                            </div>
+                            <p className='absolute top-3 right-4 text-[0.65rem] contentText !text-red-500'>Priority</p>
+                        </div>
+                        
+                        <div className='relative w-full flex-col border border-gray-800/60 cursor-pointer hover:bg-[#020818] rounded-sm px-5 py-2'>
+                            <h3 className='text-base'>E-Lafda hogya college me</h3>
+                            <div className='flex gap-1 text-xs text-[#64748b]'>
+                                <p>Department</p>
+                                <span>•</span>
+                                <p>Time</p>
+                            </div>
+                            <p className='absolute top-3 right-4 text-[0.65rem] contentText !text-yellow-500'>Priority</p>
+                        </div>
+
+                        <div className='relative w-full flex-col border border-gray-800/60 cursor-pointer hover:bg-[#020818] rounded-sm px-5 py-2'>
+                            <h3 className='text-base'>E-Lafda hogya college me</h3>
+                            <div className='flex gap-1 text-xs text-[#64748b]'>
+                                <p>Department</p>
+                                <span>•</span>
+                                <p>Time</p>
+                            </div>
+                            <p className='absolute top-3 right-4 text-[0.65rem] contentText !text-green-500'>Priority</p>
+                        </div>
+
+                        <div className='relative w-full flex-col border border-gray-800/60 cursor-pointer hover:bg-[#020818] rounded-sm px-5 py-2'>
+                            <h3 className='text-base'>E-Lafda hogya college me</h3>
+                            <div className='flex gap-1 text-xs text-[#64748b]'>
+                                <p>Department</p>
+                                <span>•</span>
+                                <p>Time</p>
+                            </div>
+                            <p className='absolute top-3 right-4 text-[0.65rem] contentText !text-red-500'>Priority</p>
+                        </div>
+                    </div>
                 </div>
 
-                <div className='w-[31.25%] h-[400px] rounded-xl px-8 py-4 bg-[#020613] border border-gray-800'>
-                    <div className='flex justify-between items-center'>
+                <div className='w-[31.25%] h-[400px] rounded-xl bg-[#020613] border border-gray-800'>
+                    <div className='flex justify-between items-center mb-4 px-8 py-4'>
                         <h2 className='subtitle'>Events</h2>
                         <button onClick = {() => {setSelectedView("PostAnnouncement")}} className='cursor-pointer btnText bg-indigo-600/20 hover:bg-indigo-600/30 px-3 py-2 rounded-sm text-xs transition-all duration-200 ease-in-out flex justify-center items-center gap-2'>View All</button>
+                    </div>
+
+                    <div className='flex flex-col justify-center items-center px-2 gap-1'>
+                        <div className='relative w-full flex-col border border-gray-800/60 cursor-pointer hover:bg-[#020818] rounded-sm px-5 py-2'>
+                            <h3 className='text-base'>E-Lafda hogya college me</h3>
+                            <div className='flex gap-1 text-xs text-[#64748b]'>
+                                <p>Date</p>
+                                <span>•</span>
+                                <p>Time</p>
+                                <span>•</span>
+                                <p>Venue</p>
+                            </div>
+                        </div>
+
+                        <div className='relative w-full flex-col border border-gray-800/60 cursor-pointer hover:bg-[#020818] rounded-sm px-5 py-2'>
+                            <h3 className='text-base'>E-Lafda hogya college me</h3>
+                            <div className='flex gap-1 text-xs text-[#64748b]'>
+                                <p>Date</p>
+                                <span>•</span>
+                                <p>Time</p>
+                                <span>•</span>
+                                <p>Venue</p>
+                            </div>
+                        </div>
+                        
+                        <div className='relative w-full flex-col border border-gray-800/60 cursor-pointer hover:bg-[#020818] rounded-sm px-5 py-2'>
+                            <h3 className='text-base'>E-Lafda hogya college me</h3>
+                            <div className='flex gap-1 text-xs text-[#64748b]'>
+                                <p>Date</p>
+                                <span>•</span>
+                                <p>Time</p>
+                                <span>•</span>
+                                <p>Venue</p>
+                            </div>
+                        </div>
+
+                        <div className='relative w-full flex-col border border-gray-800/60 cursor-pointer hover:bg-[#020818] rounded-sm px-5 py-2'>
+                            <h3 className='text-base'>E-Lafda hogya college me</h3>
+                            <div className='flex gap-1 text-xs text-[#64748b]'>
+                                <p>Date</p>
+                                <span>•</span>
+                                <p>Time</p>
+                                <span>•</span>
+                                <p>Venue</p>
+                            </div>
+                        </div>
+
+                        <div className='relative w-full flex-col border border-gray-800/60 cursor-pointer hover:bg-[#020818] rounded-sm px-5 py-2'>
+                            <h3 className='text-base'>E-Lafda hogya college me</h3>
+                            <div className='flex gap-1 text-xs text-[#64748b]'>
+                                <p>Date</p>
+                                <span>•</span>
+                                <p>Time</p>
+                                <span>•</span>
+                                <p>Venue</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

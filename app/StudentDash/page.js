@@ -24,6 +24,13 @@ import PostEvent from "@/components/PostEvent";
 import { useUser } from "@/context/userContext";
 import { useRouter } from "next/navigation";
 import StudentDash from "@/components/StudentDash";
+import UpcomingEvents from "@/components/UpcomingEvents";
+import EventsList from "@/components/EventsList";
+import AnnouncementList from "@/components/AnnouncementList";
+import Notifications from "@/components/Notification";
+import { LiaUniversitySolid } from "react-icons/lia";
+import UserIssues from "@/components/UserIssues";
+import CampusIssues from "@/components/CampusIssues";
 
 const Page = () => {
 
@@ -41,10 +48,11 @@ const Page = () => {
 
   const links = [
     { href: "/StudentDash", view: "StudentDash", label: "Dashboard", icon: <MdOutlineDashboard /> },
-    { href: "/StudentDash", view: "Announcements", label: "Issues", icon: <TbMessageReport /> },
-    { href: "/StudentDash", view: "Events", label: "Events", icon: <IoIosCalendar /> },
+    { href: "/StudentDash", view: "UserIssues", label: "My Issues", icon: <TbMessageReport /> },
+    { href: "/StudentDash", view: "AllIssues", label: "All Campus Issues", icon: <LiaUniversitySolid /> },
+    { href: "/StudentDash", view: "EventList", label: "Events", icon: <IoIosCalendar /> },
     { href: "/StudentDash", view: "Announcements", label: "Anouncements", icon: <MdOutlineChatBubbleOutline /> },
-    { href: "/StudentDash", view: "Announcements", label: "Notifications", icon: <MdNotificationsNone /> },
+    // { href: "/StudentDash", view: "Notifications", label: "Notifications", icon: <MdNotificationsNone /> },
     { href: "/StudentDash", view: "Settings", label: "Settings", icon: <IoSettingsOutline /> },
   ];
 
@@ -77,6 +85,7 @@ const Page = () => {
         </div>
 
         <div className="relative bg-cyan-800/40 border border-cyan-800 hover:bg-cyan-700/40 hover:border-cyan-600 rounded-md px-0 py-2 flex flex-col justify-center items-center gap-1 cursor-pointer">
+          <Link href="/Profile" className="flex flex-col justify-center items-center">
           <img src={userData?.profilePic} alt={userData?.name} className="rounded-full w-20 h-20" />
 
           <div className="flex flex-col gap-0 justify-center items-center w-full">
@@ -87,13 +96,17 @@ const Page = () => {
           {userData?.role === "Admin" && <p className="absolute top-[-30px] left-2 text-xs text-purple-600 bg-purple-600/20 border border-purple-800 px-2 py-1 rounded-full navText">Admin</p>}
           {userData?.role === "Faculty" && <p className="absolute top-[-30px] left-2 text-xs text-indigo-600 bg-indigo-600/20 border border-indigo-800 px-2 py-1 rounded-full navText">Faculty</p>}
           {userData?.role === "Student Club" && <p className="absolute top-[-30px] left-2 text-xs text-yellow-600 bg-yellow-600/20 border border-yellow-800 px-2 py-1 rounded-full navText">Student Club</p>}
+          </Link>
         </div>
       </SidebarBody>
 
-      <div className="min-h-[100vh] w-[84vw] overflow-x-hidden fixed right-0 h-fit flex justify-center items-center">
+      <div className="min-h-screen h-fit overflow-y-scroll w-[84vw] overflow-x-hidden fixed right-0 flex justify-center items-center">
         {selectedView === "StudentDash" && <StudentDash setSelectedView={setSelectedView} />}
-        {selectedView === "Events" && <Events setSelectedView={setSelectedView} />}
-        {selectedView === "Announcements" && <Announcements setSelectedView={setSelectedView} />}
+        {selectedView === "UserIssues" && <UserIssues />}
+        {selectedView === "AllIssues" && <CampusIssues />}
+        {selectedView === "EventList" && <EventsList />}
+        {selectedView === "Announcements" && <AnnouncementList />}
+        {selectedView === "Notifications" && <Notifications />}
         {selectedView === "Users" && <Users />}
         {selectedView === "Settings" && <Settings />}
         {selectedView === "PostAnnouncement" && <PostAnnouncement />}

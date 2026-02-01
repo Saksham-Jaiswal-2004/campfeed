@@ -31,6 +31,7 @@ import Notifications from "@/components/Notification";
 import { LiaUniversitySolid } from "react-icons/lia";
 import UserIssues from "@/components/UserIssues";
 import CampusIssues from "@/components/CampusIssues";
+import LogIssue from "@/components/LogIssue";
 
 const Page = () => {
 
@@ -102,8 +103,8 @@ const Page = () => {
 
       <div className="min-h-screen h-fit overflow-y-scroll w-[84vw] overflow-x-hidden fixed right-0 flex justify-center items-center">
         {selectedView === "StudentDash" && <StudentDash setSelectedView={setSelectedView} />}
-        {selectedView === "UserIssues" && <UserIssues />}
-        {selectedView === "AllIssues" && <CampusIssues />}
+        {selectedView === "UserIssues" && <UserIssues setSelectedView={setSelectedView} />}
+        {selectedView === "AllIssues" && <CampusIssues setSelectedView={setSelectedView} />}
         {selectedView === "EventList" && <EventsList />}
         {selectedView === "Announcements" && <AnnouncementList />}
         {selectedView === "Notifications" && <Notifications />}
@@ -111,6 +112,7 @@ const Page = () => {
         {selectedView === "Settings" && <Settings />}
         {selectedView === "PostAnnouncement" && <PostAnnouncement />}
         {selectedView === "PostEvent" && <PostEvent />}
+        {selectedView === "LogIssue" && <LogIssue setSelectedView={setSelectedView} />}
       </div>
     </Sidebar>
   )

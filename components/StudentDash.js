@@ -119,8 +119,8 @@ const StudentDash = ({setSelectedView}) => {
 
                 <div className='flex gap-4'>
                     {/* <button onClick = {() => {setSelectedView("Notifications")}} className='cursor-pointer btnText bg-indigo-600/20 hover:bg-indigo-700/30 text-gray-200 hover:text-white px-3 py-2 rounded-sm text-sm transition-all duration-200 ease-in-out flex justify-center items-center gap-2'><MdNotificationsNone className='text-xl' /></button> */}
-                    <button onClick = {() => {setSelectedView("PostEvent")}} className='cursor-pointer btnText bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-sm text-sm transition-all duration-200 ease-in-out flex justify-center items-center gap-2'><TbMessageReport className='text-lg' /> Issues</button>
-                    <button onClick = {() => {setSelectedView("PostAnnouncement")}} className='cursor-pointer btnText bg-indigo-600/30 hover:bg-indigo-600/50 px-4 py-2 rounded-sm text-sm transition-all duration-200 ease-in-out flex justify-center items-center gap-2'><IoAddOutline className='text-lg' /> Log an Issue</button>
+                    <button onClick = {() => {setSelectedView("AllIssues")}} className='cursor-pointer btnText bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-sm text-sm transition-all duration-200 ease-in-out flex justify-center items-center gap-2'><TbMessageReport className='text-lg' /> Issues</button>
+                    <button onClick = {() => {setSelectedView("LogIssue")}} className='cursor-pointer btnText bg-indigo-600/30 hover:bg-indigo-600/50 px-4 py-2 rounded-sm text-sm transition-all duration-200 ease-in-out flex justify-center items-center gap-2'><IoAddOutline className='text-lg' /> Log an Issue</button>
                 </div>
             </div>
 
@@ -170,7 +170,7 @@ const StudentDash = ({setSelectedView}) => {
                 <div className='w-[31.25%] h-[400px] rounded-xl bg-[#020613] border border-gray-800'>
                     <div className='flex justify-between items-center mb-4 px-8 py-4'>
                         <h2 className='subtitle'>Issue Logs</h2>
-                        <button onClick = {() => {setSelectedView("PostAnnouncement")}} className='cursor-pointer btnText bg-indigo-600/20 hover:bg-indigo-600/30 px-3 py-2 rounded-sm text-xs transition-all duration-200 ease-in-out flex justify-center items-center gap-2'>View All</button>
+                        <button onClick = {() => {setSelectedView("AllIssues")}} className='cursor-pointer btnText bg-indigo-600/20 hover:bg-indigo-600/30 px-3 py-2 rounded-sm text-xs transition-all duration-200 ease-in-out flex justify-center items-center gap-2'>View All</button>
                     </div>
 
                     <div className='flex flex-col justify-center items-center px-2 gap-1'>
@@ -229,7 +229,7 @@ const StudentDash = ({setSelectedView}) => {
                 <div className='w-[31.25%] h-[400px] rounded-xl bg-[#020613] border border-gray-800'>
                     <div className='flex justify-between items-center mb-4 px-8 py-4'>
                         <h2 className='subtitle'>Announcements</h2>
-                        <button onClick = {() => {setSelectedView("PostAnnouncement")}} className='cursor-pointer btnText bg-indigo-600/20 hover:bg-indigo-600/30 px-3 py-2 rounded-sm text-xs transition-all duration-200 ease-in-out flex justify-center items-center gap-2'>View All</button>
+                        <button onClick = {() => {setSelectedView("Announcements")}} className='cursor-pointer btnText bg-indigo-600/20 hover:bg-indigo-600/30 px-3 py-2 rounded-sm text-xs transition-all duration-200 ease-in-out flex justify-center items-center gap-2'>View All</button>
                     </div>
 
                     <div className='flex flex-col justify-center items-center px-2 gap-1'>
@@ -288,7 +288,7 @@ const StudentDash = ({setSelectedView}) => {
                 <div className='w-[31.25%] h-[400px] rounded-xl bg-[#020613] border border-gray-800'>
                     <div className='flex justify-between items-center mb-4 px-8 py-4'>
                         <h2 className='subtitle'>Events</h2>
-                        <button onClick = {() => {setSelectedView("PostAnnouncement")}} className='cursor-pointer btnText bg-indigo-600/20 hover:bg-indigo-600/30 px-3 py-2 rounded-sm text-xs transition-all duration-200 ease-in-out flex justify-center items-center gap-2'>View All</button>
+                        <button onClick = {() => {setSelectedView("EventList")}} className='cursor-pointer btnText bg-indigo-600/20 hover:bg-indigo-600/30 px-3 py-2 rounded-sm text-xs transition-all duration-200 ease-in-out flex justify-center items-center gap-2'>View All</button>
                     </div>
 
                     <div className='flex flex-col justify-center items-center px-2 gap-1'>

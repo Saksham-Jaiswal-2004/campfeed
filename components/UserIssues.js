@@ -5,6 +5,7 @@ import { IoIosArrowDown } from "react-icons/io";
 import { CgDanger } from "react-icons/cg";
 import { MdOutlineInfo } from "react-icons/md";
 import { FiCheckCircle } from "react-icons/fi";
+import { IoAddOutline } from "react-icons/io5";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,7 +19,7 @@ import { collection, getDocs, getDoc, doc } from "firebase/firestore";
 import { useUser } from "@/context/userContext";
 import { useRouter } from "next/navigation";
 
-const UserIssues = () => {
+const UserIssues = ({setSelectedView}) => {
   const [role, setRole] = useState("Select Role");
   const [priority, setPriority] = useState("Select Priority");
   const [audience, setAudience] = useState("Select Audience");
@@ -107,6 +108,8 @@ const UserIssues = () => {
           <h2 className='subtitle text-3xl'>Your Issues</h2>
           <p className='contentText'>Track the progress of your submitted issues</p>
         </div>
+
+        <button onClick = {() => {setSelectedView("LogIssue")}} className='cursor-pointer btnText bg-indigo-600/30 hover:bg-indigo-600/50 px-4 py-2 rounded-sm text-sm transition-all duration-200 ease-in-out flex justify-center items-center gap-2'><IoAddOutline className='text-lg' /> Log an Issue</button>
       </div>
 
       <div className='flex gap-5 justify-center items-center w-full mt-5'>

@@ -68,9 +68,9 @@ const Footer = () => {
                         <h1 className='text-3xl font-bold bg-gradient-to-r from-indigo-500 to-cyan-400 bg-clip-text text-transparent'>CampFeed</h1>
                     </Link>
 
-                    <div className='flex justify-center items-end gap-1 contentText'>
+                    <div className='flex justify-center items-center gap-1 contentText'>
                         <MdEmail className='text-xl' />
-                        <span> - support@campfeed.in</span>
+                        <span> - sakshamjaiswalofficial@gmail.com</span>
                     </div>
 
                     <div className='flex justify-center items-center text-3xl gap-5'>

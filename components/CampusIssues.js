@@ -6,6 +6,7 @@ import { CgDanger } from "react-icons/cg";
 import { MdOutlineInfo } from "react-icons/md";
 import { FiCheckCircle } from "react-icons/fi";
 import { IoAddOutline } from "react-icons/io5";
+import { FaAngleUp } from "react-icons/fa6";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,6 +19,7 @@ import { db } from "@/lib/firebase";
 import { collection, getDocs, getDoc, doc } from "firebase/firestore";
 import { useUser } from "@/context/userContext";
 import { useRouter } from "next/navigation";
+import ShareButton from './ShareButton';
 
 const CampusIssues = ({setSelectedView}) => {
   const [role, setRole] = useState("Select Role");
@@ -29,6 +31,98 @@ const CampusIssues = ({setSelectedView}) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [expanded, setExpanded] = useState({});
   const router = useRouter();
+
+  const issuesData = [
+    {
+    "id": "ISSUE-001",
+    "title": "WiFi not working in Hostel Block B",
+    "description": "The WiFi connection has been extremely unstable for the past 3 days in Hostel Block B. Speeds drop to 0.5 Mbps during evening hours.",
+    "category_id": "CAT002",
+    "priority": "high",
+    "status": "In Progress",
+    "student_id": "STU001",
+    "assigned_to": "STAFF002",
+    "is_anonymous": false,
+    "location": "Hostel Block B - 3rd Floor",
+    "attachment_urls": [
+      "https://example.com/screenshots/speedtest1.png"
+    ],
+    "created_at": "2026-03-01T10:15:00Z",
+    "updated_at": "2026-03-01T14:30:00Z",
+    "resolved_at": null,
+    "upvotes": 200,
+  },
+  {
+    "id": "ISSUE-002",
+    "title": "Water leakage in Room 204",
+    "description": "There is continuous water leakage from the ceiling during rainfall. It is affecting electrical wiring.",
+    "category_id": "CAT005",
+    "priority": "critical",
+    "status": "Open",
+    "student_id": "STU002",
+    "assigned_to": null,
+    "is_anonymous": true,
+    "location": "Hostel Block A - Room 204",
+    "attachment_urls": [],
+    "created_at": "2026-03-02T07:40:00Z",
+    "updated_at": "2026-03-02T07:40:00Z",
+    "resolved_at": null,
+    "upvotes": 200,
+  },
+  {
+    "id": "ISSUE-003",
+    "title": "Mess food quality deteriorating",
+    "description": "The quality of dinner served this week has been poor. Multiple students reported undercooked rice and stale chapatis.",
+    "category_id": "CAT003",
+    "priority": "medium",
+    "status": "Resolved",
+    "student_id": "STU003",
+    "assigned_to": "ADM001",
+    "is_anonymous": false,
+    "location": "Main Mess Hall",
+    "attachment_urls": [
+      "https://example.com/photos/mess-food.jpg"
+    ],
+    "created_at": "2026-02-25T18:20:00Z",
+    "updated_at": "2026-02-27T12:00:00Z",
+    "resolved_at": "2026-02-27T11:45:00Z",
+    "upvotes": 200
+  },
+  {
+    "id": "ISSUE-004",
+    "title": "Request for additional lab practice hours",
+    "description": "Students preparing for placements need extended lab access during weekends.",
+    "category_id": "CAT004",
+    "priority": "low",
+    "status": "Rejected",
+    "student_id": "STU004",
+    "assigned_to": "ADM002",
+    "is_anonymous": false,
+    "location": "Computer Lab 2",
+    "attachment_urls": [],
+    "created_at": "2026-02-20T09:00:00Z",
+    "updated_at": "2026-02-22T10:30:00Z",
+    "resolved_at": "2026-02-22T10:30:00Z",
+    "upvotes": 200,
+  },
+  {
+    "id": "ISSUE-005",
+    "title": "Broken tube light in Classroom C-101",
+    "description": "The tube light has been flickering and finally stopped working. It makes it difficult to attend evening lectures.",
+    "category_id": "CAT005",
+    "priority": "medium",
+    "status": "Open",
+    "student_id": "STU005",
+    "assigned_to": null,
+    "is_anonymous": false,
+    "location": "Academic Block C - Room 101",
+    "attachment_urls": [],
+    "created_at": "2026-03-02T12:10:00Z",
+    "updated_at": "2026-03-02T12:10:00Z",
+    "resolved_at": null,
+    "upvotes": 200,
+  }
+];
 
   useEffect(() => {
     if (!loading && !user) {
@@ -222,26 +316,29 @@ const CampusIssues = ({setSelectedView}) => {
             No Present Announcements
           </div>
         ) : (
-          <div className='grid grid-cols-1 justify-center items-center gap-2 w-full mb-10'>
-            {filteredAnnouncements.map((announcement) => (
-              <div key={announcement.id} className='w-full h-fit border border-gray-800 bg-[#020613] rounded-lg overflow-hidden'>
+          <div className='grid grid-cols-1 justify-center items-center gap-4 w-full mb-10'>
+            {/* {filteredAnnouncements.map((announcement) => ( */}
+            {issuesData.map((announcement) => (
+              <div key={announcement.id} className='w-full !h-[40vh] border border-gray-800 bg-[#020613] rounded-lg overflow-hidden'>
                 <Link href={`/Announcements/${announcement.id}`} className='cursor-pointer'>
-                  <div className='w-full h-full flex flex-col justify-between p-5 hover:bg-gray-900/50 transition-all duration-200 ease-in-out'>
-                    <div className='relative'>
+                <div className='relative w-full h-full flex justify-center items-center pl-8 gap-4 hover:bg-gray-900/50 transition-all duration-200 ease-in-out'>
+                  <div>
+                    <img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/attachments/gen-images/public/overflowing-dumpster-x1cBEefLftHFa7DMvTW6HJwbBgrq54.png" alt="" className='h-[33vh] w-auto' />
+                  </div>
+                  
+                  <div className='w-full h-full relative flex flex-col justify-start p-5'>
+                    <div className='relative py-2'>
                       <h3 className='subtitle text-lg mb-1'>{announcement.title}</h3>
                       <p className='contentText text-xs w-[95%] flex gap-2 items-center'>
-                        {announcement.createdByUser?.username}
+                        {announcement.is_anonymous ? "Anonymous" : announcement.student_id}
                         <span>•</span>
-                        <span className='border border-gray-700 contentText py-[0.15rem] px-2 rounded-lg !text-white'>{announcement.createdByUser?.role}</span>
+                        <span className='border border-gray-700 contentText py-[0.15rem] px-2 rounded-lg !text-white'>{announcement.category_id}</span>
                         <span>•</span>
-                        {new Date(announcement.createdAt.toDate()).toLocaleString("en-GB", {
-                          day: "2-digit",
-                          month: "short",
-                          year: "numeric",
-                          hour: "2-digit",
-                          minute: "2-digit",
-                          hour12: true,
-                        })}
+                        {new Date(announcement.created_at).toLocaleDateString("en-IN", {
+                           day: "numeric",
+                           month: "long",
+                           year: "numeric"
+                         })}
                       </p>
                       <div className='flex gap-2 text-xs mt-3'>
                         {announcement.tags?.map((tag, index) => (
@@ -252,22 +349,29 @@ const CampusIssues = ({setSelectedView}) => {
                       </div>
 
                       <div className='absolute top-0 right-0 flex gap-2 text-xs justify-center items-center contentText'>
-                        <span className='border border-gray-700 contentText py-1 px-2 rounded-lg !text-white bg-blue-400/70'>{announcement.targetAudience}</span>
-                        {announcement.priority === "High" && (
+                        <span className='border border-gray-700 contentText py-1 px-2 rounded-lg !text-gray-400 bg-gray-500/10'>{announcement.id}</span>
+                        <span className='border border-gray-700 contentText py-1 px-2 rounded-lg !text-gray-400 bg-blue-400/10'>{announcement.status}</span>
+                        {announcement.priority === "critical" && (
                           <p className='text-xs flex items-center gap-1 text-red-400 bg-red-500/20 p-1 rounded-lg border border-red-800/30'>
+                            <CgDanger /> Critical Priority
+                          </p>
+                        )}
+                        {announcement.priority === "high" && (
+                          <p className='text-xs flex items-center gap-1 text-orange-400 bg-orange-500/20 p-1 rounded-lg border border-orange-800/30'>
                             <CgDanger /> High Priority
                           </p>
                         )}
-                        {announcement.priority === "Medium" && (
+                        {announcement.priority === "medium" && (
                           <p className='text-xs flex items-center gap-1 text-yellow-400 bg-yellow-500/20 p-1 rounded-lg border border-yellow-800/30'>
                             <MdOutlineInfo /> Medium Priority
                           </p>
                         )}
-                        {announcement.priority === "Low" && (
+                        {announcement.priority === "low" && (
                           <p className='text-xs flex items-center gap-1 text-green-400 bg-green-500/20 p-1 rounded-lg border border-green-800/30'>
                             <FiCheckCircle /> Low Priority
                           </p>
                         )}
+                        {/* <ShareButton title="" url="/" text={`Check out this Event: `} /> */}
                       </div>
                     </div>
 
@@ -289,6 +393,9 @@ const CampusIssues = ({setSelectedView}) => {
                         </button>
                       </div>
                     )}
+
+                  </div>
+                    <Link href="/" className='absolute bottom-0 right-0'><span className='mr-4 mb-4 border border-gray-700 contentText py-2 px-2 rounded-lg !text-white bg-blue-400/50 text-xs hover:bg-blue-400/70 transition-all duration-300 ease-in-out flex justify-center items-center gap-1'><FaAngleUp /> {announcement.upvotes} Votes</span></Link>
                   </div>
                 </Link>
               </div>

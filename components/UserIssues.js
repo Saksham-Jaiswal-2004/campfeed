@@ -224,7 +224,7 @@ const UserIssues = ({setSelectedView}) => {
         ) : (
           <div className='grid grid-cols-1 justify-center items-center gap-2 w-full mb-10'>
             {filteredAnnouncements.map((announcement) => (
-              <div key={announcement.id} className='w-full h-fit border border-gray-800 bg-[#020613] rounded-lg overflow-hidden'>
+              <div key={announcement.id} className='w-full !h-[30vh] border border-gray-800 bg-[#020613] rounded-lg overflow-hidden'>
                 <Link href={`/Announcements/${announcement.id}`} className='cursor-pointer'>
                   <div className='w-full h-full flex flex-col justify-between p-5 hover:bg-gray-900/50 transition-all duration-200 ease-in-out'>
                     <div className='relative'>

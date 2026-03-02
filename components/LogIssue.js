@@ -281,19 +281,19 @@ const LogIssue = ({setSelectedView}) => {
                     className={cn(
                       "flex flex-col bg-[#020316] justify-center items-center gap-3 px-2 py-8 rounded-xl border-1 border-gray-800 transition-all text-center",
                       formData.urgency === u.id
-                        ? "bg-[#03051d] border-green-500/50"
+                        ? `{ bg-[#03051d] ${u.id==="low" ? "border-green-500/50" : u.id==="medium" ? "border-yellow-500/50" : u.id==="high" ? "border-orange-500/50" : "border-red-500/50"} }`
                         : "",
                     )}
                   >
                     <div
                       className={cn(
                         "h-12 w-12 rounded-full flex items-center justify-center shrink-0",
-                        formData.urgency === u.id ? "text-green-500" : "",
+                        formData.urgency === u.id ? `{ ${u.id==="low" ? "text-green-400/50" : u.id==="medium" ? "text-yellow-400/50" : u.id==="high" ? "text-orange-400/50" : "text-red-400/50"} }` : "",
                       )}
                     >
                       <u.icon className="h-8 w-8" />
                     </div>
-                    <div>
+                    <div className={`${formData.urgency === u.id ? u.id==="low" ? "text-green-400/50" : u.id==="medium" ? "text-yellow-400/50" : u.id==="high" ? "text-orange-400/50" : "text-red-400/50" : ""}`}>
                       <p className="text-lg subTitle">{u.name}</p>
                       <p className="text-xs contentText">{u.desc}</p>
                     </div>

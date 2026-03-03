@@ -7,6 +7,8 @@ import { MdOutlineInfo } from "react-icons/md";
 import { FiCheckCircle } from "react-icons/fi";
 import { IoAddOutline } from "react-icons/io5";
 import { FaAngleUp } from "react-icons/fa6";
+import { FaAngleRight } from 'react-icons/fa';
+import { FaRegThumbsUp } from "react-icons/fa";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,9 +24,9 @@ import { useRouter } from "next/navigation";
 import ShareButton from './ShareButton';
 
 const CampusIssues = ({setSelectedView}) => {
-  const [role, setRole] = useState("Select Role");
+  const [status, setStatus] = useState("Select Status");
   const [priority, setPriority] = useState("Select Priority");
-  const [audience, setAudience] = useState("Select Audience");
+  const [category, setCategory] = useState("Select Category");
   const { user, loading } = useUser();
   const [announcements, setAnnouncements] = useState([]);
   const [fetching, setFetching] = useState(true);
@@ -173,19 +175,19 @@ const CampusIssues = ({setSelectedView}) => {
 
   const filteredAnnouncements = useMemo(() => {
     return announcements.filter((announcement) => {
-      const roleMatch = role === "All Roles" || role === "Select Role" || announcement.createdByUser?.role === role;
+      const statusMatch = status === "All Status" || status === "Select Status" || announcement.createdByUser?.status === status;
       const priorityMatch = priority === "All Priorities" || priority === "Select Priority" || announcement.priority === priority;
-      const audienceMatch = audience === "All Audience" || audience === "Select Audience" || announcement.targetAudience === audience;
+      const categoryMatch = category === "All Categories" || category === "Select Category" || announcement.targetAudience === category;
       const nameMatch = announcement.title?.toLowerCase().includes(searchQuery.toLowerCase());
-      return roleMatch && priorityMatch && audienceMatch && nameMatch;
+      return statusMatch && priorityMatch && categoryMatch && nameMatch;
     });
-  }, [announcements, role, priority, audience, searchQuery]);
+  }, [announcements, status, priority, category, searchQuery]);
 
   const handleReset = () => {
     setSearchQuery("")
-    setRole("Select Role");
+    setStatus("Select Status");
     setPriority("Select Priority");
-    setAudience("Select Audience");
+    setCategory("Select Category");
   };
 
   const toggleExpand = (id) => {
@@ -261,38 +263,40 @@ const CampusIssues = ({setSelectedView}) => {
         />
 
         <DropdownMenu>
-          <DropdownMenuTrigger>{role}</DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuItem onClick={() => setRole("All Roles")}>All Roles</DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setRole("Admin")}>Admin</DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setRole("Faculty")}>Faculty</DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setRole("Student Club")}>Student Club</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-
-        <DropdownMenu>
-          <DropdownMenuTrigger>{priority}</DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuItem onClick={() => setPriority("All Priorities")}>All Priorities</DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setPriority("High")}>High Priority</DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setPriority("Medium")}>Medium Priority</DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setPriority("Low")}>Low Priority</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-
-        <DropdownMenu>
-          <DropdownMenuTrigger>{audience}</DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuItem onClick={() => setAudience("All Audience")}>All Audience</DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setAudience("Students")}>Student</DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setAudience("Faculty")}>Faculty</DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setAudience("Student Clubs")}>Student Clubs</DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setAudience("CSE Department")}>CSE Department</DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setAudience("ECE Department")}>ECE Department</DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setAudience("AI/ML Department")}>AI/ML Department</DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setAudience("Cybersecurity Department")}>Cybersecurity Department</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+                  <DropdownMenuTrigger>{status}</DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    <DropdownMenuItem onClick={() => setStatus("All Status")}>All Roles</DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setStatus("In Progress")}>In Progress</DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setStatus("Resolved")}>Resolved</DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setStatus("Rejected")}>Rejected</DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+        
+                <DropdownMenu>
+                  <DropdownMenuTrigger>{priority}</DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    <DropdownMenuItem onClick={() => setPriority("All Priorities")}>All Priorities</DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setPriority("High")}>High Priority</DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setPriority("Medium")}>Medium Priority</DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setPriority("Low")}>Low Priority</DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+        
+                <DropdownMenu>
+                  <DropdownMenuTrigger>{category}</DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    <DropdownMenuItem onClick={() => setCategory("All Categories")}>All Categories</DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setCategory("Academic")}>Academic</DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setCategory("Faculty/Department")}>Faculty/Department</DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setCategory("Education & Assessment")}>Education & Assessment</DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setCategory("Administrative/Office")}>Administrative/Office</DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setCategory("Hostel/Accomodation")}>Hostel/Accomodation</DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setCategory("IT & Digital")}>IT & Digital</DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setCategory("Campus Facilities/Transport")}>Campus Facilities/Transport</DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setCategory("Safety, Security & Discipline")}>Safety, Security & Discipline</DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setCategory("Others")}>Others</DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
 
         <button
           className='contextText border border-gray-700 px-4 py-2 rounded-sm hover:bg-gray-700/20 transition-all duration-200 ease-in-out mx-2'
@@ -320,8 +324,8 @@ const CampusIssues = ({setSelectedView}) => {
             {/* {filteredAnnouncements.map((announcement) => ( */}
             {issuesData.map((announcement) => (
               <div key={announcement.id} className='w-full !h-[40vh] border border-gray-800 bg-[#020613] rounded-lg overflow-hidden'>
-                <Link href={`/Announcements/${announcement.id}`} className='cursor-pointer group'>
-                <div className='relative w-full h-full flex justify-center items-center pl-8 gap-4 hover:bg-gray-900/50 transition-all duration-200 ease-in-out'>
+                {/* <Link href={`/Announcements/${announcement.id}`} className='cursor-pointer group'> */}
+                <div className='relative w-full h-full flex justify-center items-center pl-8 gap-4 hover:bg-gray-900/30 transition-all duration-200 ease-in-out group'>
                   <div className='h-[85%] overflow-hidden'>
                     <img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/attachments/gen-images/public/overflowing-dumpster-x1cBEefLftHFa7DMvTW6HJwbBgrq54.png" alt="" className='h-full w-auto group-hover:scale-110 transition-all duration-200 ease-in-out' />
                   </div>
@@ -398,9 +402,13 @@ const CampusIssues = ({setSelectedView}) => {
                     )}
 
                   </div>
-                    <Link href="/" className='absolute bottom-0 right-0'><span className='mr-4 mb-4 border border-gray-700 contentText py-2 px-2 rounded-lg !text-white bg-blue-400/50 text-xs hover:bg-blue-400/70 transition-all duration-300 ease-in-out flex justify-center items-center gap-1'><FaAngleUp /> {announcement.upvotes} Votes</span></Link>
+
+                  <div className='absolute bottom-0 right-0 flex'>
+                    <Link href="/" className=''><span className='mr-4 mb-4 border border-gray-700 contentText py-2 px-2 rounded-lg !text-white bg-blue-400/50 text-xs hover:bg-blue-400/70 transition-all duration-300 ease-in-out flex justify-center items-center gap-1'><FaRegThumbsUp /> {announcement.upvotes} Votes</span></Link>
+                    <Link href="/" className=''><span className='mr-4 mb-4 contentText py-2 px-2 rounded-lg !text-blue-400 text-xs hover:!text-blue-500 transition-all duration-300 ease-in-out flex justify-center items-center gap-1'>View Full Report <FaAngleRight /></span></Link>
                   </div>
-                </Link>
+                  </div>
+                {/* </Link> */}
               </div>
             ))}
           </div>

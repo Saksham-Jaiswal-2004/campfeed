@@ -27,9 +27,9 @@ import { useRouter } from "next/navigation";
 import { FaAngleRight } from 'react-icons/fa';
 
 const UserIssues = ({setSelectedView}) => {
-  const [role, setRole] = useState("Select Role");
+  const [status, setStatus] = useState("Select Status");
   const [priority, setPriority] = useState("Select Priority");
-  const [audience, setAudience] = useState("Select Audience");
+  const [category, setCategory] = useState("Select Category");
   const { user, loading } = useUser();
   const [announcements, setAnnouncements] = useState([]);
   const [fetching, setFetching] = useState(true);
@@ -178,19 +178,19 @@ const UserIssues = ({setSelectedView}) => {
 
   const filteredAnnouncements = useMemo(() => {
     return announcements.filter((announcement) => {
-      const roleMatch = role === "All Roles" || role === "Select Role" || announcement.createdByUser?.role === role;
+      const statusMatch = status === "All Status" || status === "Select Status" || announcement.createdByUser?.status === status;
       const priorityMatch = priority === "All Priorities" || priority === "Select Priority" || announcement.priority === priority;
-      const audienceMatch = audience === "All Audience" || audience === "Select Audience" || announcement.targetAudience === audience;
+      const categoryMatch = category === "All Categories" || category === "Select Category" || announcement.targetAudience === category;
       const nameMatch = announcement.title?.toLowerCase().includes(searchQuery.toLowerCase());
-      return roleMatch && priorityMatch && audienceMatch && nameMatch;
+      return statusMatch && priorityMatch && categoryMatch && nameMatch;
     });
-  }, [announcements, role, priority, audience, searchQuery]);
+  }, [announcements, status, priority, category, searchQuery]);
 
   const handleReset = () => {
     setSearchQuery("")
-    setRole("Select Role");
+    setStatus("Select Status");
     setPriority("Select Priority");
-    setAudience("Select Audience");
+    setCategory("Select Category");
   };
 
   const toggleExpand = (id) => {
@@ -260,21 +260,21 @@ const UserIssues = ({setSelectedView}) => {
         <CiSearch className='absolute contentText top-[28%] left-[2.5%]' />
         <input
           type="search"
-          name="announcements"
+          name="issues"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          id="announcements"
-          placeholder='Search Announcements...'
+          id="issues"
+          placeholder='Search Your Issues...'
           className='w-[40%] text-sm mx-2 contentText !text-white rounded-sm pl-8 pr-4 py-2 border border-gray-700 focus:!border-gray-500 outline-none'
         />
 
         <DropdownMenu>
-          <DropdownMenuTrigger>{role}</DropdownMenuTrigger>
+          <DropdownMenuTrigger>{status}</DropdownMenuTrigger>
           <DropdownMenuContent>
-            <DropdownMenuItem onClick={() => setRole("All Roles")}>All Roles</DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setRole("Admin")}>Admin</DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setRole("Faculty")}>Faculty</DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setRole("Student Club")}>Student Club</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setStatus("All Status")}>All Roles</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setStatus("In Progress")}>In Progress</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setStatus("Resolved")}>Resolved</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setStatus("Rejected")}>Rejected</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
 
@@ -289,16 +289,18 @@ const UserIssues = ({setSelectedView}) => {
         </DropdownMenu>
 
         <DropdownMenu>
-          <DropdownMenuTrigger>{audience}</DropdownMenuTrigger>
+          <DropdownMenuTrigger>{category}</DropdownMenuTrigger>
           <DropdownMenuContent>
-            <DropdownMenuItem onClick={() => setAudience("All Audience")}>All Audience</DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setAudience("Students")}>Student</DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setAudience("Faculty")}>Faculty</DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setAudience("Student Clubs")}>Student Clubs</DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setAudience("CSE Department")}>CSE Department</DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setAudience("ECE Department")}>ECE Department</DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setAudience("AI/ML Department")}>AI/ML Department</DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setAudience("Cybersecurity Department")}>Cybersecurity Department</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setCategory("All Categories")}>All Categories</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setCategory("Academic")}>Academic</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setCategory("Faculty/Department")}>Faculty/Department</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setCategory("Education & Assessment")}>Education & Assessment</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setCategory("Administrative/Office")}>Administrative/Office</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setCategory("Hostel/Accomodation")}>Hostel/Accomodation</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setCategory("IT & Digital")}>IT & Digital</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setCategory("Campus Facilities/Transport")}>Campus Facilities/Transport</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setCategory("Safety, Security & Discipline")}>Safety, Security & Discipline</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setCategory("Others")}>Others</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
 

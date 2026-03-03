@@ -112,12 +112,14 @@ const EventsList = () => {
                 ) : (
                     <div className='grid grid-cols-3 justify-center items-center gap-8 w-full mb-10'>
                         {searchedEvents.map((event, index) => (
-                            <div key={index} className='w-full h-[550px] cursor-pointer border border-gray-800 bg-[#020613] rounded-xl overflow-hidden'>
-                                <div className='h-[40%] w-full bg-gray-800'></div>
+                            <div key={index} className='w-full h-[550px] cursor-pointer border border-gray-800 bg-[#020613] rounded-xl overflow-hidden group'>
+                                <div className='h-[40%] w-full bg-gray-800 overflow-hidden'>
+                                    <img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/attachments/gen-images/public/overflowing-dumpster-x1cBEefLftHFa7DMvTW6HJwbBgrq54.png" alt="" className='h-full w-auto group-hover:scale-105 transition-all duration-200 ease-in-out' />
+                                </div>
 
                                 <div className='h-[60%] w-full flex flex-col justify-between p-5'>
                                     <div>
-                                        <h3 className='subtitle text-lg mb-1'>{event.name}</h3>
+                                        <h3 className='subtitle text-lg mb-1 group-hover:text-indigo-500 transition-all duration-200 ease-in-out'>{event.name}</h3>
                                         <p className='contentText text-sm w-[95%]'>{event.description}</p>
                                         <div className='flex gap-2 text-xs mt-2'>
                                             {event.tags?.map((tag, index) => (

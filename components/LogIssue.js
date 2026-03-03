@@ -1,38 +1,40 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
-import { FiUsers } from "react-icons/fi";
+import { HiOutlineAcademicCap } from "react-icons/hi";
+import { FaChalkboardTeacher } from "react-icons/fa";
+import { PiExam } from "react-icons/pi";
+import { MdOutlineAdminPanelSettings } from "react-icons/md";
+import { MdOutlineHotel } from "react-icons/md";
+import { PiNetworkFill } from "react-icons/pi";
+import { MdOutlineMiscellaneousServices } from "react-icons/md";
+import { MdOutlineSecurity } from "react-icons/md";
+import { AiOutlineIssuesClose } from "react-icons/ai";
 import {
   ChevronLeft,
   ChevronRight,
   CheckCircle2,
   Camera,
   X,
-  MapPin,
   Clock,
   Calendar,
   AlertTriangle,
   Shield,
   Share2,
-  Loader2,
-  MessageSquare,
-  Info,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Switch } from "./ui/switch";
 
 const categories = [
-  { id: "academic", name: "Academic", icon: "Acha", color: "text-blue-500", bg: "bg-blue-50" },
-  { id: "hostel", name: "Faculty / Department", icon: "Acha", color: "text-cyan-500", bg: "bg-cyan-50" },
-  { id: "infrastructure", name: "Examination & Assessment", icon: "Acha", color: "text-amber-500", bg: "bg-amber-50" },
-  { id: "mess", name: "Administrative / Office", icon: "Acha" ,color: "text-emerald-500", bg: "bg-emerald-50" },
-  { id: "administration", name: "Hostel & Accomodation", icon: "Acha", color: "text-red-500", bg: "bg-red-50" },
-  { id: "placements", name: "IT & Digital", icon: "Acha", color: "text-slate-500", bg: "bg-slate-50" },
-  { id: "other", name: "Campus Facilities / Transport", icon: "Acha", color: "text-purple-500", bg: "bg-purple-50" },
-  { id: "other", name: "Safety, Security & Discipline", icon: "Acha", color: "text-purple-500", bg: "bg-purple-50" },
-  { id: "other", name: "Others", icon: "Acha", color: "text-purple-500", bg: "bg-purple-50" },
+  { id: "academic", name: "Academic", icon: HiOutlineAcademicCap, color: "text-blue-500", bg: "bg-blue-100" },
+  { id: "hostel", name: "Faculty / Department", icon: FaChalkboardTeacher, color: "text-cyan-500", bg: "bg-cyan-100" },
+  { id: "infrastructure", name: "Examination & Assessment", icon: PiExam, color: "text-amber-500", bg: "bg-amber-100" },
+  { id: "mess", name: "Administrative / Office", icon: MdOutlineAdminPanelSettings ,color: "text-emerald-500", bg: "bg-emerald-100" },
+  { id: "administration", name: "Hostel & Accomodation", icon: MdOutlineHotel, color: "text-red-500", bg: "bg-red-100" },
+  { id: "placements", name: "IT & Digital", icon: PiNetworkFill, color: "text-teal-500", bg: "bg-teal-100" },
+  { id: "facilities", name: "Campus Facilities / Transport", icon: MdOutlineMiscellaneousServices, color: "text-purple-500", bg: "bg-purple-100" },
+  { id: "safety", name: "Safety, Security & Discipline", icon: MdOutlineSecurity, color: "text-pink-500", bg: "bg-pink-100" },
+  { id: "other", name: "Others", icon: AiOutlineIssuesClose, color: "text-indigo-500", bg: "bg-indigo-100" },
 ];
 
 const steps = [

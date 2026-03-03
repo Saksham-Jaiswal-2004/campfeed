@@ -58,7 +58,7 @@ const CampusIssues = ({setSelectedView}) => {
     "description": "There is continuous water leakage from the ceiling during rainfall. It is affecting electrical wiring.",
     "category_id": "CAT005",
     "priority": "critical",
-    "status": "Open",
+    "status": "In Progress",
     "student_id": "STU002",
     "assigned_to": null,
     "is_anonymous": true,
@@ -111,7 +111,7 @@ const CampusIssues = ({setSelectedView}) => {
     "description": "The tube light has been flickering and finally stopped working. It makes it difficult to attend evening lectures.",
     "category_id": "CAT005",
     "priority": "medium",
-    "status": "Open",
+    "status": "Resolved",
     "student_id": "STU005",
     "assigned_to": null,
     "is_anonymous": false,
@@ -320,24 +320,27 @@ const CampusIssues = ({setSelectedView}) => {
             {/* {filteredAnnouncements.map((announcement) => ( */}
             {issuesData.map((announcement) => (
               <div key={announcement.id} className='w-full !h-[40vh] border border-gray-800 bg-[#020613] rounded-lg overflow-hidden'>
-                <Link href={`/Announcements/${announcement.id}`} className='cursor-pointer'>
+                <Link href={`/Announcements/${announcement.id}`} className='cursor-pointer group'>
                 <div className='relative w-full h-full flex justify-center items-center pl-8 gap-4 hover:bg-gray-900/50 transition-all duration-200 ease-in-out'>
-                  <div>
-                    <img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/attachments/gen-images/public/overflowing-dumpster-x1cBEefLftHFa7DMvTW6HJwbBgrq54.png" alt="" className='h-[33vh] w-auto' />
+                  <div className='h-[85%] overflow-hidden'>
+                    <img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/attachments/gen-images/public/overflowing-dumpster-x1cBEefLftHFa7DMvTW6HJwbBgrq54.png" alt="" className='h-full w-auto group-hover:scale-110 transition-all duration-200 ease-in-out' />
                   </div>
                   
                   <div className='w-full h-full relative flex flex-col justify-start p-5'>
                     <div className='relative py-2'>
-                      <h3 className='subtitle text-lg mb-1'>{announcement.title}</h3>
+                      <h3 className='subtitle text-xl mb-2 group-hover:text-indigo-500 transition-all duration-200 ease-in-out'>{announcement.title}</h3>
                       <p className='contentText text-xs w-[95%] flex gap-2 items-center'>
                         {announcement.is_anonymous ? "Anonymous" : announcement.student_id}
                         <span>•</span>
                         <span className='border border-gray-700 contentText py-[0.15rem] px-2 rounded-lg !text-white'>{announcement.category_id}</span>
                         <span>•</span>
                         {new Date(announcement.created_at).toLocaleDateString("en-IN", {
-                           day: "numeric",
-                           month: "long",
-                           year: "numeric"
+                           day: "2-digit",
+                           month: "short",
+                           year: "numeric",
+                           hour: "2-digit",
+                           minute: "2-digit",
+                           hour12: true,
                          })}
                       </p>
                       <div className='flex gap-2 text-xs mt-3'>
@@ -350,7 +353,7 @@ const CampusIssues = ({setSelectedView}) => {
 
                       <div className='absolute top-0 right-0 flex gap-2 text-xs justify-center items-center contentText'>
                         <span className='border border-gray-700 contentText py-1 px-2 rounded-lg !text-gray-400 bg-gray-500/10'>{announcement.id}</span>
-                        <span className='border border-gray-700 contentText py-1 px-2 rounded-lg !text-gray-400 bg-blue-400/10'>{announcement.status}</span>
+                        <span className={`border border-gray-700 contentText py-1 px-2 rounded-lg ${announcement.status === "Resolved" ? "!text-green-500 bg-green-500/10 border-green-800/50" : announcement.status === "Rejected" ? "!text-red-500 bg-red-500/10 border-red-800/50" : announcement.status === "In Progress" ? "!text-yellow-500 bg-yellow-500/10 border-yellow-800/50" : ""}`}>{announcement.status}</span>
                         {announcement.priority === "critical" && (
                           <p className='text-xs flex items-center gap-1 text-red-400 bg-red-500/20 p-1 rounded-lg border border-red-800/30'>
                             <CgDanger /> Critical Priority

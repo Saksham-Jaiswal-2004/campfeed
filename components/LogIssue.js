@@ -288,12 +288,12 @@ const LogIssue = ({setSelectedView}) => {
                     <div
                       className={cn(
                         "h-12 w-12 rounded-full flex items-center justify-center shrink-0",
-                        formData.urgency === u.id ? `{ ${u.id==="low" ? "text-green-400/50" : u.id==="medium" ? "text-yellow-400/50" : u.id==="high" ? "text-orange-400/50" : "text-red-400/50"} }` : "",
+                        formData.urgency === u.id ? `{ ${u.id==="low" ? "text-green-400/70" : u.id==="medium" ? "text-yellow-400/70" : u.id==="high" ? "text-orange-400/70" : "text-red-400/70"} }` : "",
                       )}
                     >
                       <u.icon className="h-8 w-8" />
                     </div>
-                    <div className={`${formData.urgency === u.id ? u.id==="low" ? "text-green-400/50" : u.id==="medium" ? "text-yellow-400/50" : u.id==="high" ? "text-orange-400/50" : "text-red-400/50" : ""}`}>
+                    <div className={`${formData.urgency === u.id ? u.id==="low" ? "text-green-400/80" : u.id==="medium" ? "text-yellow-400/80" : u.id==="high" ? "text-orange-400/80" : "text-red-400/80" : ""}`}>
                       <p className="text-lg subTitle">{u.name}</p>
                       <p className="text-xs contentText">{u.desc}</p>
                     </div>

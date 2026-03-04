@@ -28,7 +28,7 @@ const CampusIssues = ({setSelectedView}) => {
   const [priority, setPriority] = useState("Select Priority");
   const [category, setCategory] = useState("Select Category");
   const { user, loading } = useUser();
-  const [announcements, setAnnouncements] = useState([]);
+  const [issues, setIssues] = useState([]);
   const [fetching, setFetching] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [expanded, setExpanded] = useState({});
@@ -133,55 +133,55 @@ const CampusIssues = ({setSelectedView}) => {
   }, [loading, user]);
 
   useEffect(() => {
-    const fetchMyAnnouncements = async () => {
+    const fetchAllIssues = async () => {
       if (!user) return;
 
       try {
-        const announcementsRef = collection(db, "announcements");
-        const snapshot = await getDocs(announcementsRef);
-        const announcementsWithUser = await Promise.all(
+        const issuesRef = collection(db, "issues");
+        const snapshot = await getDocs(issuesRef);
+        const issuesWithUser = await Promise.all(
           snapshot.docs.map(async (docSnap) => {
-            const announcementData = docSnap.data();
+            const issueData = docSnap.data();
             let createdByData = {};
 
             try {
-              const userRef = doc(db, "users", announcementData.createdBy);
+              const userRef = doc(db, "users", issueData.student_id);
               const userSnap = await getDoc(userRef);
               if (userSnap.exists()) {
                 createdByData = userSnap.data();
               }
             } catch (error) {
-              console.error("Error fetching user for announcement:", error);
+              console.error("Error fetching user for issue:", error);
             }
 
             return {
               id: docSnap.id,
-              ...announcementData,
+              ...issueData,
               createdByUser: createdByData,
             };
           })
         );
 
-        setAnnouncements(announcementsWithUser);
+        setIssues(issuesWithUser);
       } catch (err) {
-        console.error("Error fetching announcements: ", err);
+        console.error("Error fetching issues: ", err);
       } finally {
         setFetching(false);
       }
     };
 
-    fetchMyAnnouncements();
+    fetchAllIssues();
   }, [user]);
 
-  const filteredAnnouncements = useMemo(() => {
-    return announcements.filter((announcement) => {
-      const statusMatch = status === "All Status" || status === "Select Status" || announcement.createdByUser?.status === status;
-      const priorityMatch = priority === "All Priorities" || priority === "Select Priority" || announcement.priority === priority;
-      const categoryMatch = category === "All Categories" || category === "Select Category" || announcement.targetAudience === category;
-      const nameMatch = announcement.title?.toLowerCase().includes(searchQuery.toLowerCase());
+  const filteredIssues = useMemo(() => {
+    return issues.filter((issue) => {
+      const statusMatch = status === "All Status" || status === "Select Status" || issue.createdByUser?.status === status;
+      const priorityMatch = priority === "All Priorities" || priority === "Select Priority" || issue.priority === priority;
+      const categoryMatch = category === "All Categories" || category === "Select Category" || issue.category_id === category_id;
+      const nameMatch = issue.title?.toLowerCase().includes(searchQuery.toLowerCase());
       return statusMatch && priorityMatch && categoryMatch && nameMatch;
     });
-  }, [announcements, status, priority, category, searchQuery]);
+  }, [issues, status, priority, category, searchQuery]);
 
   const handleReset = () => {
     setSearchQuery("")
@@ -254,11 +254,11 @@ const CampusIssues = ({setSelectedView}) => {
         <CiSearch className='absolute contentText top-[28%] left-[2.5%]' />
         <input
           type="search"
-          name="announcements"
+          name="issues"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          id="announcements"
-          placeholder='Search Announcements...'
+          id="issues"
+          placeholder='Search Campus Issues...'
           className='w-[40%] text-sm mx-2 contentText !text-white rounded-sm pl-8 pr-4 py-2 border border-gray-700 focus:!border-gray-500 outline-none'
         />
 
@@ -312,18 +312,18 @@ const CampusIssues = ({setSelectedView}) => {
         </div> */}
 
         {fetching ? (
-          <div className='w-full h-full flex justify-center items-center navText text-3xl'>
-            Fetching All Announcements...
+          <div className='w-full h-full contentText flex justify-center items-center navText text-3xl'>
+            Fetching All Issues...
           </div>
-        ) : filteredAnnouncements.length === 0 ? (
-          <div className='w-full h-full flex justify-center items-center navText text-3xl'>
-            No Present Announcements
+        ) : filteredIssues.length === 0 ? (
+          <div className='w-full h-full contentText flex justify-center items-center navText text-3xl'>
+            No Present Issues
           </div>
         ) : (
           <div className='grid grid-cols-1 justify-center items-center gap-4 w-full mb-10'>
             {/* {filteredAnnouncements.map((announcement) => ( */}
-            {issuesData.map((announcement) => (
-              <div key={announcement.id} className='w-full !h-[40vh] border border-gray-800 bg-[#020613] rounded-lg overflow-hidden'>
+            {filteredIssues.map((issue) => (
+              <div key={issue.id} className='w-full !h-[40vh] border border-gray-800 bg-[#020613] rounded-lg overflow-hidden'>
                 {/* <Link href={`/Announcements/${announcement.id}`} className='cursor-pointer group'> */}
                 <div className='relative w-full h-full flex justify-center items-center pl-8 gap-4 hover:bg-gray-900/30 transition-all duration-200 ease-in-out group'>
                   <div className='h-[85%] overflow-hidden'>
@@ -332,13 +332,13 @@ const CampusIssues = ({setSelectedView}) => {
                   
                   <div className='w-full h-full relative flex flex-col justify-start p-5'>
                     <div className='relative py-2'>
-                      <h3 className='subtitle text-xl mb-2 group-hover:text-indigo-500 transition-all duration-200 ease-in-out'>{announcement.title}</h3>
+                      <h3 className='subtitle text-xl mb-2 group-hover:text-indigo-500 transition-all duration-200 ease-in-out'>{issue.title}</h3>
                       <p className='contentText text-xs w-[95%] flex gap-2 items-center'>
-                        {announcement.is_anonymous ? "Anonymous" : announcement.student_id}
+                        {issue.is_anonymous ? "Anonymous" : issue.student_id}
                         <span>•</span>
-                        <span className='border border-gray-700 contentText py-[0.15rem] px-2 rounded-lg !text-white'>{announcement.category_id}</span>
+                        <span className='border border-gray-700 contentText py-[0.15rem] px-2 rounded-lg !text-white'>{issue.category_id}</span>
                         <span>•</span>
-                        {new Date(announcement.created_at).toLocaleDateString("en-IN", {
+                        {new Date(issue.created_at).toLocaleDateString("en-IN", {
                            day: "2-digit",
                            month: "short",
                            year: "numeric",
@@ -348,7 +348,7 @@ const CampusIssues = ({setSelectedView}) => {
                          })}
                       </p>
                       <div className='flex gap-2 text-xs mt-3'>
-                        {announcement.tags?.map((tag, index) => (
+                        {issue.tags?.map((tag, index) => (
                           <p key={index} className="border border-gray-700 bg-cyan-500/60 !text-white contentText py-1 px-2 rounded-lg">
                             {tag}
                           </p>
@@ -356,24 +356,24 @@ const CampusIssues = ({setSelectedView}) => {
                       </div>
 
                       <div className='absolute top-0 right-0 flex gap-2 text-xs justify-center items-center contentText'>
-                        <span className='border border-gray-700 contentText py-1 px-2 rounded-lg !text-gray-400 bg-gray-500/10'>{announcement.id}</span>
-                        <span className={`border border-gray-700 contentText py-1 px-2 rounded-lg ${announcement.status === "Resolved" ? "!text-green-500 bg-green-500/10 border-green-800/50" : announcement.status === "Rejected" ? "!text-red-500 bg-red-500/10 border-red-800/50" : announcement.status === "In Progress" ? "!text-yellow-500 bg-yellow-500/10 border-yellow-800/50" : ""}`}>{announcement.status}</span>
-                        {announcement.priority === "critical" && (
+                        <span className='border border-gray-700 contentText py-1 px-2 rounded-lg !text-gray-400 bg-gray-500/10'>ID - {issue.id}</span>
+                        <span className={`border border-gray-700 contentText py-1 px-2 rounded-lg ${issue.status === "Resolved" ? "!text-green-500 bg-green-500/10 border-green-800/50" : issue.status === "Rejected" ? "!text-red-500 bg-red-500/10 border-red-800/50" : issue.status === "In Progress" ? "!text-yellow-500 bg-yellow-500/10 border-yellow-800/50" : ""}`}>{issue.status}</span>
+                        {issue.priority === "critical" && (
                           <p className='text-xs flex items-center gap-1 text-red-400 bg-red-500/20 p-1 rounded-lg border border-red-800/30'>
                             <CgDanger /> Critical Priority
                           </p>
                         )}
-                        {announcement.priority === "high" && (
+                        {issue.priority === "high" && (
                           <p className='text-xs flex items-center gap-1 text-orange-400 bg-orange-500/20 p-1 rounded-lg border border-orange-800/30'>
                             <CgDanger /> High Priority
                           </p>
                         )}
-                        {announcement.priority === "medium" && (
+                        {issue.priority === "medium" && (
                           <p className='text-xs flex items-center gap-1 text-yellow-400 bg-yellow-500/20 p-1 rounded-lg border border-yellow-800/30'>
                             <MdOutlineInfo /> Medium Priority
                           </p>
                         )}
-                        {announcement.priority === "low" && (
+                        {issue.priority === "low" && (
                           <p className='text-xs flex items-center gap-1 text-green-400 bg-green-500/20 p-1 rounded-lg border border-green-800/30'>
                             <FiCheckCircle /> Low Priority
                           </p>
@@ -384,19 +384,19 @@ const CampusIssues = ({setSelectedView}) => {
 
                     <div className='flex w-full h-fit justify-start mt-3'>
                       <p className="contentText text-sm">
-                        {expanded[announcement.id]
-                          ? announcement.description
-                          : announcement.description?.slice(0, 160) + (announcement.description?.length > 160 ? "..." : "")}
+                        {expanded[issue.id]
+                          ? issue.description
+                          : issue.description?.slice(0, 160) + (issue.description?.length > 160 ? "..." : "")}
                       </p>
                     </div>
 
-                    {announcement.description?.length > 160 && (
+                    {issue.description?.length > 160 && (
                       <div className='flex w-full h-fit justify-start'>
                         <button
-                          onClick={() => toggleExpand(announcement.id)}
+                          onClick={() => toggleExpand(issue.id)}
                           className='text-xs flex items-center gap-2 text-indigo-500 hover:text-indigo-700 mt-2'
                         >
-                          {expanded[announcement.id] ? "Show Less" : "Read More"} <IoIosArrowDown />
+                          {expanded[issue.id] ? "Show Less" : "Read More"} <IoIosArrowDown />
                         </button>
                       </div>
                     )}
@@ -404,7 +404,7 @@ const CampusIssues = ({setSelectedView}) => {
                   </div>
 
                   <div className='absolute bottom-0 right-0 flex'>
-                    <Link href="/" className=''><span className='mr-4 mb-4 border border-gray-700 contentText py-2 px-2 rounded-lg !text-white bg-blue-400/50 text-xs hover:bg-blue-400/70 transition-all duration-300 ease-in-out flex justify-center items-center gap-1'><FaRegThumbsUp /> {announcement.upvotes} Votes</span></Link>
+                    <Link href="/" className=''><span className='mr-4 mb-4 border border-gray-700 contentText py-2 px-2 rounded-lg !text-white bg-blue-400/50 text-xs hover:bg-blue-400/70 transition-all duration-300 ease-in-out flex justify-center items-center gap-1'><FaRegThumbsUp /> {issue.upvotes} Votes</span></Link>
                     <Link href="/" className=''><span className='mr-4 mb-4 contentText py-2 px-2 rounded-lg !text-blue-400 text-xs hover:!text-blue-500 transition-all duration-300 ease-in-out flex justify-center items-center gap-1'>View Full Report <FaAngleRight /></span></Link>
                   </div>
                   </div>

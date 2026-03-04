@@ -10,6 +10,9 @@ import { PiNetworkFill } from "react-icons/pi";
 import { MdOutlineMiscellaneousServices } from "react-icons/md";
 import { MdOutlineSecurity } from "react-icons/md";
 import { AiOutlineIssuesClose } from "react-icons/ai";
+import { RiShieldUserLine } from "react-icons/ri";
+import { VscError } from "react-icons/vsc";
+import { toast } from "sonner"
 import {
   ChevronLeft,
   ChevronRight,
@@ -24,17 +27,20 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Switch } from "./ui/switch";
+import { db } from '@/lib/firebase';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { useUser } from '@/context/userContext';
 
 const categories = [
-  { id: "academic", name: "Academic", icon: HiOutlineAcademicCap, color: "text-blue-500", bg: "bg-blue-100" },
-  { id: "hostel", name: "Faculty / Department", icon: FaChalkboardTeacher, color: "text-cyan-500", bg: "bg-cyan-100" },
-  { id: "infrastructure", name: "Examination & Assessment", icon: PiExam, color: "text-amber-500", bg: "bg-amber-100" },
-  { id: "mess", name: "Administrative / Office", icon: MdOutlineAdminPanelSettings ,color: "text-emerald-500", bg: "bg-emerald-100" },
-  { id: "administration", name: "Hostel & Accomodation", icon: MdOutlineHotel, color: "text-red-500", bg: "bg-red-100" },
-  { id: "placements", name: "IT & Digital", icon: PiNetworkFill, color: "text-teal-500", bg: "bg-teal-100" },
-  { id: "facilities", name: "Campus Facilities / Transport", icon: MdOutlineMiscellaneousServices, color: "text-purple-500", bg: "bg-purple-100" },
-  { id: "safety", name: "Safety, Security & Discipline", icon: MdOutlineSecurity, color: "text-pink-500", bg: "bg-pink-100" },
-  { id: "other", name: "Others", icon: AiOutlineIssuesClose, color: "text-indigo-500", bg: "bg-indigo-100" },
+  { id: "CAT001", name: "Academic", icon: HiOutlineAcademicCap, color: "text-blue-500", bg: "bg-blue-100" },
+  { id: "CAT002", name: "Faculty / Department", icon: FaChalkboardTeacher, color: "text-cyan-500", bg: "bg-cyan-100" },
+  { id: "CAT003", name: "Examination & Assessment", icon: PiExam, color: "text-amber-500", bg: "bg-amber-100" },
+  { id: "CAT004", name: "Administrative / Office", icon: MdOutlineAdminPanelSettings ,color: "text-emerald-500", bg: "bg-emerald-100" },
+  { id: "CAT005", name: "Hostel & Accomodation", icon: MdOutlineHotel, color: "text-red-500", bg: "bg-red-100" },
+  { id: "CAT006", name: "IT & Digital", icon: PiNetworkFill, color: "text-teal-500", bg: "bg-teal-100" },
+  { id: "CAT007", name: "Campus Facilities / Transport", icon: MdOutlineMiscellaneousServices, color: "text-purple-500", bg: "bg-purple-100" },
+  { id: "CAT008", name: "Safety, Security & Discipline", icon: MdOutlineSecurity, color: "text-pink-500", bg: "bg-pink-100" },
+  { id: "CAT009", name: "Others", icon: AiOutlineIssuesClose, color: "text-indigo-500", bg: "bg-indigo-100" },
 ];
 
 const steps = [
@@ -46,24 +52,18 @@ const steps = [
 ];
 
 const LogIssue = ({setSelectedView}) => {
+  const { user, userData } = useUser();
   const [currentStep, setCurrentStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     category: "",
     files: [],
-    location: "Detecting location...",
+    title: "",
     description: "",
     urgency: "medium",
     shareOnFeed: true,
+    anonymous: false,
   });
-
-  useEffect(() => {
-    if (currentStep === 3) {
-      setTimeout(() => {
-        setFormData((prev) => ({ ...prev, location: "221B Baker St, London NW1 6XE" }));
-      }, 1500);
-    }
-  }, [currentStep]);
 
   const nextStep = () => {
     setCurrentStep((prev) => Math.min(prev + 1, steps.length + 1));
@@ -74,21 +74,86 @@ const LogIssue = ({setSelectedView}) => {
   };
 
   const handleFileUpload = (e) => {
-    if (e.target.files) {
-      setFormData((prev) => ({
-        ...prev,
-        files: [...prev.files, ...Array.from(e.target.files)],
-      }));
-    }
-  };
+  const selectedFiles = Array.from(e.target.files);
 
-  const handleSubmit = (e) => {
+  const newFiles = selectedFiles.map((file) => ({
+    file,
+    preview: URL.createObjectURL(file),
+  }));
+
+  setFormData((prev) => ({
+    ...prev,
+    files: [...prev.files, ...newFiles],
+  }));
+};
+
+const handleDrop = (e) => {
+  e.preventDefault();
+  const droppedFiles = Array.from(e.dataTransfer.files);
+
+  const newFiles = droppedFiles.map((file) => ({
+    file,
+    preview: URL.createObjectURL(file),
+  }));
+
+  setFormData((prev) => ({
+    ...prev,
+    files: [...prev.files, ...newFiles],
+  }));
+};
+
+const handleDragOver = (e) => {
+  e.preventDefault();
+};
+
+  const handleIssueSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      setCurrentStep(6);
-    }, 2500);
+
+    if (!user || !userData) 
+    {
+      alert("You must be logged in to post an event.");
+      return;
+    }
+
+    try {
+        await addDoc(collection(db, "issues"), {
+          category_id: formData.category,
+          attachment_urls: formData.files,
+          thumbnail_url: null,
+          title: formData.title,
+          description: formData.description,
+          priority: formData.urgency,
+          shareOnFeed: formData.shareOnFeed,
+          is_anonymous: formData.anonymous,
+          status: "in_progress",
+          student_id: user.uid,
+          created_at: serverTimestamp(),
+          updated_at: serverTimestamp(),
+          resolved_at: null,
+        });
+
+        toast("Issue Posted Successfully")
+        reset();
+        setCurrentStep(6);
+        } catch (err) {
+            console.error("Error posting event:", err);
+            setCurrentStep(7);
+        } finally {
+            setLoading(false);
+        }
+  };
+
+  const reset = () => {
+    setFormData({
+      category: "",
+      files: [],
+      title: "",
+      description: "",
+      urgency: "medium",
+      shareOnFeed: true,
+      anonymous: false,
+    })
   };
 
   return (
@@ -96,7 +161,7 @@ const LogIssue = ({setSelectedView}) => {
       <div className="flex gap-1 justify-between items-center w-full px-5 mt-6">
         <div className="flex flex-col">
           <h2 className="subtitle text-3xl">Report a new Issue</h2>
-          <p className="contentText">Track the progress of your submitted issues</p>
+          <p className="contentText">Share your concern and make your voice heard.</p>
         </div>
       </div>
 
@@ -127,7 +192,6 @@ const LogIssue = ({setSelectedView}) => {
               </div>
             ))}
           </div>
-          {/* <Progress value={(currentStep / 5) * 100} className="h-2" /> */}
         </div>
       )}
 
@@ -138,7 +202,7 @@ const LogIssue = ({setSelectedView}) => {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
-            className="grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-2"
+            className="grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-2 pb-4"
           >
             {categories.map((cat) => (
               <button
@@ -174,7 +238,7 @@ const LogIssue = ({setSelectedView}) => {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
-            className="space-y-6 w-full flex flex-col justify-center items-center"
+            className="space-y-6 w-full flex flex-col justify-center items-center pb-4"
           >
             <div className="w-[60%] border-2 border-dashed border-gray-700 px-12 py-28 rounded-xl text-center relative hover:border-gray-500 transition-colors bg-[#020613] group cursor-pointer">
               <input
@@ -182,6 +246,9 @@ const LogIssue = ({setSelectedView}) => {
                 multiple
                 className="absolute inset-0 opacity-0 cursor-pointer"
                 onChange={handleFileUpload}
+                onDrop={handleDrop}
+                onDragOver={handleDragOver}
+                accept="image/*,video/*"
               />
               <div className="flex flex-col items-center gap-4">
                 <div className="h-20 w-20 rounded-full bg-gray-900 flex items-center justify-center group-hover:bg-gray-800 transition-colors">
@@ -195,21 +262,23 @@ const LogIssue = ({setSelectedView}) => {
             </div>
 
             {formData.files.length > 0 && (
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-6 gap-4">
                 {formData.files.map((file, i) => (
                   <div key={i} className="relative aspect-square rounded-xl bg-muted overflow-hidden group">
-                    <img src="/report-photo.jpg" alt="Preview" className="object-cover w-full h-full" />
+                    <img src={file.preview} alt="Preview" className="object-cover w-28 h-auto" />
                     <button
                       className="absolute top-2 right-2 p-1 bg-background/80 rounded-full text-destructive hover:bg-background"
-                      onClick={() =>
-                        setFormData((prev) => ({ ...prev, files: prev.files.filter((_, idx) => idx !== i) }))
-                      }
+                      onClick={() => {
+                        URL.revokeObjectURL(formData.files[i].preview);
+                      
+                        setFormData((prev) => ({
+                          ...prev,
+                          files: prev.files.filter((_, idx) => idx !== i),
+                        }));
+                      }}
                     >
                       <X className="h-4 w-4" />
                     </button>
-                    <div className="absolute bottom-2 left-2">
-                      <Badge className="bg-success">Detected: Pothole</Badge>
-                    </div>
                   </div>
                 ))}
               </div>
@@ -231,24 +300,43 @@ const LogIssue = ({setSelectedView}) => {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
-            className="space-y-6 w-full flex flex-col justify-center items-center"
+            className="space-y-6 w-full flex flex-col justify-center items-center pb-4"
           >
             <div className="space-y-4 w-3/5">
-              <div htmlFor="desc" className="text-lg subtitle">
-                Detailed Description
+              <div className="flex justify-between">
+                <div htmlFor="desc" className="text-lg subtitle">
+                  Title
+                </div>
+
+                <div className="flex justify-between items-center text-sm">
+                  <p className="text-muted-foreground">{formData.title.length}/100 characters</p>
+                </div>
               </div>
+
+              <input id="title" type="text" placeholder="Issue Title" value={formData.title} onChange={(e) => setFormData((prev) => ({ ...prev, title: e.target.value }))} maxLength={100} className="outline-none bg-[#020316] rounded-lg w-full border border-gray-600 focus:!border-gray-600 text-base resize-none px-5 py-3" />
+            </div>
+
+            <div className="space-y-4 w-3/5">
+              <div className="flex justify-between">
+                <div htmlFor="desc" className="text-lg subtitle">
+                  Detailed Description
+                </div>
+  
+                <div className="flex justify-between items-center text-sm">
+                  <p className="text-muted-foreground">{formData.description.length}/500 characters</p>
+                </div>
+              </div>
+
               <textarea
                 id="desc"
                 placeholder="Describe your issue in detail..."
-                className="min-h-[250px] bg-[#020316] rounded-lg w-full border border-gray-600 focus:!border-gray-600 text-base resize-none px-5 py-3"
+                className="outline-none min-h-[250px] bg-[#020316] rounded-lg w-full border border-gray-600 focus:!border-gray-600 text-base resize-none px-5 py-3"
                 value={formData.description}
                 onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
                 maxLength={500}
               />
-              <div className="flex justify-between items-center text-sm">
-                <p className="text-muted-foreground">{formData.description.length}/500 characters</p>
-              </div>
             </div>
+
             <div className="flex w-3/5 justify-between items-center gap-4">
               <div variant="outline" size="lg" className="flex justify-center items-center h-14 bg-indigo-600/30 hover:bg-indigo-600/50 btnText rounded-lg px-16 py-2 cursor-pointer gap-2" onClick={prevStep}>
                 <ChevronLeft className="h-4 w-4" /> Back
@@ -266,7 +354,7 @@ const LogIssue = ({setSelectedView}) => {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
-            className="space-y-6 w-full flex flex-col justify-center items-center h-fit"
+            className="space-y-6 w-full flex flex-col justify-center items-center h-fit pb-4"
           >
             <div className="space-y-4 w-[70%]">
               <label className="text-lg subtitle">Urgency Level</label>
@@ -304,14 +392,26 @@ const LogIssue = ({setSelectedView}) => {
               </div>
             </div>
 
-            <div className="p-6 w-[70%] bg-gray-900/20 rounded-xl border border-gray-600 flex items-center justify-between">
-              <div className="space-y-1">
-                <p className="font-bold flex items-center gap-2">
-                  Share on Community Feed <Share2 className="h-4 w-4 text-muted-foreground" />
-                </p>
-                <p className="text-xs text-muted-foreground">Allow others to upvote and comment on this issue</p>
+            <div className="p-6 w-[70%] bg-gray-900/20 rounded-xl border border-gray-600 flex flex-col items-center justify-between gap-6">
+              <div className="flex justify-between items-center w-full">
+                <div className="space-y-1">
+                  <p className="font-bold flex items-center gap-2">
+                    Share on Community Feed <Share2 className="h-4 w-4 text-muted-foreground" />
+                  </p>
+                  <p className="text-xs text-muted-foreground">Allow others to upvote and comment on this issue</p>
+                </div>
+                <Switch checked={formData.shareOnFeed} onCheckedChange={(val) => {setFormData((prev) => ({ ...prev, shareOnFeed: val }))}} />
               </div>
-              <Switch />
+
+              <div className="flex justify-between items-center w-full">
+                <div className="space-y-1">
+                  <p className="font-bold flex items-center gap-2">
+                    Report Anonymously <RiShieldUserLine className="h-5 w-5 text-muted-foreground" />
+                  </p>
+                  <p className="text-xs text-muted-foreground">Your issue will remain anonymous and won&apos;t appear with your name</p>
+                </div>
+                <Switch checked={formData.anonymous} onCheckedChange={(val) => {setFormData((prev) => ({ ...prev, anonymous: val }))}} />
+              </div>
             </div>
 
             <div className="flex w-[70%] justify-between items-center gap-4">
@@ -331,17 +431,78 @@ const LogIssue = ({setSelectedView}) => {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
-            className="space-y-6 w-full flex flex-col justify-center items-center h-fit"
+            className="space-y-6 w-full flex flex-col justify-center items-center h-fit pb-4"
           >
             <div className="space-y-4 w-[70%]">
-              <label className="text-lg subtitle">Report Preview</label>
+              <label className="text-xl title">Report Preview</label>
+
+              <div className="relative pt-2">
+                <h2 className="mt-5 subtitle">Title</h2>
+                <p className="contentText">{formData.title==="" ? "No Title" : formData.title}</p>
+
+                <h2 className="mt-5 subtitle">Description</h2>
+                <p className="contentText">{formData.description==="" ? "No Description" : formData.description}</p>
+
+                <h2 className="mt-5 subtitle">Attachments</h2>
+                <div className="flex flex-wrap justify-start items-center gap-4 mt-2">
+                  {formData.files.map((file, i) => (
+                    <div key={i} className="relative aspect-square rounded-xl bg-muted overflow-hidden group">
+                      <img src={file.preview} alt="Preview" className="object-cover !w-40 h-auto" />
+                      <button
+                        className="absolute top-2 right-2 p-1 bg-background/80 rounded-full text-destructive hover:bg-background"
+                        onClick={() =>
+                          setFormData((prev) => ({ ...prev, files: prev.files.filter((_, idx) => idx !== i) }))
+                        }
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+                
+                <div className="absolute top-0 right-0 flex justify-center items-center gap-4 mt-2 mr-4">
+                  <div className="flex justify-center items-center">
+                    <p className="border border-gray-700 text-sm contentText py-1 px-3 rounded-lg !text-gray-400 bg-gray-500/10">
+                      {
+                        formData.category==="CAT001"? categories[0].name :
+                        formData.category==="CAT002"? categories[1].name :
+                        formData.category==="CAT003"? categories[2].name :
+                        formData.category==="CAT004"? categories[3].name :
+                        formData.category==="CAT005"? categories[4].name :
+                        formData.category==="CAT006"? categories[5].name :
+                        formData.category==="CAT007"? categories[6].name :
+                        formData.category==="CAT008"? categories[7].name :
+                        formData.category==="CAT009"? categories[8].name : ""
+                      }
+                    </p>
+                  </div>
+    
+                  <div className="flex justify-center items-center gap-2">
+                    <p className={`text-sm flex items-center gap-1 py-1 px-3 rounded-lg border ${formData.urgency === "critical" ? "text-red-400 bg-red-500/20 border-red-800/50" : formData.urgency === "high" ? "text-orange-400 bg-orange-500/20 border-orange-800/50" : formData.urgency === "medium" ? "text-yellow-400 bg-yellow-500/20 border-yellow-800/50" : formData.urgency === "low" ? "text-green-400 bg-green-500/20 border-green-800/50" : ""}`}>
+                      {formData.urgency.charAt(0).toUpperCase()+formData.urgency.substring(1)} Urgency
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex justify-between items-center mt-5">
+                  <div className="flex flex-col gap-1">
+                    <h4 className="flex justify-center items-center gap-1 mt-4 subtitle"><Share2 className="h-5 w-5" /> Share Issue on Community Feed</h4>
+                    <p className="contentText text-lg">{formData.shareOnFeed==true ? "Yes" : "No"}</p>
+                  </div>
+  
+                  <div className="flex flex-col gap-1">
+                    <h4 className="flex justify-center items-center gap-1 mt-4 subtitle"><RiShieldUserLine className="h-5 w-5" /> Report Issue Anonymously</h4>
+                    <p className="contentText text-lg">{formData.anonymous==true ? "Yes" : "No"}</p>
+                  </div>
+                </div>
+              </div>
             </div>
 
             <div className="flex w-[70%] justify-between items-center gap-4">
               <div variant="outline" size="lg" className="flex justify-center items-center h-14 bg-indigo-600/30 hover:bg-indigo-600/50 btnText rounded-lg px-16 py-2 cursor-pointer gap-2" onClick={prevStep}>
                 <ChevronLeft className="h-4 w-4" /> Back
               </div>
-              <div size="lg" className="flex justify-center items-center h-14 bg-indigo-600 hover:bg-indigo-700 btnText rounded-lg px-16 py-2 cursor-pointer gap-2" onClick={nextStep}>
+              <div size="lg" className="flex justify-center items-center h-14 bg-indigo-600 hover:bg-indigo-700 btnText rounded-lg px-16 py-2 cursor-pointer gap-2" onClick={handleIssueSubmit}>
                 Submit <ChevronRight className="h-4 w-4" />
               </div>
             </div>
@@ -353,7 +514,7 @@ const LogIssue = ({setSelectedView}) => {
             key="success"
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="space-y-6 w-3/5 flex flex-col justify-center items-center h-full"
+            className="space-y-6 w-3/5 flex flex-col justify-center items-center h-full pb-4"
           >
             <div className="space-y-4">
               <div className="relative h-32 w-32 rounded-full bg-green-500/30 flex items-center justify-center border-4 border-green-500/50">
@@ -361,18 +522,49 @@ const LogIssue = ({setSelectedView}) => {
               </div>
             </div>
             <div className="space-y-3 w-full flex flex-col text-center justify-center items-center">
-              <h2 className="text-4xl font-extrabold subtitle">Report Logged</h2>
+              <h2 className="text-4xl font-extrabold subtitle">Issue Raised</h2>
               <p className="text-lg contentText max-w-md mx-auto">
-                Issue #CIV-1024-XQ has been assigned to Public Works. Expected resolution within 48 hours.
+                Your issue has been submitted successfully. The concerned authorities will review it soon.
               </p>
             </div>
             
             <div className="flex w-[70%] justify-between items-center gap-4 mt-16">
-              <div variant="outline" size="lg" className="flex justify-center items-center h-14 bg-indigo-600/30 hover:bg-indigo-600/50 btnText rounded-lg px-16 py-2 cursor-pointer gap-2" onClick={prevStep}>
-                <ChevronLeft className="h-4 w-4" /> Back
+              <div variant="outline" size="lg" className="flex justify-center items-center h-14 bg-indigo-600/30 hover:bg-indigo-600/50 btnText rounded-lg px-12 py-2 cursor-pointer gap-2" onClick={() => {setCurrentStep(1); reset()}}>
+                <ChevronLeft className="h-4 w-4" /> Report Another Issue
               </div>
               <div size="lg" className="flex justify-center items-center h-14 bg-indigo-600 hover:bg-indigo-700 btnText rounded-lg px-16 py-2 cursor-pointer gap-2">
-              {/* <button onClick = {() => {setSelectedView("StudentDash")}} className='cursor-pointer btnText bg-indigo-600/30 hover:bg-indigo-600/50 px-4 py-2 rounded-sm text-sm transition-all duration-200 ease-in-out flex justify-center items-center gap-2'> */}
+                <button onClick = {() => {setSelectedView("StudentDash")}} className="flex justify-center items-center">
+                  Dashboard <ChevronRight className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
+        {currentStep === 7 && (
+          <motion.div
+            key="success"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="space-y-6 w-3/5 flex flex-col justify-center items-center h-full"
+          >
+            <div className="space-y-4">
+              <div className="relative h-32 w-32 rounded-full bg-red-500/30 flex items-center justify-center border-4 border-red-500/50">
+                <VscError className="h-16 w-16 text-red-500" />
+              </div>
+            </div>
+            <div className="space-y-3 w-full flex flex-col text-center justify-center items-center">
+              <h2 className="text-4xl font-extrabold subtitle">Failed to Raise Issue</h2>
+              <p className="text-lg contentText max-w-md mx-auto">
+                We couldn&apos;t submit your issue at the moment. Please try again in a few seconds.
+              </p>
+            </div>
+            
+            <div className="flex w-[70%] justify-between items-center gap-4 mt-16">
+              <div variant="outline" size="lg" className="flex justify-center items-center h-14 bg-indigo-600/30 hover:bg-indigo-600/50 btnText rounded-lg px-12 py-2 cursor-pointer gap-2" onClick={() => {setCurrentStep(5)}}>
+                <ChevronLeft className="h-4 w-4" /> Try Again
+              </div>
+              <div size="lg" className="flex justify-center items-center h-14 bg-indigo-600 hover:bg-indigo-700 btnText rounded-lg px-16 py-2 cursor-pointer gap-2">
                 <button onClick = {() => {setSelectedView("StudentDash")}} className="flex justify-center items-center">
                   Dashboard <ChevronRight className="h-4 w-4" />
                 </button>

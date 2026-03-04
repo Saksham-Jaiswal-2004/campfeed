@@ -201,7 +201,7 @@ const CampusIssues = ({setSelectedView}) => {
     <div className='w-full h-screen overflow-y-scroll flex flex-col justify-start items-center'>
       <div className='flex gap-1 justify-between items-center w-full px-5 mt-6'>
         <div className='flex flex-col'>
-          <h2 className='subtitle text-3xl'>Your Campus Issues</h2>
+          <h2 className='subtitle text-3xl'>All Campus Issues</h2>
           <p className='contentText'>Track the progress of all submitted issues from your campus</p>
         </div>
 

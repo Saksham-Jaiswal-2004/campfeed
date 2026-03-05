@@ -19,6 +19,7 @@ import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 import { db } from "@/lib/firebase";
 import { collection, getDocs, getDoc, doc } from "firebase/firestore";
+import { onSnapshot, query, orderBy } from "firebase/firestore";
 import { useUser } from "@/context/userContext";
 import { useRouter } from "next/navigation";
 import ShareButton from './ShareButton';
@@ -34,98 +35,6 @@ const CampusIssues = ({setSelectedView}) => {
   const [expanded, setExpanded] = useState({});
   const router = useRouter();
 
-  const issuesData = [
-    {
-    "id": "ISSUE-001",
-    "title": "WiFi not working in Hostel Block B",
-    "description": "The WiFi connection has been extremely unstable for the past 3 days in Hostel Block B. Speeds drop to 0.5 Mbps during evening hours.",
-    "category_id": "CAT002",
-    "priority": "high",
-    "status": "In Progress",
-    "student_id": "STU001",
-    "assigned_to": "STAFF002",
-    "is_anonymous": false,
-    "location": "Hostel Block B - 3rd Floor",
-    "attachment_urls": [
-      "https://example.com/screenshots/speedtest1.png"
-    ],
-    "created_at": "2026-03-01T10:15:00Z",
-    "updated_at": "2026-03-01T14:30:00Z",
-    "resolved_at": null,
-    "upvotes": 200,
-  },
-  {
-    "id": "ISSUE-002",
-    "title": "Water leakage in Room 204",
-    "description": "There is continuous water leakage from the ceiling during rainfall. It is affecting electrical wiring.",
-    "category_id": "CAT005",
-    "priority": "critical",
-    "status": "In Progress",
-    "student_id": "STU002",
-    "assigned_to": null,
-    "is_anonymous": true,
-    "location": "Hostel Block A - Room 204",
-    "attachment_urls": [],
-    "created_at": "2026-03-02T07:40:00Z",
-    "updated_at": "2026-03-02T07:40:00Z",
-    "resolved_at": null,
-    "upvotes": 200,
-  },
-  {
-    "id": "ISSUE-003",
-    "title": "Mess food quality deteriorating",
-    "description": "The quality of dinner served this week has been poor. Multiple students reported undercooked rice and stale chapatis.",
-    "category_id": "CAT003",
-    "priority": "medium",
-    "status": "Resolved",
-    "student_id": "STU003",
-    "assigned_to": "ADM001",
-    "is_anonymous": false,
-    "location": "Main Mess Hall",
-    "attachment_urls": [
-      "https://example.com/photos/mess-food.jpg"
-    ],
-    "created_at": "2026-02-25T18:20:00Z",
-    "updated_at": "2026-02-27T12:00:00Z",
-    "resolved_at": "2026-02-27T11:45:00Z",
-    "upvotes": 200
-  },
-  {
-    "id": "ISSUE-004",
-    "title": "Request for additional lab practice hours",
-    "description": "Students preparing for placements need extended lab access during weekends.",
-    "category_id": "CAT004",
-    "priority": "low",
-    "status": "Rejected",
-    "student_id": "STU004",
-    "assigned_to": "ADM002",
-    "is_anonymous": false,
-    "location": "Computer Lab 2",
-    "attachment_urls": [],
-    "created_at": "2026-02-20T09:00:00Z",
-    "updated_at": "2026-02-22T10:30:00Z",
-    "resolved_at": "2026-02-22T10:30:00Z",
-    "upvotes": 200,
-  },
-  {
-    "id": "ISSUE-005",
-    "title": "Broken tube light in Classroom C-101",
-    "description": "The tube light has been flickering and finally stopped working. It makes it difficult to attend evening lectures.",
-    "category_id": "CAT005",
-    "priority": "medium",
-    "status": "Resolved",
-    "student_id": "STU005",
-    "assigned_to": null,
-    "is_anonymous": false,
-    "location": "Academic Block C - Room 101",
-    "attachment_urls": [],
-    "created_at": "2026-03-02T12:10:00Z",
-    "updated_at": "2026-03-02T12:10:00Z",
-    "resolved_at": null,
-    "upvotes": 200,
-  }
-];
-
   useEffect(() => {
     if (!loading && !user) {
       router.push("/auth/Login");
@@ -133,51 +42,52 @@ const CampusIssues = ({setSelectedView}) => {
   }, [loading, user]);
 
   useEffect(() => {
-    const fetchAllIssues = async () => {
-      if (!user) return;
+  if (!user) return;
 
-      try {
-        const issuesRef = collection(db, "issues");
-        const snapshot = await getDocs(issuesRef);
-        const issuesWithUser = await Promise.all(
-          snapshot.docs.map(async (docSnap) => {
-            const issueData = docSnap.data();
-            let createdByData = {};
+  const issuesRef = collection(db, "issues");
 
-            try {
-              const userRef = doc(db, "users", issueData.student_id);
-              const userSnap = await getDoc(userRef);
-              if (userSnap.exists()) {
-                createdByData = userSnap.data();
-              }
-            } catch (error) {
-              console.error("Error fetching user for issue:", error);
+  const unsubscribe = onSnapshot(issuesRef, async (snapshot) => {
+    try {
+      const issuesWithUser = await Promise.all(
+        snapshot.docs.map(async (docSnap) => {
+          const issueData = docSnap.data();
+          let createdByData = {};
+
+          try {
+            const userRef = doc(db, "users", issueData.student_id);
+            const userSnap = await getDoc(userRef);
+
+            if (userSnap.exists()) {
+              createdByData = userSnap.data();
             }
+          } catch (error) {
+            console.error("Error fetching user for issue:", error);
+          }
 
-            return {
-              id: docSnap.id,
-              ...issueData,
-              createdByUser: createdByData,
-            };
-          })
-        );
+          return {
+            id: docSnap.id,
+            ...issueData,
+            createdByUser: createdByData,
+          };
+        })
+      );
 
-        setIssues(issuesWithUser);
-      } catch (err) {
-        console.error("Error fetching issues: ", err);
-      } finally {
-        setFetching(false);
-      }
-    };
+      setIssues(issuesWithUser);
+    } catch (err) {
+      console.error("Error fetching issues:", err);
+    } finally {
+      setFetching(false);
+    }
+  });
 
-    fetchAllIssues();
-  }, [user]);
+  return () => unsubscribe();
+}, [user]);
 
   const filteredIssues = useMemo(() => {
     return issues.filter((issue) => {
-      const statusMatch = status === "All Status" || status === "Select Status" || issue.createdByUser?.status === status;
+      const statusMatch = status === "All Status" || status === "Select Status" || issue.status === status;
       const priorityMatch = priority === "All Priorities" || priority === "Select Priority" || issue.priority === priority;
-      const categoryMatch = category === "All Categories" || category === "Select Category" || issue.category_id === category_id;
+      const categoryMatch = category === "All Categories" || category === "Select Category" || issue.category_id === category;
       const nameMatch = issue.title?.toLowerCase().includes(searchQuery.toLowerCase());
       return statusMatch && priorityMatch && categoryMatch && nameMatch;
     });
@@ -215,7 +125,7 @@ const CampusIssues = ({setSelectedView}) => {
                 {/* <FaRegCalendar className='text-blue-600' /> */}
             </div>
 
-                <p className='subtitle text-3xl pl-2 mb-1 flex items-center gap-1'><span className='text-white text-4xl ml-1 mr-2'>•</span> 16</p>
+                <p className='subtitle text-3xl pl-2 mb-1 flex items-center gap-1'><span className='text-white text-4xl ml-1 mr-2'>•</span> {issues.length}</p>
                 <p className='text-[#64748b] text-xs'><span className='text-green-500'>+12%</span> from last month</p>
             </div>
 
@@ -225,7 +135,7 @@ const CampusIssues = ({setSelectedView}) => {
                     {/* <CiChat1 className='text-green-500 text-xl' /> */}
                 </div>
 
-                <p className='subtitle text-3xl pl-2 mb-1 flex items-center gap-1'><span className='text-green-500 text-4xl ml-1 mr-2'>•</span> 3</p>
+                <p className='subtitle text-3xl pl-2 mb-1 flex items-center gap-1'><span className='text-green-500 text-4xl ml-1 mr-2'>•</span> {issues.filter(issue => issue.status==="resolved").length}</p>
                 <p className='text-[#64748b] text-xs'><span className='text-green-500'>+3%</span> from last month</p>
             </div>
 
@@ -235,8 +145,8 @@ const CampusIssues = ({setSelectedView}) => {
                     {/* <AiOutlineRise className='text-violet-600 text-xl' /> */}
                 </div>
 
-                <p className='subtitle text-3xl pl-2 mb-1 flex items-center gap-1'><span className='text-blue-500 text-4xl ml-1 mr-2'>•</span> 8</p>
-                <p className='text-[#64748b] text-xs'><span className='text-green-500'>+5%</span> from last week</p>
+                <p className='subtitle text-3xl pl-2 mb-1 flex items-center gap-1'><span className='text-blue-500 text-4xl ml-1 mr-2'>•</span> {issues.filter(issue => issue.status==="in_progress").length}</p>
+                <p className='text-[#64748b] text-xs'><span className='text-green-500'>+5%</span> from last month</p>
             </div>
 
             <div className='w-[23%] h-[135px] flex flex-col justify-center border border-gray-800 bg-[#020613] rounded-lg p-3'>
@@ -245,7 +155,7 @@ const CampusIssues = ({setSelectedView}) => {
                     {/* <FiUsers className='text-cyan-500 text-xl' /> */}
                 </div>
 
-                <p className='subtitle text-3xl pl-2 mb-1 flex items-center gap-1'><span className='text-red-500 text-4xl ml-1 mr-2'>•</span> 5</p>
+                <p className='subtitle text-3xl pl-2 mb-1 flex items-center gap-1'><span className='text-red-500 text-4xl ml-1 mr-2'>•</span> {issues.filter(issue => issue.status==="rejected").length}</p>
                 <p className='text-[#64748b] text-xs'><span className='text-green-500'>+5.2%</span> from last month</p>
             </div>
       </div>
@@ -263,22 +173,22 @@ const CampusIssues = ({setSelectedView}) => {
         />
 
         <DropdownMenu>
-                  <DropdownMenuTrigger>{status}</DropdownMenuTrigger>
+                  <DropdownMenuTrigger>{status==="in_progress"?"In Progress":status==="resolved"?"Resolved":status==="rejected"?"Rejected":status}</DropdownMenuTrigger>
                   <DropdownMenuContent>
-                    <DropdownMenuItem onClick={() => setStatus("All Status")}>All Roles</DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setStatus("In Progress")}>In Progress</DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setStatus("Resolved")}>Resolved</DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setStatus("Rejected")}>Rejected</DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setStatus("All Status")}>All Status</DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setStatus("in_progress")}>In Progress</DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setStatus("resolved")}>Resolved</DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setStatus("rejected")}>Rejected</DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
         
                 <DropdownMenu>
-                  <DropdownMenuTrigger>{priority}</DropdownMenuTrigger>
+                  <DropdownMenuTrigger>{priority==="high"?"High Priority":priority==="medium"?"Medium Priority":priority==="low"?"Low Priority":priority}</DropdownMenuTrigger>
                   <DropdownMenuContent>
                     <DropdownMenuItem onClick={() => setPriority("All Priorities")}>All Priorities</DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setPriority("High")}>High Priority</DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setPriority("Medium")}>Medium Priority</DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setPriority("Low")}>Low Priority</DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setPriority("high")}>High Priority</DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setPriority("medium")}>Medium Priority</DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setPriority("low")}>Low Priority</DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
         
@@ -286,15 +196,15 @@ const CampusIssues = ({setSelectedView}) => {
                   <DropdownMenuTrigger>{category}</DropdownMenuTrigger>
                   <DropdownMenuContent>
                     <DropdownMenuItem onClick={() => setCategory("All Categories")}>All Categories</DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setCategory("Academic")}>Academic</DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setCategory("Faculty/Department")}>Faculty/Department</DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setCategory("Education & Assessment")}>Education & Assessment</DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setCategory("Administrative/Office")}>Administrative/Office</DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setCategory("Hostel/Accomodation")}>Hostel/Accomodation</DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setCategory("IT & Digital")}>IT & Digital</DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setCategory("Campus Facilities/Transport")}>Campus Facilities/Transport</DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setCategory("Safety, Security & Discipline")}>Safety, Security & Discipline</DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setCategory("Others")}>Others</DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setCategory("CAT001")}>Academic</DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setCategory("CAT002")}>Faculty/Department</DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setCategory("CAT003")}>Education & Assessment</DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setCategory("CAT004")}>Administrative/Office</DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setCategory("CAT005")}>Hostel/Accomodation</DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setCategory("CAT006")}>IT & Digital</DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setCategory("CAT007")}>Campus Facilities/Transport</DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setCategory("CAT008")}>Safety, Security & Discipline</DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setCategory("CAT009")}>Others</DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
 
@@ -336,9 +246,21 @@ const CampusIssues = ({setSelectedView}) => {
                       <p className='contentText text-xs w-[95%] flex gap-2 items-center'>
                         {issue.is_anonymous ? "Anonymous" : issue.student_id}
                         <span>•</span>
-                        <span className='border border-gray-700 contentText py-[0.15rem] px-2 rounded-lg !text-white'>{issue.category_id}</span>
+                        <span className='border border-gray-700 contentText py-[0.15rem] px-2 rounded-lg !text-white'>
+                          {
+                            issue.category_id==="CAT001"?"Academic":
+                            issue.category_id==="CAT002"?"Faculty/Department":
+                            issue.category_id==="CAT003"?"Education & Assessment":
+                            issue.category_id==="CAT004"?"Administrative/Office":
+                            issue.category_id==="CAT005"?"Hostel/Accomodation":
+                            issue.category_id==="CAT006"?"IT & Digital":
+                            issue.category_id==="CAT007"?"Campus Facilities/Transport":
+                            issue.category_id==="CAT008"?"Safety, Security & Discipline":
+                            issue.category_id==="CAT009"?"Others": ""
+                          }
+                        </span>
                         <span>•</span>
-                        {new Date(issue.created_at).toLocaleDateString("en-IN", {
+                        {issue.created_at?.toDate().toLocaleDateString("en-IN", {
                            day: "2-digit",
                            month: "short",
                            year: "numeric",
@@ -357,7 +279,9 @@ const CampusIssues = ({setSelectedView}) => {
 
                       <div className='absolute top-0 right-0 flex gap-2 text-xs justify-center items-center contentText'>
                         <span className='border border-gray-700 contentText py-1 px-2 rounded-lg !text-gray-400 bg-gray-500/10'>ID - {issue.id}</span>
-                        <span className={`border border-gray-700 contentText py-1 px-2 rounded-lg ${issue.status === "Resolved" ? "!text-green-500 bg-green-500/10 border-green-800/50" : issue.status === "Rejected" ? "!text-red-500 bg-red-500/10 border-red-800/50" : issue.status === "In Progress" ? "!text-yellow-500 bg-yellow-500/10 border-yellow-800/50" : ""}`}>{issue.status}</span>
+                        <span className={`border border-gray-700 contentText py-1 px-2 rounded-lg ${issue.status === "resolved" ? "!text-green-500 bg-green-500/10 border-green-800/50" : issue.status === "rejected" ? "!text-red-500 bg-red-500/10 border-red-800/50" : issue.status === "in_progress" ? "!text-yellow-500 bg-yellow-500/10 border-yellow-800/50" : ""}`}>
+                          {issue.status === "resolved" ? "Resolved" : issue.status === "rejected" ? "Rejected" : issue.status === "in_progress" ? "In Progress" : ""}
+                        </span>
                         {issue.priority === "critical" && (
                           <p className='text-xs flex items-center gap-1 text-red-400 bg-red-500/20 p-1 rounded-lg border border-red-800/30'>
                             <CgDanger /> Critical Priority

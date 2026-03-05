@@ -63,6 +63,7 @@ const LogIssue = ({setSelectedView}) => {
     urgency: "medium",
     shareOnFeed: true,
     anonymous: false,
+    upvotes: 0,
   });
 
   const nextStep = () => {
@@ -131,6 +132,7 @@ const handleDragOver = (e) => {
           created_at: serverTimestamp(),
           updated_at: serverTimestamp(),
           resolved_at: null,
+          upvotes: 0,
         });
 
         toast("Issue Posted Successfully")

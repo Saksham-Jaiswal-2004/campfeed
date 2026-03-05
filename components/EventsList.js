@@ -151,7 +151,22 @@ const EventsList = () => {
                                         <div className='w-full px-2'>
                                             <Progress value={(event.registered / event.capacity) * 100} />
                                         </div>
-                                        <Link href={`/Events/${event.id}`} className='w-full'><button className={`w-full bg-indigo-600 hover:bg-indigo-700 py-2 rounded-lg text-sm transition-all duration-200 ease-in-out ${event.registered >= event.capacity ? "!bg-indigo-900 cursor-not-allowed" : ""}`} disabled={event.registered >= event.capacity}>{event.registered >= event.capacity ? "Event Full" : "View Event"}</button></Link>
+                                        {event.registered >= event.capacity ? (
+  // Event full → just show a disabled button, no link
+  <button
+    className="w-full bg-indigo-900 cursor-not-allowed py-2 rounded-lg text-sm transition-all duration-200 ease-in-out"
+    disabled
+  >
+    Event Full
+  </button>
+) : (
+  // Event available → clickable link
+  <Link href={`/Events/${event.id}`} className="w-full">
+    <button className="w-full bg-indigo-600 hover:bg-indigo-700 py-2 rounded-lg text-sm transition-all duration-200 ease-in-out">
+      View Event
+    </button>
+  </Link>
+)}
                                     </div>
                                 </div>
                             </div>

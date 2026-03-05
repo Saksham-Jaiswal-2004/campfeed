@@ -173,40 +173,40 @@ const CampusIssues = ({setSelectedView}) => {
         />
 
         <DropdownMenu>
-                  <DropdownMenuTrigger>{status==="in_progress"?"In Progress":status==="resolved"?"Resolved":status==="rejected"?"Rejected":status}</DropdownMenuTrigger>
-                  <DropdownMenuContent>
-                    <DropdownMenuItem onClick={() => setStatus("All Status")}>All Status</DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setStatus("in_progress")}>In Progress</DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setStatus("resolved")}>Resolved</DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setStatus("rejected")}>Rejected</DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-        
-                <DropdownMenu>
-                  <DropdownMenuTrigger>{priority==="high"?"High Priority":priority==="medium"?"Medium Priority":priority==="low"?"Low Priority":priority}</DropdownMenuTrigger>
-                  <DropdownMenuContent>
-                    <DropdownMenuItem onClick={() => setPriority("All Priorities")}>All Priorities</DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setPriority("high")}>High Priority</DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setPriority("medium")}>Medium Priority</DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setPriority("low")}>Low Priority</DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-        
-                <DropdownMenu>
-                  <DropdownMenuTrigger>{category}</DropdownMenuTrigger>
-                  <DropdownMenuContent>
-                    <DropdownMenuItem onClick={() => setCategory("All Categories")}>All Categories</DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setCategory("CAT001")}>Academic</DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setCategory("CAT002")}>Faculty/Department</DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setCategory("CAT003")}>Education & Assessment</DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setCategory("CAT004")}>Administrative/Office</DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setCategory("CAT005")}>Hostel/Accomodation</DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setCategory("CAT006")}>IT & Digital</DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setCategory("CAT007")}>Campus Facilities/Transport</DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setCategory("CAT008")}>Safety, Security & Discipline</DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setCategory("CAT009")}>Others</DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+          <DropdownMenuTrigger>{status==="in_progress"?"In Progress":status==="resolved"?"Resolved":status==="rejected"?"Rejected":status}</DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuItem onClick={() => setStatus("All Status")}>All Status</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setStatus("in_progress")}>In Progress</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setStatus("resolved")}>Resolved</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setStatus("rejected")}>Rejected</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        <DropdownMenu>
+          <DropdownMenuTrigger>{priority==="high"?"High Priority":priority==="medium"?"Medium Priority":priority==="low"?"Low Priority":priority}</DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuItem onClick={() => setPriority("All Priorities")}>All Priorities</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setPriority("high")}>High Priority</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setPriority("medium")}>Medium Priority</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setPriority("low")}>Low Priority</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        <DropdownMenu>
+          <DropdownMenuTrigger>{category}</DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuItem onClick={() => setCategory("All Categories")}>All Categories</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setCategory("CAT001")}>Academic</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setCategory("CAT002")}>Faculty/Department</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setCategory("CAT003")}>Education & Assessment</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setCategory("CAT004")}>Administrative/Office</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setCategory("CAT005")}>Hostel/Accomodation</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setCategory("CAT006")}>IT & Digital</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setCategory("CAT007")}>Campus Facilities/Transport</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setCategory("CAT008")}>Safety, Security & Discipline</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setCategory("CAT009")}>Others</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
 
         <button
           className='contextText border border-gray-700 px-4 py-2 rounded-sm hover:bg-gray-700/20 transition-all duration-200 ease-in-out mx-2'

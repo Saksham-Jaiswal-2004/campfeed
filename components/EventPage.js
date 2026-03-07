@@ -13,72 +13,75 @@ import Link from "next/link";
 import RSVPButton from "@/components/RSVPButton";
 import { IoIosArrowForward } from "react-icons/io";
 import ShareButton from "@/components/ShareButton";
+import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 
-// export async function generateMetadata({ params }) {
-//   const id = params?.id;
-//   if (!id) return { title: "Not Found" };
+export default function EventPage({setSelectedView, id}) {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-//   const docRef = doc(db, "events", id);
-//   const snap = await getDoc(docRef);
+  useEffect(() => {
+    if (!id) return;
 
-//   if (!snap.exists()) return { title: "Not Found" };
+    const fetchEvent = async () => {
+      try {
+        const docRef = doc(db, "events", id);
+        const snap = await getDoc(docRef);
 
-//   const data = snap.data();
-//   return {
-//     title: data?.name || "Event",
-//   };
-// }
+        if (snap.exists()) {
+          setData(snap.data());
+        } else {
+          setData(null);
+        }
+      } catch (err) {
+        console.error(err);
+        setData(null);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-export default async function EventPage({ params }) {
-  const idparams = useParams();
-  const id = idparams?.id;
-  
+    fetchEvent();
+  }, [id]);
+
   if (!id) return <div className="h-screen w-screen flex justify-center items-center text-xl">Event ID not provided</div>;
 
-  const docRef = doc(db, "events", id);
-  const snap = await getDoc(docRef);
+  if (loading) return <p>Loading...</p>;
+  if (!data) return <p>Event not found</p>;
 
-  if (!snap.exists()) return notFound();
-
-  const data = snap.data() || {};
-
-  // Safe defaults
-  const fullUrl = `https://campfeed.vercel.app/Announcements/${id}`;
   const startDate = data.startDate?.toDate ? new Date(data.startDate.toDate()) : null;
   const registered = data.registered ?? 0;
-  const capacity = data.capacity ?? 1; // avoid division by zero
+  const capacity = data.capacity ?? 1;
   const tags = data.tags ?? [];
   const venue = data.venue ?? "TBA";
   const organiser = data.organiser ?? "Unknown";
   const contactInfo = data.contactInfo ?? "Not provided";
 
   return (
-    <div className="w-full min-h-screen overflow-y-scroll flex flex-col justify-start items-center">
-      {/* <Navbar /> */}
+    <div className="w-full h-screen overflow-y-scroll flex flex-col justify-start items-center">
 
-      <div className="flex flex-col justify-center items-center mt-8 px-4 w-[60%] h-fit">
+      <div className="flex flex-col justify-center items-center mt-8 px-4 py-8 w-[85%] h-fit">
         <p className="mb-2 text-xs contentText flex justify-start items-center gap-2 w-full">
-          <Link href="/StudentDash" className="hover:text-white">Dashboard</Link>
+          <button onClick={() => {setSelectedView("StudentDash")}} className="hover:text-white">Dashboard</button>
           <IoIosArrowForward />
-          <Link href="/Events" className="hover:text-white">Events</Link>
+          <button onClick={() => {setSelectedView("EventList")}} className="hover:text-white">Events</button>
           <IoIosArrowForward />
           <span className="!text-white !text-sm">{data.name || "Event"}</span>
         </p>
 
         <div className="flex justify-between items-center w-full my-4">
           <div>
-            <h1 className="text-3xl title">{data.name || "Event"}</h1>
-            <p className="text-[#9dacc2] dark:text-gray-300 whitespace-pre-line">
+            <h1 className="text-5xl title">{data.name || "Event"}</h1>
+            {/* <p className="text-[#9dacc2] dark:text-gray-300 whitespace-pre-line">
               {data.description || "No description provided."}
-            </p>
+            </p> */}
           </div>
           <div>
-            <ShareButton title={data.name || "Event"} url={fullUrl} text={`Check out this Event: ${data.name || "Event"}`} />
+            <ShareButton title={data.name || "Event"} text={`Check out this Event: ${data.name || "Event"}`} />
           </div>
         </div>
 
-        <div className="w-[100%] h-[50vh] bg-gray-600 rounded-lg overflow-hidden"></div>
+        <div className="w-[100%] h-[350px] bg-gray-600 rounded-lg overflow-hidden"></div>
 
         <div className="flex gap-3 text-sm mt-2 flex-wrap w-full px-2">
           {tags.map((tag, index) => (
@@ -88,9 +91,9 @@ export default async function EventPage({ params }) {
           ))}
         </div>
 
-        <div className="w-full h-full flex justify-center items-start gap-4 my-4">
+        <div className="w-full h-fit flex justify-center items-start gap-4 my-4">
           <div className="w-[68%] min-h-[50vh] h-fit border border-gray-700 rounded-md p-4">
-            <h2 className="subtitle text-xl">Event Details</h2>
+            <h2 className="subtitle text-3xl">{ data.name }</h2>
             <p className="px-4 mt-2 contentText">{data.description || "No description provided."}</p>
           </div>
 
@@ -128,7 +131,7 @@ export default async function EventPage({ params }) {
           </div>
         </div>
 
-        <div className="w-full h-full flex justify-center items-start gap-4 mb-4">
+        <div className="w-full h-fit flex justify-center items-start gap-4 mb-4">
           <div className="w-[30%] h-fit min-h-[22vh] border border-gray-700 rounded-md p-4">
             <h2 className="subtitle text-base">Related</h2>
             <div className="w-full h-[10vh] flex flex-col justify-center items-center gap-1 mt-3">

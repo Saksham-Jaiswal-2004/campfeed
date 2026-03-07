@@ -9,57 +9,68 @@ import { CgDanger } from "react-icons/cg";
 import { MdOutlineInfo } from "react-icons/md";
 import { FiCheckCircle } from "react-icons/fi";
 import ShareButton from "@/components/ShareButton";
+import { useEffect, useState } from "react";
 
-export async function generateMetadata({ params }) {
+export default function AnnouncementPage({setSelectedView, id}) {
 
-    const { id } = params;
+    const [data, setData] = useState(null);
+    const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(true);
 
-    const docRef = doc(db, "announcements", id);
-    const snap = await getDoc(docRef);
+    useEffect(() => {
+      if (!id) return;
 
-    if (!snap.exists()) return { title: "Not Found" };
-
-    return {
-        title: snap.data().name || "Announcement",
-    };
-}
-
-async function getUserById(uid) {
-    try {
-        const userRef = doc(db, "users", uid);
-        const snap = await getDoc(userRef);
-
-        if (snap.exists()) {
-            return snap.data();
-        } else {
-            console.warn(`No user found with UID: ${uid}`);
-            return null;
+      const fetchAnnouncement = async () => {
+        try {
+          const docRef = doc(db, "announcements", id);
+          const snap = await getDoc(docRef);
+  
+          if (!snap.exists()) {
+            setData(null);
+            return;
+          }
+  
+          const announcementData = snap.data();
+          setData(announcementData);
+  
+          if (announcementData?.createdBy) {
+            try {
+              const userSnap = await getDoc(doc(db, "users", announcementData.createdBy));
+              if (userSnap.exists()) {
+                setUser(userSnap.data());
+              }
+            } catch (err) {
+              console.error(err);
+            }
+          }
+        } catch (err) {
+          console.error(err);
+          setData(null);
+          setUser(null);
+        } finally {
+          setLoading(false);
         }
-    } catch (error) {
-        console.error("Error fetching user by ID:", error);
-        return null;
-    }
-}
+      };
 
-export default async function EventPage({ params }) {
+      fetchAnnouncement();
+    }, [id]);
+    
+    if (!id) return <div className="h-screen w-screen flex justify-center items-center text-xl">Announcement ID not provided</div>;
 
-    const { id } = params;
-
-    const docRef = doc(db, "announcements", id);
-    const snap = await getDoc(docRef);
-    const fullUrl = `https://campfeed.vercel.app/Events/${id}`;
-
-    if (!snap.exists()) return notFound();
-
-    const data = snap.data();
-    const user = await getUserById(data?.createdBy);
+    if (loading) return <p>Loading...</p>;
+    if (!data) return <p>Announcement not found</p>;
 
     return (
-        <div className="w-full min-h-screen overflow-y-scroll flex flex-col justify-start items-center">
-            <Navbar />
+        <div className="w-full h-screen overflow-y-scroll flex flex-col justify-start items-center">
 
-            <div className="flex flex-col justify-center items-center mt-24 px-4 w-[60%] h-fit">
-                <p className="mb-2 text-xs contentText flex justify-start items-center gap-2 w-full"><Link href="/StudentDash" className="hover:text-white">Dashboard</Link> <IoIosArrowForward />{" "} <Link href="/Announcements" className="hover:text-white">Announcements</Link> <IoIosArrowForward /> <span className="!text-white !text-sm">{data.title}</span></p>
+            <div className="flex flex-col justify-center items-center mt-8 px-4 py-8 w-[85%] h-fit">
+                <p className="mb-2 text-xs contentText flex justify-start items-center gap-2 w-full">
+                  <button onClick={() => {setSelectedView("StudentDash")}} className="hover:text-white">Dashboard</button>
+                  <IoIosArrowForward />
+                  <button onClick={() => {setSelectedView("Announcements")}} className="hover:text-white">Announcements</button>
+                  <IoIosArrowForward />
+                  <span className="!text-white !text-sm">{data.title || "Announcement"}</span>
+                </p>
 
                 <div className="flex justify-between items-center w-full my-4">
                     <div>
@@ -67,7 +78,7 @@ export default async function EventPage({ params }) {
                     </div>
 
                     <div>
-                        <ShareButton title={data.name} url={fullUrl} text={`Check out this Announcement: ${data.name}`} />
+                        <ShareButton title={data.name} text={`Check out this Announcement: ${data.name}`} />
                     </div>
                 </div>
 

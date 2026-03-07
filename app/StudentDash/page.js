@@ -32,10 +32,13 @@ import { LiaUniversitySolid } from "react-icons/lia";
 import UserIssues from "@/components/UserIssues";
 import CampusIssues from "@/components/CampusIssues";
 import LogIssue from "@/components/LogIssue";
+import EventPage from "@/components/EventPage";
+import AnnouncementPage from "@/components/AnnouncementPage";
 
 const Page = () => {
 
   const [selectedView, setSelectedView] = useState("StudentDash")
+  const [selectedId, setSelectedId] = useState()
   const { user, userData, login, logout, loading } = useUser();
   const router = useRouter();
 
@@ -105,14 +108,16 @@ const Page = () => {
         {selectedView === "StudentDash" && <StudentDash setSelectedView={setSelectedView} />}
         {selectedView === "UserIssues" && <UserIssues setSelectedView={setSelectedView} />}
         {selectedView === "AllIssues" && <CampusIssues setSelectedView={setSelectedView} />}
-        {selectedView === "EventList" && <EventsList />}
-        {selectedView === "Announcements" && <AnnouncementList />}
+        {selectedView === "EventList" && <EventsList setSelectedView={setSelectedView} setSelectedId={setSelectedId} />}
+        {selectedView === "Announcements" && <AnnouncementList  setSelectedView={setSelectedView} setSelectedId={setSelectedId} />}
         {selectedView === "Notifications" && <Notifications />}
         {selectedView === "Users" && <Users />}
         {selectedView === "Settings" && <Settings />}
         {selectedView === "PostAnnouncement" && <PostAnnouncement />}
         {selectedView === "PostEvent" && <PostEvent />}
         {selectedView === "LogIssue" && <LogIssue setSelectedView={setSelectedView} />}
+        {selectedView === "DetailedEvent" && <EventPage setSelectedView={setSelectedView} id={selectedId} /> }
+        {selectedView === "DetailedAnnouncement" && <AnnouncementPage setSelectedView={setSelectedView} id={selectedId} /> }
       </div>
     </Sidebar>
   )

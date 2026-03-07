@@ -18,7 +18,7 @@ import { collection, getDocs, getDoc, doc } from "firebase/firestore";
 import { useUser } from "@/context/userContext";
 import { useRouter } from "next/navigation";
 
-const AnnouncementList = () => {
+const AnnouncementList = ({setSelectedView, setSelectedId}) => {
   const [role, setRole] = useState("Select Role");
   const [priority, setPriority] = useState("Select Priority");
   const [audience, setAudience] = useState("Select Audience");
@@ -180,10 +180,10 @@ const AnnouncementList = () => {
           <div className='grid grid-cols-1 justify-center items-center gap-2 w-full mb-10'>
             {filteredAnnouncements.map((announcement) => (
               <div key={announcement.id} className='w-full h-[30vh] border border-gray-800 bg-[#020613] rounded-lg overflow-hidden group'>
-                <Link href={`/Announcements/${announcement.id}`} className='cursor-pointer'>
+                <button onClick={() => {setSelectedView("DetailedAnnouncement"); setSelectedId(announcement.id)}} className='cursor-pointer w-full h-full justify-start'>
                   <div className='w-full h-full flex flex-col justify-between p-5 hover:bg-gray-900/30 transition-all duration-200 ease-in-out'>
                     <div className='relative'>
-                      <h3 className='subtitle text-lg mb-1 group-hover:text-indigo-500 transition-all duration-200 ease-in-out'>{announcement.title}</h3>
+                      <h3 className='subtitle text-lg mb-1 group-hover:text-indigo-500 transition-all duration-200 ease-in-out w-fit'>{announcement.title}</h3>
                       <p className='contentText text-xs w-[95%] flex gap-2 items-center'>
                         {announcement.createdByUser?.username}
                         <span>•</span>
@@ -245,7 +245,7 @@ const AnnouncementList = () => {
                       </div>
                     )}
                   </div>
-                </Link>
+                </button>
               </div>
             ))}
           </div>

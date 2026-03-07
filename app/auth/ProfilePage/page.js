@@ -42,7 +42,7 @@ const ProfilePage = () => {
 
     try {
       await setDoc(doc(db, "users", user.uid), userData);
-      router.push("/Dashboard");
+      router.push("/StudentDash");
     } catch (err) {
       console.error("Error saving user data", err);
     }
@@ -74,7 +74,7 @@ const ProfilePage = () => {
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             className="w-full mt-1 p-2 rounded bg-gray-800 text-white"
-            placeholder="e.g. saksham01"
+            placeholder="e.g. john_doe"
           />
         </div>
 

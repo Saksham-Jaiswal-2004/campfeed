@@ -12,12 +12,12 @@ const Page = () => {
     const router = useRouter();
 
     useEffect(() => {
-        if (loading && !user) return;
+        if (loading || userData === undefined) return;
 
         if (user && userData === null) {
-            router.push("/auth/ProfilePage");
+            router.replace("/auth/ProfilePage");
         } else if (user && userData) {
-            router.push("/Dashboard");
+            router.replace("/StudentDash");
         }
     }, [loading, user, userData, router]);
 

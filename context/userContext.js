@@ -8,9 +8,9 @@ import { signInWithPopup, GoogleAuthProvider, signOut } from "firebase/auth";
 const UserContext = createContext(null);
 
 export const UserProvider = ({ children }) => {
-    const [user, setUser] = useState(null); // Firebase user
-    const [userData, setUserData] = useState(null); // Firestore user data
-    const [loading, setLoading] = useState(true); // Global loading state
+    const [user, setUser] = useState(null);
+    const [userData, setUserData] = useState(undefined);
+    const [loading, setLoading] = useState(true);
 
     const fetchUserData = async (uid) => {
         try {

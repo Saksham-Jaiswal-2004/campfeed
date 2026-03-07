@@ -1,4 +1,3 @@
-"use client"
 import React, { useState, useEffect } from 'react'
 import { CiSearch } from "react-icons/ci";
 import { Progress } from "@/components/ui/progress"
@@ -21,7 +20,7 @@ import { collection, query, where, getDocs } from "firebase/firestore";
 import { useUser } from "@/context/userContext";
 import { useRouter } from "next/navigation";
 
-const EventsList = () => {
+const EventsList = ({setSelectedView, setSelectedId}) => {
     const [audience, setAudience] = useState("Select Audience")
     const { user, userData, loading } = useUser();
     const [events, setEvents] = useState([]);
@@ -161,11 +160,9 @@ const EventsList = () => {
   </button>
 ) : (
   // Event available → clickable link
-  <Link href={`/Events/${event.id}`} className="w-full">
-    <button className="w-full bg-indigo-600 hover:bg-indigo-700 py-2 rounded-lg text-sm transition-all duration-200 ease-in-out">
+    <button className="w-full bg-indigo-600 hover:bg-indigo-700 py-2 rounded-lg text-sm transition-all duration-200 ease-in-out" onClick={() => {setSelectedView("DetailedEvent"); setSelectedId(event.id)}}>
       View Event
     </button>
-  </Link>
 )}
                                     </div>
                                 </div>

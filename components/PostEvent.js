@@ -51,7 +51,7 @@ const PostEvent = () => {
         setLoading(true);
 
         try {
-            const docRef = await addDoc(collection(db, "events"), {
+            await addDoc(collection(db, "events"), {
                 ...formData,
                 capacity: parseInt(formData.capacity),
                 registered: 0,
@@ -188,7 +188,7 @@ const PostEvent = () => {
                     </div>
 
                     <div className='flex flex-col gap-1 my-8 relative'>
-                        <label htmlFor="eventposter" className='text-sm px-2'>Event Poster (Optional) - <span className='text-red-600'>X</span> Currently We are not Accepting Posters</label>
+                        <label htmlFor="eventposter" className='text-sm px-2'>Event Poster</label>
                         <label htmlFor="eventposter" className="block w-full">
                             <div className="cursor-pointer border border-gray-700 bg-[#020818] px-4 py-2 text-base rounded-md text-white flex items-center justify-between">
                                 <span className="text-gray-400" id="fileName">Upload Event Poster</span>
@@ -197,32 +197,12 @@ const PostEvent = () => {
                                 </svg>
                             </div>
                             <input
-                                type=""
-                                name="eventposter"
-                                id="eventposter"
-                                accept="image/png, image/jpeg, image/jpg, image/webp"
-                                className="hidden"
-                                disabled={true}
-                                onChange={(e) => {
-                                    const file = e.target.files[0];
-                                    const maxSizeMB = 5;
-
-                                    if (file) {
-                                        if (!["image/png", "image/jpeg", "image/jpg", "image/webp"].includes(file.type)) {
-                                            alert("Only PNG, JPG, JPEG, or WEBP files are allowed.");
-                                            e.target.value = "";
-                                            return;
-                                        }
-
-                                        if (file.size > maxSizeMB * 1024 * 1024) {
-                                            alert(`File size should be less than ${maxSizeMB} MB.`);
-                                            e.target.value = "";
-                                            return;
-                                        }
-
-                                        document.getElementById("fileName").innerText = file.name;
-                                    }
-                                }}
+                              type="file"
+                              className="absolute inset-0 opacity-0 cursor-pointer"
+                              // onChange={handleFileUpload}
+                              // onDrop={handleDrop}
+                              // onDragOver={handleDragOver}
+                              accept="image/*,video/*"
                             />
                         </label>
 

@@ -243,8 +243,12 @@ const UserIssues = ({setSelectedView}) => {
             {filteredIssues.map((issue) => (
               <div key={issue.id} className='w-full !h-[40vh] border border-gray-800 bg-[#020613] rounded-lg overflow-hidden'>
                 <div className='relative w-full h-full flex justify-center items-center pl-8 gap-4 hover:bg-gray-900/20 transition-all duration-200 ease-in-out group'>
-                  <div className='!h-[85%] overflow-hidden'>
-                    <img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/attachments/gen-images/public/overflowing-dumpster-x1cBEefLftHFa7DMvTW6HJwbBgrq54.png" alt="" className='h-full w-auto group-hover:scale-110 transition-all duration-200 ease-in-out' />
+                  <div className='!h-[85%] w-[30vw] bg-red-500 overflow-hidden flex justify-center items-center'>
+                    <img 
+                    src={issue.attachment_urls[0]?.url ? issue.attachment_urls[0].url : "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/attachments/gen-images/public/overflowing-dumpster-x1cBEefLftHFa7DMvTW6HJwbBgrq54.png"} 
+                    alt="" 
+                    className='h-full w-full group-hover:scale-110 transition-all duration-200 ease-in-out object-cover' 
+                    />
                   </div>
                   
                   <div className='w-full h-full relative flex flex-col justify-start p-5'>

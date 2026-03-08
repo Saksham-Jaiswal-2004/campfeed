@@ -107,6 +107,21 @@ const handleDragOver = (e) => {
   e.preventDefault();
 };
 
+const uploadImage = async (file, folder) => {
+
+  const fd = new FormData();
+  fd.append("file", file);
+  fd.append("folder", folder);
+
+  const res = await fetch("/api/upload", {
+    method: "POST",
+    body: fd
+  });
+
+  const data = await res.json();
+  return data;
+};
+
   const handleIssueSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -118,9 +133,15 @@ const handleDragOver = (e) => {
     }
 
     try {
+        const uploadedImages = await Promise.all(
+          formData.files.map((item) =>
+            uploadImage(item.file, "issues")
+          )
+        );
+
         await addDoc(collection(db, "issues"), {
           category_id: formData.category,
-          attachment_urls: formData.files,
+          attachment_urls: uploadedImages,
           thumbnail_url: null,
           title: formData.title,
           description: formData.description,
@@ -504,9 +525,13 @@ const handleDragOver = (e) => {
               <div variant="outline" size="lg" className="flex justify-center items-center h-14 bg-indigo-600/30 hover:bg-indigo-600/50 btnText rounded-lg px-16 py-2 cursor-pointer gap-2" onClick={prevStep}>
                 <ChevronLeft className="h-4 w-4" /> Back
               </div>
-              <div size="lg" className="flex justify-center items-center h-14 bg-indigo-600 hover:bg-indigo-700 btnText rounded-lg px-16 py-2 cursor-pointer gap-2" onClick={handleIssueSubmit}>
-                Submit <ChevronRight className="h-4 w-4" />
-              </div>
+              <button size="lg" 
+              className={`${loading? "bg-gray-500 hover:bg-gray-600 cursor-not-allowed" : "bg-indigo-600 hover:bg-indigo-700 cursor-pointer"} flex justify-center items-center h-14 btnText rounded-lg px-16 py-2 gap-2`}
+              onClick={handleIssueSubmit}
+              disabled={loading}
+              >
+                {loading? "Submiting..." : "Submit"} <ChevronRight className="h-4 w-4" />
+              </button>
             </div>
           </motion.div>
         )}

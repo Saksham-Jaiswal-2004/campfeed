@@ -81,7 +81,13 @@ export default function EventPage({setSelectedView, id}) {
           </div>
         </div>
 
-        <div className="w-[100%] h-[350px] bg-gray-600 rounded-lg overflow-hidden"></div>
+        <div className="w-[100%] h-[350px] bg-gray-600 rounded-lg overflow-hidden">
+          <img 
+          src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/attachments/gen-images/public/overflowing-dumpster-x1cBEefLftHFa7DMvTW6HJwbBgrq54.png" 
+          alt="" 
+          className="h-full w-full object-cover"
+          />
+        </div>
 
         <div className="flex gap-3 text-sm mt-2 flex-wrap w-full px-2">
           {tags.map((tag, index) => (
@@ -132,19 +138,24 @@ export default function EventPage({setSelectedView, id}) {
         </div>
 
         <div className="w-full h-fit flex justify-center items-start gap-4 mb-4">
-          <div className="w-[30%] h-fit min-h-[22vh] border border-gray-700 rounded-md p-4">
-            <h2 className="subtitle text-base">Related</h2>
-            <div className="w-full h-[10vh] flex flex-col justify-center items-center gap-1 mt-3">
-              <Link href={"/Announcements"} className="w-full">
-                <button className="px-4 py-2 w-full contentText text-sm rounded-sm hover:bg-gray-600/20 border border-gray-700 disabled:opacity-50">
+          <div className="w-[30%] h-fit min-h-[22vh] border border-gray-700 rounded-md p-4 flex justify-center items-center">
+            {/* <h2 className="subtitle text-base">Related</h2> */}
+            <div className="w-full h-[10vh] flex flex-col justify-center items-center gap-1">
+                <button className="px-4 py-2 w-full contentText text-sm rounded-sm hover:bg-gray-600/20 border border-gray-700 disabled:opacity-50"
+                onClick={() => {setSelectedView("Announcements")}}
+                >
                   View All Announcements
                 </button>
-              </Link>
-              <Link href={"/Events"} className="w-full">
-                <button className="px-4 py-2 w-full contentText text-sm rounded-sm hover:bg-gray-600/20 border border-gray-700 disabled:opacity-50">
+                <button className="px-4 py-2 w-full contentText text-sm rounded-sm hover:bg-gray-600/20 border border-gray-700 disabled:opacity-50"
+                onClick={() => {setSelectedView("EventList")}}
+                >
                   Explore Events
                 </button>
-              </Link>
+                <button className="px-4 py-2 w-full contentText text-sm rounded-sm hover:bg-gray-600/20 border border-gray-700 disabled:opacity-50"
+                onClick={() => {setSelectedView("LogIssue")}}
+                >
+                  Report an Issue
+                </button>
             </div>
           </div>
 

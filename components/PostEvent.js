@@ -4,6 +4,7 @@ import { db } from '@/lib/firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { useUser } from '@/context/userContext';
 import { toast } from "sonner"
+import { X } from 'lucide-react';
 
 const PostEvent = () => {
 
@@ -20,7 +21,41 @@ const PostEvent = () => {
         capacity: "",
         targetAudience: "",
         tags: "",
+        files: [],
     });
+
+    const handleFileUpload = (e) => {
+      const selectedFiles = Array.from(e.target.files);
+    
+      const newFiles = selectedFiles.map((file) => ({
+        file,
+        preview: URL.createObjectURL(file),
+      }));
+    
+      setFormData((prev) => ({
+        ...prev,
+        files: [...prev.files, ...newFiles],
+      }));
+    };
+    
+    const handleDrop = (e) => {
+      e.preventDefault();
+      const droppedFiles = Array.from(e.dataTransfer.files);
+    
+      const newFiles = droppedFiles.map((file) => ({
+        file,
+        preview: URL.createObjectURL(file),
+      }));
+    
+      setFormData((prev) => ({
+        ...prev,
+        files: [...prev.files, ...newFiles],
+      }));
+    };
+    
+    const handleDragOver = (e) => {
+      e.preventDefault();
+    };
 
     const handlePostEvent = async (e) => {
         e.preventDefault();
@@ -187,27 +222,54 @@ const PostEvent = () => {
                         <p className='text-[#96aac5] text-[0.82rem] px-2'>Separate multiple tags with commas</p>
                     </div>
 
-                    <div className='flex flex-col gap-1 my-8 relative'>
-                        <label htmlFor="eventposter" className='text-sm px-2'>Event Poster</label>
-                        <label htmlFor="eventposter" className="block w-full">
-                            <div className="cursor-pointer border border-gray-700 bg-[#020818] px-4 py-2 text-base rounded-md text-white flex items-center justify-between">
-                                <span className="text-gray-400" id="fileName">Upload Event Poster</span>
-                                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1M12 12v8m0-8l3.5 3.5M12 12L8.5 15.5M16 8V4H8v4" />
-                                </svg>
-                            </div>
-                            <input
-                              type="file"
-                              className="absolute inset-0 opacity-0 cursor-pointer"
-                              // onChange={handleFileUpload}
-                              // onDrop={handleDrop}
-                              // onDragOver={handleDragOver}
-                              accept="image/*,video/*"
-                            />
-                        </label>
+                    <div className='flex flex-col my-8 relative'>
+                        <label htmlFor="eventposter" className='text-sm px-2 mb-1'>Event Banner</label>
+                        {formData.files.length == 0 ? (
+                          <label htmlFor="eventposter" className="block w-full relative group">
+                              <div className="relative cursor-pointer border-2 border-dashed border-gray-700 group-hover:border-gray-500 transition-colors bg-[#020818] px-4 py-2 h-48 text-base rounded-md flex flex-col items-center justify-center gap-0">
+                                  <div className='h-20 w-20 rounded-full bg-gray-900 flex items-center justify-center group-hover:bg-gray-800 transition-colors'>
+                                    <svg className="w-10 h-10 contentText group-hover:!text-white transition-colors" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1M12 12v8m0-8l3.5 3.5M12 12L8.5 15.5M16 8V4H8v4" />
+                                    </svg>
+                                  </div>
+                                  <span className="text-xl font-bold mt-2" id="fileName">Upload Event Banner</span>
+                                  <p className='text-muted-foreground text-sm'>Upload an image to make your event more attractive (JPG, JPEG, PNG, WEBP max 5MB)</p>
+                              </div>
+                              <input
+                                type="file"
+                                className="absolute inset-0 opacity-0 cursor-pointer"
+                                onChange={handleFileUpload}
+                                onDrop={handleDrop}
+                                onDragOver={handleDragOver}
+                                accept="image/*"
+                              />
+  
+                          </label>
+                        ):(
+                          <div className="flex justify-center items-center w-full gap-4">
+                            {formData.files.map((file, i) => (
+                              <div key={i} className="relative rounded-xl bg-muted overflow-hidden group w-[98%] aspect-[16/5]">
+                                <img src={file.preview} alt="Preview" className="object-cover w-full h-full" />
+                                <button
+                                  className="absolute top-2 right-2 p-1 bg-background/80 rounded-full text-destructive hover:bg-background"
+                                  onClick={() => {
+                                    URL.revokeObjectURL(formData.files[i].preview);
+                                  
+                                    setFormData((prev) => ({
+                                      ...prev,
+                                      files: prev.files.filter((_, idx) => idx !== i),
+                                    }));
+                                  }}
+                                >
+                                  <X className="h-4 w-4" />
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
 
-                        <p className='text-[#96aac5] text-[0.82rem] px-2'>Upload an image to make your event more attractive (JPG, JPEG, PNG, WEBP max 5MB)</p>
-                    </div>
+                    {/* {formData.files.length > 0 && } */}
 
                     {/* <div className='flex flex-col gap-1 mb-8'>
                         <label htmlFor="registrationLink" className='text-sm px-2'>External Registration Link</label>

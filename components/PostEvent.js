@@ -5,11 +5,15 @@ import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { useUser } from '@/context/userContext';
 import { toast } from "sonner"
 import { X } from 'lucide-react';
+import ImageCropper from './ui/ImageCropper';
 
 const PostEvent = () => {
 
     const { user, userData } = useUser();
     const [loading, setLoading] = useState(false);
+    const [cropImage, setCropImage] = useState(null);
+    const [showCropper, setShowCropper] = useState(false);
+    const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
     const [formData, setFormData] = useState({
         name: "",
         organiser: "",
@@ -25,37 +29,83 @@ const PostEvent = () => {
     });
 
     const handleFileUpload = (e) => {
-      const selectedFiles = Array.from(e.target.files);
+      const file = e.target.files[0];
+      if (!file) return;
     
-      const newFiles = selectedFiles.map((file) => ({
-        file,
-        preview: URL.createObjectURL(file),
-      }));
+      const preview = URL.createObjectURL(file);
     
-      setFormData((prev) => ({
-        ...prev,
-        files: [...prev.files, ...newFiles],
-      }));
+      setCropImage(preview);
+      setShowCropper(true);
     };
-    
-    const handleDrop = (e) => {
+        
+        const handleDrop = (e) => {
       e.preventDefault();
-      const droppedFiles = Array.from(e.dataTransfer.files);
+      const file = e.dataTransfer.files[0];
+      if (!file) return;
     
-      const newFiles = droppedFiles.map((file) => ({
-        file,
-        preview: URL.createObjectURL(file),
-      }));
+      const preview = URL.createObjectURL(file);
     
-      setFormData((prev) => ({
-        ...prev,
-        files: [...prev.files, ...newFiles],
-      }));
+      setCropImage(preview);
+      setShowCropper(true);
     };
     
     const handleDragOver = (e) => {
       e.preventDefault();
     };
+
+    const getCroppedImg = async (imageSrc, crop) => {
+    const image = new Image();
+    image.src = imageSrc;
+  
+    await new Promise((resolve) => (image.onload = resolve));
+  
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+  
+    canvas.width = crop.width;
+    canvas.height = crop.height;
+  
+    ctx.drawImage(
+      image,
+      crop.x,
+      crop.y,
+      crop.width,
+      crop.height,
+      0,
+      0,
+      crop.width,
+      crop.height
+    );
+  
+    return new Promise((resolve) => {
+      canvas.toBlob((blob) => {
+        resolve(blob);
+      }, "image/jpeg");
+    });
+  };
+
+    const onCropComplete = (croppedArea, croppedPixels) => {
+      setCroppedAreaPixels(croppedPixels);
+    };
+
+    const handleCropSave = async () => {
+
+    const croppedBlob = await getCroppedImg(cropImage, croppedAreaPixels);
+  
+    const preview = URL.createObjectURL(croppedBlob);
+  
+    const newFile = {
+      file: croppedBlob,
+      preview: preview
+    };
+  
+    setFormData((prev) => ({
+      ...prev,
+      files: [newFile]
+    }));
+  
+    setShowCropper(false);
+  };
 
     const handlePostEvent = async (e) => {
         e.preventDefault();
@@ -294,6 +344,38 @@ const PostEvent = () => {
                     </ul>
                 </div>
             </div>
+
+            {showCropper && (
+              <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
+            
+                <div className="bg-[#020818] p-6 rounded-lg w-[600px]">
+            
+                  <ImageCropper
+                    image={cropImage}
+                    aspect={16/5}
+                    onCropComplete={onCropComplete}
+                  />
+            
+                  <div className="flex justify-end gap-3 mt-4">
+                    <button
+                      onClick={() => setShowCropper(false)}
+                      className="px-4 py-2 bg-gray-700 rounded"
+                    >
+                      Cancel
+                    </button>
+            
+                    <button
+                      onClick={handleCropSave}
+                      className="px-4 py-2 bg-indigo-600 rounded"
+                    >
+                      Crop & Save
+                    </button>
+                  </div>
+            
+                </div>
+            
+              </div>
+            )}
         </div>
     )
 }

@@ -109,6 +109,44 @@ const AnnouncementList = ({setSelectedView, setSelectedId}) => {
         </div>
       </div>
 
+      <div className='flex gap-5 justify-center items-center w-full mt-5'>
+          <div className='w-[23%] h-[135px] flex flex-col justify-center border border-gray-800 bg-[#020613] rounded-lg p-3'>
+             <div className='mb-5 flex justify-between pr-3'>
+                 <p className='contentText text-sm'>Total Announcements </p>
+             </div>
+  
+                 <p className='subtitle text-3xl pl-2 mb-1 flex items-center gap-1'><span className='text-white text-4xl ml-1 mr-2'>•</span> 1</p>
+                 <p className='text-[#64748b] text-xs'><span className='text-green-500'>+12%</span> from last month</p>
+          </div>
+    
+          <div className='w-[23%] h-[135px] flex flex-col justify-center border border-gray-800 bg-[#020613] rounded-lg p-3'>
+              <div className='mb-5 flex justify-between pr-3'>
+                  <p className='contentText text-sm'>High Priority</p>
+              </div>
+
+              <p className='subtitle text-3xl pl-2 mb-1 flex items-center gap-1'><span className='text-red-500 text-4xl ml-1 mr-2'>•</span> 2</p>
+              <p className='text-[#64748b] text-xs'><span className='text-green-500'>+3%</span> from last month</p>
+          </div>
+
+          <div className='w-[23%] h-[135px] flex flex-col justify-center border border-gray-800 bg-[#020613] rounded-lg p-3'>
+              <div className='mb-5 flex justify-between pr-3'>
+                <p className='contentText text-sm'>Medium Priority</p>
+              </div>
+
+              <p className='subtitle text-3xl pl-2 mb-1 flex items-center gap-1'><span className='text-yellow-500 text-4xl ml-1 mr-2'>•</span> 3</p>
+              <p className='text-[#64748b] text-xs'><span className='text-green-500'>+5%</span> from last month</p>
+          </div>
+
+          <div className='w-[23%] h-[135px] flex flex-col justify-center border border-gray-800 bg-[#020613] rounded-lg p-3'>
+              <div className='mb-5 flex justify-between pr-3'>
+                  <p className='contentText text-sm'>Low Priority</p>
+              </div>
+
+              <p className='subtitle text-3xl pl-2 mb-1 flex items-center gap-1'><span className='text-green-500 text-4xl ml-1 mr-2'>•</span> 4</p>
+              <p className='text-[#64748b] text-xs'><span className='text-green-500'>+5.2%</span> from last month</p>
+          </div>
+      </div>
+
       <div className='flex justify-start w-full my-6 pl-3 relative'>
         <CiSearch className='absolute contentText top-[28%] left-[2.5%]' />
         <input

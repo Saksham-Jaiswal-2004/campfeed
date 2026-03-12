@@ -77,6 +77,44 @@ const EventsList = ({setSelectedView, setSelectedId}) => {
                 </div>
             </div>
 
+            <div className='flex gap-5 justify-center items-center w-full mt-5'>
+                <div className='w-[23%] h-[135px] flex flex-col justify-center border border-gray-800 bg-[#020613] rounded-lg p-3'>
+                   <div className='mb-5 flex justify-between pr-3'>
+                       <p className='contentText text-sm'>Total Events</p>
+                   </div>
+       
+                       <p className='subtitle text-3xl pl-2 mb-1 flex items-center gap-1'><span className='text-white text-4xl ml-1 mr-2'>•</span> 1</p>
+                       <p className='text-[#64748b] text-xs'><span className='text-green-500'>+12%</span> from last month</p>
+                </div>
+       
+                <div className='w-[23%] h-[135px] flex flex-col justify-center border border-gray-800 bg-[#020613] rounded-lg p-3'>
+                    <div className='mb-5 flex justify-between pr-3'>
+                        <p className='contentText text-sm'>Ongoing Events</p>
+                    </div>
+    
+                    <p className='subtitle text-3xl pl-2 mb-1 flex items-center gap-1'><span className='text-green-500 text-4xl ml-1 mr-2'>•</span> 2</p>
+                    <p className='text-[#64748b] text-xs'><span className='text-green-500'>+3%</span> from last month</p>
+                </div>
+    
+                <div className='w-[23%] h-[135px] flex flex-col justify-center border border-gray-800 bg-[#020613] rounded-lg p-3'>
+                    <div className='mb-5 flex justify-between pr-3'>
+                        <p className='contentText text-sm'>Upcoming Events</p>
+                    </div>
+    
+                    <p className='subtitle text-3xl pl-2 mb-1 flex items-center gap-1'><span className='text-blue-500 text-4xl ml-1 mr-2'>•</span> 3</p>
+                    <p className='text-[#64748b] text-xs'><span className='text-green-500'>+5%</span> from last month</p>
+                </div>
+    
+                <div className='w-[23%] h-[135px] flex flex-col justify-center border border-gray-800 bg-[#020613] rounded-lg p-3'>
+                    <div className='mb-5 flex justify-between pr-3'>
+                        <p className='contentText text-sm'>Events Cancelled</p>
+                    </div>
+    
+                    <p className='subtitle text-3xl pl-2 mb-1 flex items-center gap-1'><span className='text-red-500 text-4xl ml-1 mr-2'>•</span> 4</p>
+                    <p className='text-[#64748b] text-xs'><span className='text-green-500'>+5.2%</span> from last month</p>
+                </div>
+            </div>
+
             <div className='flex justify-start w-full 400 my-6 pl-3 relative'>
                 <CiSearch className='absolute contentText top-[29%] left-[2.5%]' />
                 <input type="search" name="events" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} id="events" placeholder='Search Events by Name and Target Audience...' className='w-[40%] text-sm mx-2 contentText !text-white rounded-sm pl-8 pr-4 py-2 border border-gray-700 focus:!border-gray-500 outline-none' />

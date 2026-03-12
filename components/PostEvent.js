@@ -4,8 +4,15 @@ import { db } from '@/lib/firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { useUser } from '@/context/userContext';
 import { toast } from "sonner"
-import { X } from 'lucide-react';
 import ImageCropper from './ui/ImageCropper';
+import { motion } from "framer-motion";
+import { VscError } from "react-icons/vsc";
+import {
+  ChevronLeft,
+  ChevronRight,
+  CheckCircle2,
+  X,
+} from "lucide-react";
 
 const PostEvent = () => {
 
@@ -14,6 +21,9 @@ const PostEvent = () => {
     const [cropImage, setCropImage] = useState(null);
     const [showCropper, setShowCropper] = useState(false);
     const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
+    const [isSuccess, setIsSuccess] = useState(null);
+    const [isFailed, setIsFailed] = useState(null);
+    const [isForm, setIsForm] = useState(true);
     const [formData, setFormData] = useState({
         name: "",
         organiser: "",
@@ -107,6 +117,21 @@ const PostEvent = () => {
     setShowCropper(false);
   };
 
+  const uploadImage = async (file, folder) => {
+
+  const fd = new FormData();
+  fd.append("file", file);
+  fd.append("folder", folder);
+
+  const res = await fetch("/api/upload", {
+    method: "POST",
+    body: fd
+  });
+
+  const data = await res.json();
+  return data;
+};
+
     const handlePostEvent = async (e) => {
         e.preventDefault();
 
@@ -136,8 +161,16 @@ const PostEvent = () => {
         setLoading(true);
 
         try {
+          const uploadedImages = await Promise.all(
+            formData.files.map((item) =>
+              uploadImage(item.file, "events")
+            )
+          );
+
+          const { files, ...eventData } = formData;
+
             await addDoc(collection(db, "events"), {
-                ...formData,
+                ...eventData,
                 capacity: parseInt(formData.capacity),
                 registered: 0,
                 startDate: start,
@@ -146,10 +179,12 @@ const PostEvent = () => {
                 targetAudience: formData.targetAudience,
                 createdAt: serverTimestamp(),
                 createdBy: user.uid,
-                eventPosterURL: null,
+                eventPosterURL: uploadedImages,
             });
 
-            toast("Event Posted Successfully")
+            // toast("Event Posted Successfully")
+            setIsForm(false);
+            setIsSuccess(true);
             setFormData({
                 name: "",
                 organiser: "",
@@ -164,7 +199,8 @@ const PostEvent = () => {
             });
         } catch (err) {
             console.error("Error posting event:", err);
-            alert("Failed to post event.");
+            setIsForm(false)
+            setIsFailed(true);
         } finally {
             setLoading(false)
         }
@@ -182,6 +218,7 @@ const PostEvent = () => {
             capacity: "",
             targetAudience: "",
             tags: "",
+            files: [],
         });
     };
 
@@ -194,6 +231,7 @@ const PostEvent = () => {
                 </div>
             </div>
 
+            {isForm && (
             <div className='w-[70%]'>
                 <form onSubmit={handlePostEvent} className='h-fit border border-gray-700 bg-indigo-950/50 rounded-lg my-4 p-6'>
                     <div className='flex flex-col gap-1 mb-8'>
@@ -344,6 +382,71 @@ const PostEvent = () => {
                     </ul>
                 </div>
             </div>
+            )}
+
+            {isSuccess && (
+              <motion.div
+                key="success"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="space-y-6 w-3/5 flex flex-col justify-center items-center h-full pb-4"
+              >
+                <div className="space-y-4">
+                  <div className="relative h-32 w-32 rounded-full bg-green-500/30 flex items-center justify-center border-4 border-green-500/50">
+                    <CheckCircle2 className="h-16 w-16 text-green-500" />
+                  </div>
+                </div>
+                <div className="space-y-3 w-full flex flex-col text-center justify-center items-center">
+                  <h2 className="text-4xl font-extrabold subtitle">Event Posted</h2>
+                  <p className="text-lg contentText max-w-md mx-auto">
+                    Your event has been posted successfully. It is now visible to users and participants can start engaging with it.
+                  </p>
+                </div>
+                
+                <div className="flex w-[70%] justify-between items-center gap-4 mt-16">
+                  <div variant="outline" size="lg" className="flex justify-center items-center h-14 bg-indigo-600/30 hover:bg-indigo-600/50 btnText rounded-lg px-12 py-2 cursor-pointer gap-2" onClick={() => {setIsSuccess(false); setIsForm(true); handleResetForm()}}>
+                    <ChevronLeft className="h-4 w-4" /> Report Another Issue
+                  </div>
+                  <div size="lg" className="flex justify-center items-center h-14 bg-indigo-600 hover:bg-indigo-700 btnText rounded-lg px-16 py-2 cursor-pointer gap-2">
+                    <button onClick = {() => {setSelectedView("StudentDash"); setIsForm(true); handleResetForm()}} className="flex justify-center items-center">
+                      Dashboard <ChevronRight className="h-4 w-4" />
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+    
+            {isFailed && (
+              <motion.div
+                key="success"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="space-y-6 w-3/5 flex flex-col justify-center items-center h-full"
+              >
+                <div className="space-y-4">
+                  <div className="relative h-32 w-32 rounded-full bg-red-500/30 flex items-center justify-center border-4 border-red-500/50">
+                    <VscError className="h-16 w-16 text-red-500" />
+                  </div>
+                </div>
+                <div className="space-y-3 w-full flex flex-col text-center justify-center items-center">
+                  <h2 className="text-4xl font-extrabold subtitle">Failed to Post Event</h2>
+                  <p className="text-lg contentText max-w-md mx-auto">
+                    We couldn&apos;t post your event at the moment. Please try again in a few seconds.
+                  </p>
+                </div>
+                
+                <div className="flex w-[70%] justify-between items-center gap-4 mt-16">
+                  <div variant="outline" size="lg" className="flex justify-center items-center h-14 bg-indigo-600/30 hover:bg-indigo-600/50 btnText rounded-lg px-12 py-2 cursor-pointer gap-2" onClick={() => {setIsFailed(false); setIsForm(true)}}>
+                    <ChevronLeft className="h-4 w-4" /> Try Again
+                  </div>
+                  <div size="lg" className="flex justify-center items-center h-14 bg-indigo-600 hover:bg-indigo-700 btnText rounded-lg px-16 py-2 cursor-pointer gap-2">
+                    <button onClick = {() => {setSelectedView("StudentDash"); setIsForm(true); handleResetForm()}} className="flex justify-center items-center">
+                      Dashboard <ChevronRight className="h-4 w-4" />
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            )}
 
             {showCropper && (
               <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">

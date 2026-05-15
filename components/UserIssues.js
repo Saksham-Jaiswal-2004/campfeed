@@ -49,7 +49,8 @@ const UserIssues = ({setSelectedView}) => {
 
   const issuesRef = query(
     collection(db, "issues"),
-    where("student_id", "==", user.uid)
+    where("student_id", "==", user.uid),
+    orderBy("created_at", "desc")
   );
 
   const unsubscribe = onSnapshot(issuesRef, async (snapshot) => {
@@ -243,9 +244,9 @@ const UserIssues = ({setSelectedView}) => {
             {filteredIssues.map((issue) => (
               <div key={issue.id} className='w-full !h-[40vh] border border-gray-800 bg-[#020613] rounded-lg overflow-hidden'>
                 <div className='relative w-full h-full flex justify-center items-center pl-8 gap-4 hover:bg-gray-900/20 transition-all duration-200 ease-in-out group'>
-                  <div className='!h-[85%] w-[30vw] bg-red-500 overflow-hidden flex justify-center items-center'>
+                  <div className='!h-[85%] w-[30vw] overflow-hidden flex justify-center items-center'>
                     <img 
-                    src={issue.attachment_urls[0]?.url ? issue.attachment_urls[0].url : "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/attachments/gen-images/public/overflowing-dumpster-x1cBEefLftHFa7DMvTW6HJwbBgrq54.png"} 
+                    src={issue.attachment_urls[0]?.url ? issue.attachment_urls[0].url : "/images/Skeleton.png"} 
                     alt="" 
                     className='h-full w-full group-hover:scale-110 transition-all duration-200 ease-in-out object-cover' 
                     />

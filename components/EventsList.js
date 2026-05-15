@@ -9,14 +9,10 @@ import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import Link from 'next/link';
-import Navbar from '@/components/Navbar';
 import { db } from "@/lib/firebase";
-import { collection, query, where, getDocs } from "firebase/firestore";
+import { collection, query, where, orderBy, getDocs } from "firebase/firestore";
 import { useUser } from "@/context/userContext";
 import { useRouter } from "next/navigation";
 
@@ -39,8 +35,13 @@ const EventsList = ({setSelectedView, setSelectedId}) => {
             if (!user) return;
 
             try {
-                const eventsRef = collection(db, "events");
-                const snapshot = await getDocs(eventsRef);
+                const q = query(
+                  collection(db, "events"),
+                  orderBy("startDate", "desc")
+                );
+          
+                const snapshot = await getDocs(q);
+          
                 const data = snapshot.docs.map((doc) => ({
                     id: doc.id,
                     ...doc.data(),
@@ -150,8 +151,8 @@ const EventsList = ({setSelectedView, setSelectedId}) => {
                     <div className='grid grid-cols-3 justify-center items-center gap-8 w-full mb-10'>
                         {searchedEvents.map((event, index) => (
                             <div key={index} className='w-full h-[550px] cursor-pointer border border-gray-800 bg-[#020613] rounded-xl overflow-hidden group'>
-                                <div className='h-[40%] w-full bg-gray-800 overflow-hidden'>
-                                    <img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/attachments/gen-images/public/overflowing-dumpster-x1cBEefLftHFa7DMvTW6HJwbBgrq54.png" alt="" className='h-full w-auto group-hover:scale-105 transition-all duration-200 ease-in-out' />
+                                <div className='h-[40%] w-full bg-gray-800 overflow-hidden flex justify-center'>
+                                    <img src="/images/Skeleton.png" alt="" className='h-full w-full group-hover:scale-105 transition-all duration-200 ease-in-out object-cover' />
                                 </div>
 
                                 <div className='h-[60%] w-full flex flex-col justify-between p-5'>
@@ -189,7 +190,6 @@ const EventsList = ({setSelectedView, setSelectedId}) => {
                                             <Progress value={(event.registered / event.capacity) * 100} />
                                         </div>
                                         {event.registered >= event.capacity ? (
-  // Event full → just show a disabled button, no link
   <button
     className="w-full bg-indigo-900 cursor-not-allowed py-2 rounded-lg text-sm transition-all duration-200 ease-in-out"
     disabled
@@ -197,7 +197,6 @@ const EventsList = ({setSelectedView, setSelectedId}) => {
     Event Full
   </button>
 ) : (
-  // Event available → clickable link
     <button className="w-full bg-indigo-600 hover:bg-indigo-700 py-2 rounded-lg text-sm transition-all duration-200 ease-in-out" onClick={() => {setSelectedView("DetailedEvent"); setSelectedId(event.id)}}>
       View Event
     </button>

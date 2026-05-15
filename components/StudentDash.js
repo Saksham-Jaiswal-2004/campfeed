@@ -13,11 +13,26 @@ import {
   where,
   onSnapshot,
   Timestamp,
+  limit,
+  orderBy,
+  getDocs,
+  doc,
+  getDoc
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useEffect, useState } from "react";
+import { useUser } from '@/context/userContext';
+import { CgDanger } from "react-icons/cg";
+import { MdOutlineInfo } from "react-icons/md";
+import { FiCheckCircle } from "react-icons/fi";
+import { div } from 'motion/react-client';
 
 const StudentDash = ({setSelectedView}) => {
+      const { user, loading } = useUser();
+      const [announcements, setAnnouncements] = useState([]);
+      const [events, setEvents] = useState([])
+      const [issues, setIssues] = useState([])
+      const [fetching, setFetching] = useState(true);
 
   const [stats, setStats] = useState({
     totalEvents: 0,
@@ -26,30 +41,127 @@ const StudentDash = ({setSelectedView}) => {
     totalUsers: 0,
   });
 
-  const recentActivity = [
-  { id: 1, 
-    title: "WiFi down in hostel block A", 
-    status: "Resolved", 
-    location: "Hostel Block A", 
-    time: "2 hours ago", 
-    urgent: false 
-  },
-  {
-    id: 2,
-    title: "Broken AC in classroom 301",
-    status: "In Progress",
-    location: "Academic Block",
-    time: "5 hours ago",
-    urgent: true,
-  },
-  { id: 3, 
-    title: "Mess food quality issue", 
-    status: "Pending", 
-    location: "Dining Hall", 
-    time: "1 day ago", 
-    urgent: false 
-  },
-]
+  useEffect(() => {
+      const fetchMyAnnouncements = async () => {
+        if (!user) return;
+  
+        try {
+          const q = query(
+                          collection(db, "announcements"),
+                          orderBy("createdAt", "desc"),
+                          limit(5)
+                        );
+                    
+          const snapshot = await getDocs(q);
+          const announcementsWithUser = await Promise.all(
+            snapshot.docs.map(async (docSnap) => {
+              const announcementData = docSnap.data();
+              let createdByData = {};
+  
+              try {
+                const userRef = doc(db, "users", announcementData.createdBy);
+                const userSnap = await getDoc(userRef);
+                if (userSnap.exists()) {
+                  createdByData = userSnap.data();
+                }
+              } catch (error) {
+                console.error("Error fetching user for announcement:", error);
+              }
+  
+              return {
+                id: docSnap.id,
+                ...announcementData,
+                createdByUser: createdByData,
+              };
+            })
+          );
+  
+          setAnnouncements(announcementsWithUser);
+        } catch (err) {
+          console.error("Error fetching announcements: ", err);
+        } finally {
+          setFetching(false);
+        }
+      };
+  
+      fetchMyAnnouncements();
+    }, [user]);
+
+    useEffect(() => {
+            const fetchMyEvents = async () => {
+                if (!user) return;
+    
+                try {
+                    const q = query(
+                      collection(db, "events"),
+                      orderBy("startDate", "desc"),
+                      limit(5)
+                    );
+              
+                    const snapshot = await getDocs(q);
+              
+                    const data = snapshot.docs.map((doc) => ({
+                        id: doc.id,
+                        ...doc.data(),
+                    }));
+                    setEvents(data);
+                } catch (err) {
+                    console.error("Error fetching events: ", err);
+                } finally {
+                    setFetching(false);
+                }
+            };
+    
+            fetchMyEvents();
+        }, [user]);
+
+    useEffect(() => {
+      if (!user) return;
+    
+      const issuesRef = collection(db, "issues");
+    
+      const q = query(
+        issuesRef,
+        orderBy("created_at", "desc"),
+        limit(5)
+      );
+    
+      const unsubscribe = onSnapshot(q, async (snapshot) => {
+        try {
+          const issuesWithUser = await Promise.all(
+            snapshot.docs.map(async (docSnap) => {
+              const issueData = docSnap.data();
+              let createdByData = {};
+    
+              try {
+                const userRef = doc(db, "users", issueData.student_id);
+                const userSnap = await getDoc(userRef);
+    
+                if (userSnap.exists()) {
+                  createdByData = userSnap.data();
+                }
+              } catch (error) {
+                console.error("Error fetching user for issue:", error);
+              }
+    
+              return {
+                id: docSnap.id,
+                ...issueData,
+                createdByUser: createdByData,
+              };
+            })
+          );
+    
+          setIssues(issuesWithUser);
+        } catch (err) {
+          console.error("Error fetching issues:", err);
+        } finally {
+          setFetching(false);
+        }
+      });
+    
+      return () => unsubscribe();
+    }, [user]);
 
   useEffect(() => {
     const unsubscribes = [];
@@ -79,21 +191,6 @@ const StudentDash = ({setSelectedView}) => {
     });
 
     unsubscribes.push(unsubscribeEvents);
-
-    // 🔁 Active Announcements
-    // const annQuery = query(
-    //   collection(db, "announcements"),
-    //   where("status", "==", "active")
-    // );
-
-    const unsubscribeAnnouncements = onSnapshot(collection(db, "announcements"), (snapshot) => {
-      setStats((prev) => ({
-        ...prev,
-        activeAnnouncements: snapshot.size,
-      }));
-    });
-
-    unsubscribes.push(unsubscribeAnnouncements);
 
     // 🔁 Users
     const unsubscribeUsers = onSnapshot(collection(db, "users"), (snapshot) => {
@@ -174,55 +271,48 @@ const StudentDash = ({setSelectedView}) => {
                     </div>
 
                     <div className='flex flex-col justify-center items-center px-2 gap-1'>
-                        <div className='relative w-full flex-col border border-gray-800/60 cursor-pointer hover:bg-[#020818] rounded-sm px-5 py-2'>
-                            <h3 className='text-base'>E-Lafda hogya college me</h3>
+                        {issues.map((issue) => (
+                        <div key={issue.id} className='relative w-full flex-col border border-gray-800/60 cursor-pointer hover:bg-[#020818] rounded-sm px-5 py-2'>
+                            <h3 className='text-base'>{issue.title}</h3>
                             <div className='flex gap-1 text-xs text-[#64748b]'>
-                                <p>Category</p>
+                                <p>
+                                    {
+                                      issue.category_id==="CAT001"?"Academic":
+                                      issue.category_id==="CAT002"?"Faculty/Department":
+                                      issue.category_id==="CAT003"?"Education & Assessment":
+                                      issue.category_id==="CAT004"?"Administrative/Office":
+                                      issue.category_id==="CAT005"?"Hostel/Accomodation":
+                                      issue.category_id==="CAT006"?"IT & Digital":
+                                      issue.category_id==="CAT007"?"Campus Facilities/Transport":
+                                      issue.category_id==="CAT008"?"Safety, Security & Discipline":
+                                      issue.category_id==="CAT009"?"Others": ""
+                                    }
+                                </p>
                                 <span>•</span>
-                                <p>Upvotes</p>
+                                <p>{issue.upvotes}</p>
                             </div>
-                            <p className='absolute top-3 right-4 text-[0.65rem] contentText !text-green-500'>Priority</p>
+                            {issue.priority === "critical" && (
+                              <p className='absolute top-3 right-4 text-[0.65rem] text-red-500 '>
+                                Critical Priority
+                              </p>
+                            )}
+                            {issue.priority === "high" && (
+                              <p className='absolute top-3 right-4 text-[0.65rem] text-orange-500 '>
+                                High Priority
+                              </p>
+                            )}
+                            {issue.priority === "medium" && (
+                              <p className='absolute top-3 right-4 text-[0.65rem] text-yellow-500 '>
+                                Medium Priority
+                              </p>
+                            )}
+                            {issue.priority === "low" && (
+                              <p className='absolute top-3 right-4 text-[0.65rem] text-green-500 '>
+                                Low Priority
+                              </p>
+                            )}
                         </div>
-
-                        <div className='relative w-full flex-col border border-gray-800/60 cursor-pointer hover:bg-[#020818] rounded-sm px-5 py-2'>
-                            <h3 className='text-base'>E-Lafda hogya college me</h3>
-                            <div className='flex gap-1 text-xs text-[#64748b]'>
-                                <p>Category</p>
-                                <span>•</span>
-                                <p>Upvotes</p>
-                            </div>
-                            <p className='absolute top-3 right-4 text-[0.65rem] contentText !text-red-500'>Priority</p>
-                        </div>
-                        
-                        <div className='relative w-full flex-col border border-gray-800/60 cursor-pointer hover:bg-[#020818] rounded-sm px-5 py-2'>
-                            <h3 className='text-base'>E-Lafda hogya college me</h3>
-                            <div className='flex gap-1 text-xs text-[#64748b]'>
-                                <p>Category</p>
-                                <span>•</span>
-                                <p>Upvotes</p>
-                            </div>
-                            <p className='absolute top-3 right-4 text-[0.65rem] contentText !text-red-500'>Priority</p>
-                        </div>
-
-                        <div className='relative w-full flex-col border border-gray-800/60 cursor-pointer hover:bg-[#020818] rounded-sm px-5 py-2'>
-                            <h3 className='text-base'>E-Lafda hogya college me</h3>
-                            <div className='flex gap-1 text-xs text-[#64748b]'>
-                                <p>Category</p>
-                                <span>•</span>
-                                <p>Upvotes</p>
-                            </div>
-                            <p className='absolute top-3 right-4 text-[0.65rem] contentText !text-yellow-500'>Priority</p>
-                        </div>
-
-                        <div className='relative w-full flex-col border border-gray-800/60 cursor-pointer hover:bg-[#020818] rounded-sm px-5 py-2'>
-                            <h3 className='text-base'>E-Lafda hogya college me</h3>
-                            <div className='flex gap-1 text-xs text-[#64748b]'>
-                                <p>Category</p>
-                                <span>•</span>
-                                <p>Upvotes</p>
-                            </div>
-                            <p className='absolute top-3 right-4 text-[0.65rem] contentText !text-green-500'>Priority</p>
-                        </div>
+                        ))}
                     </div>
                 </div>
 
@@ -233,55 +323,38 @@ const StudentDash = ({setSelectedView}) => {
                     </div>
 
                     <div className='flex flex-col justify-center items-center px-2 gap-1'>
-                        <div className='relative w-full flex-col border border-gray-800/60 cursor-pointer hover:bg-[#020818] rounded-sm px-5 py-2'>
-                            <h3 className='text-base'>E-Lafda hogya college me</h3>
+                        {announcements.map((announcement) => (
+                        <div key={announcement.id} className='relative w-full flex-col border border-gray-800/60 cursor-pointer hover:bg-[#020818] rounded-sm px-5 py-2'>
+                            <h3 className='text-base'>{announcement.title}</h3>
                             <div className='flex gap-1 text-xs text-[#64748b]'>
-                                <p>Department</p>
+                                <p>{announcement.targetAudience}</p>
                                 <span>•</span>
-                                <p>Time</p>
+                                <p>{new Date(announcement.createdAt.toDate()).toLocaleString("en-GB", {
+                                  day: "2-digit",
+                                  month: "short",
+                                  year: "numeric",
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                  hour12: true,
+                                })}</p>
                             </div>
-                            <p className='absolute top-3 right-4 text-[0.65rem] contentText !text-green-500'>Priority</p>
+                            {announcement.priority === "High" && (
+                              <p className='absolute top-3 right-4 text-[0.65rem] text-red-500 '>
+                                High Priority
+                              </p>
+                            )}
+                            {announcement.priority === "Medium" && (
+                              <p className='absolute top-3 right-4 text-[0.65rem] text-yellow-500 '>
+                                Medium Priority
+                              </p>
+                            )}
+                            {announcement.priority === "Low" && (
+                              <p className='absolute top-3 right-4 text-[0.65rem] text-green-500 '>
+                                Low Priority
+                              </p>
+                            )}
                         </div>
-
-                        <div className='relative w-full flex-col border border-gray-800/60 cursor-pointer hover:bg-[#020818] rounded-sm px-5 py-2'>
-                            <h3 className='text-base'>E-Lafda hogya college me</h3>
-                            <div className='flex gap-1 text-xs text-[#64748b]'>
-                                <p>Department</p>
-                                <span>•</span>
-                                <p>Time</p>
-                            </div>
-                            <p className='absolute top-3 right-4 text-[0.65rem] contentText !text-red-500'>Priority</p>
-                        </div>
-                        
-                        <div className='relative w-full flex-col border border-gray-800/60 cursor-pointer hover:bg-[#020818] rounded-sm px-5 py-2'>
-                            <h3 className='text-base'>E-Lafda hogya college me</h3>
-                            <div className='flex gap-1 text-xs text-[#64748b]'>
-                                <p>Department</p>
-                                <span>•</span>
-                                <p>Time</p>
-                            </div>
-                            <p className='absolute top-3 right-4 text-[0.65rem] contentText !text-yellow-500'>Priority</p>
-                        </div>
-
-                        <div className='relative w-full flex-col border border-gray-800/60 cursor-pointer hover:bg-[#020818] rounded-sm px-5 py-2'>
-                            <h3 className='text-base'>E-Lafda hogya college me</h3>
-                            <div className='flex gap-1 text-xs text-[#64748b]'>
-                                <p>Department</p>
-                                <span>•</span>
-                                <p>Time</p>
-                            </div>
-                            <p className='absolute top-3 right-4 text-[0.65rem] contentText !text-green-500'>Priority</p>
-                        </div>
-
-                        <div className='relative w-full flex-col border border-gray-800/60 cursor-pointer hover:bg-[#020818] rounded-sm px-5 py-2'>
-                            <h3 className='text-base'>E-Lafda hogya college me</h3>
-                            <div className='flex gap-1 text-xs text-[#64748b]'>
-                                <p>Department</p>
-                                <span>•</span>
-                                <p>Time</p>
-                            </div>
-                            <p className='absolute top-3 right-4 text-[0.65rem] contentText !text-red-500'>Priority</p>
-                        </div>
+                        ))}
                     </div>
                 </div>
 
@@ -292,60 +365,25 @@ const StudentDash = ({setSelectedView}) => {
                     </div>
 
                     <div className='flex flex-col justify-center items-center px-2 gap-1'>
-                        <div className='relative w-full flex-col border border-gray-800/60 cursor-pointer hover:bg-[#020818] rounded-sm px-5 py-2'>
-                            <h3 className='text-base'>E-Lafda hogya college me</h3>
+                        {events.map((event) => (
+                        <div key={event.id} className='relative w-full flex-col border border-gray-800/60 cursor-pointer hover:bg-[#020818] rounded-sm px-5 py-2'>
+                            <h3 className='text-base'>{event.name}</h3>
                             <div className='flex gap-1 text-xs text-[#64748b]'>
-                                <p>Date</p>
+                                <p>
+                                    {new Date(event.startDate.toDate()).toLocaleString("en-GB", {
+                                      day: "2-digit",
+                                      month: "short",
+                                      year: "numeric",
+                                      hour: "2-digit",
+                                      minute: "2-digit",
+                                      hour12: true,
+                                    })}
+                                </p>
                                 <span>•</span>
-                                <p>Time</p>
-                                <span>•</span>
-                                <p>Venue</p>
+                                <p>{event.venue}</p>
                             </div>
                         </div>
-
-                        <div className='relative w-full flex-col border border-gray-800/60 cursor-pointer hover:bg-[#020818] rounded-sm px-5 py-2'>
-                            <h3 className='text-base'>E-Lafda hogya college me</h3>
-                            <div className='flex gap-1 text-xs text-[#64748b]'>
-                                <p>Date</p>
-                                <span>•</span>
-                                <p>Time</p>
-                                <span>•</span>
-                                <p>Venue</p>
-                            </div>
-                        </div>
-                        
-                        <div className='relative w-full flex-col border border-gray-800/60 cursor-pointer hover:bg-[#020818] rounded-sm px-5 py-2'>
-                            <h3 className='text-base'>E-Lafda hogya college me</h3>
-                            <div className='flex gap-1 text-xs text-[#64748b]'>
-                                <p>Date</p>
-                                <span>•</span>
-                                <p>Time</p>
-                                <span>•</span>
-                                <p>Venue</p>
-                            </div>
-                        </div>
-
-                        <div className='relative w-full flex-col border border-gray-800/60 cursor-pointer hover:bg-[#020818] rounded-sm px-5 py-2'>
-                            <h3 className='text-base'>E-Lafda hogya college me</h3>
-                            <div className='flex gap-1 text-xs text-[#64748b]'>
-                                <p>Date</p>
-                                <span>•</span>
-                                <p>Time</p>
-                                <span>•</span>
-                                <p>Venue</p>
-                            </div>
-                        </div>
-
-                        <div className='relative w-full flex-col border border-gray-800/60 cursor-pointer hover:bg-[#020818] rounded-sm px-5 py-2'>
-                            <h3 className='text-base'>E-Lafda hogya college me</h3>
-                            <div className='flex gap-1 text-xs text-[#64748b]'>
-                                <p>Date</p>
-                                <span>•</span>
-                                <p>Time</p>
-                                <span>•</span>
-                                <p>Venue</p>
-                            </div>
-                        </div>
+                        ))}
                     </div>
                 </div>
             </div>

@@ -14,7 +14,7 @@ import {
 import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 import { db } from "@/lib/firebase";
-import { collection, getDocs, getDoc, doc } from "firebase/firestore";
+import { collection, getDocs, getDoc, orderBy, query, doc } from "firebase/firestore";
 import { useUser } from "@/context/userContext";
 import { useRouter } from "next/navigation";
 
@@ -40,8 +40,12 @@ const AnnouncementList = ({setSelectedView, setSelectedId}) => {
       if (!user) return;
 
       try {
-        const announcementsRef = collection(db, "announcements");
-        const snapshot = await getDocs(announcementsRef);
+        const q = query(
+                        collection(db, "announcements"),
+                        orderBy("createdAt", "desc")
+                      );
+                  
+        const snapshot = await getDocs(q);
         const announcementsWithUser = await Promise.all(
           snapshot.docs.map(async (docSnap) => {
             const announcementData = docSnap.data();

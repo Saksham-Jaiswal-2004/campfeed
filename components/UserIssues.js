@@ -26,6 +26,8 @@ import { onSnapshot, where, query, orderBy } from "firebase/firestore";
 import { useUser } from "@/context/userContext";
 import { useRouter } from "next/navigation";
 import { FaAngleRight } from 'react-icons/fa';
+import DeleteIssueModal from '@/components/DeleteIssueModal';
+import { toast } from 'sonner';
 
 const UserIssues = ({setSelectedView}) => {
   const [status, setStatus] = useState("Select Status");
@@ -319,7 +321,19 @@ const UserIssues = ({setSelectedView}) => {
                           <DropdownMenuTrigger className="border-none outline-none text-base cursor-pointer"><SlOptionsVertical /></DropdownMenuTrigger>
                           <DropdownMenuContent>
                             <DropdownMenuItem ><FaRegEdit className='!text-xs' /> Edit</DropdownMenuItem>
-                            <DropdownMenuItem className="!text-red-500 hover:!bg-red-500/10" ><MdDeleteOutline className='!text-red-500' /> Delete</DropdownMenuItem>
+                            <DeleteIssueModal 
+                              issue={issue} 
+                              onSuccess={() => {
+                                // Optional: Show success message or perform other actions
+                                toast.success("Issue Deleted Successfully!")
+                                console.log("Issue deleted successfully");
+                              }}
+                              onError={(error) => {
+                                // Optional: Show error message
+                                console.error("Failed to delete issue:", error);
+                                toast.error("Failed to Delete Issue!")
+                              }}
+                            />
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </div>

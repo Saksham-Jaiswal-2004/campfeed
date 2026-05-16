@@ -29,7 +29,7 @@ import { FaAngleRight } from 'react-icons/fa';
 import DeleteIssueModal from '@/components/DeleteIssueModal';
 import { toast } from 'sonner';
 
-const UserIssues = ({setSelectedView}) => {
+const UserIssues = ({setSelectedView, setSelectedId}) => {
   const [status, setStatus] = useState("Select Status");
   const [priority, setPriority] = useState("Select Priority");
   const [category, setCategory] = useState("Select Category");
@@ -361,7 +361,7 @@ const UserIssues = ({setSelectedView}) => {
                   </div>
                   <div className='absolute bottom-0 right-0 flex'>
                     <Link href="/" className=''><span className='mr-4 mb-4 contentText py-2 px-2 rounded-lg !text-blue-400 text-xs hover:!text-blue-500 transition-all duration-300 ease-in-out flex justify-center items-center gap-1'><FaRegThumbsUp /> {issue.upvotes} Votes</span></Link>
-                    <Link href="/" className=''><span className='mr-4 mb-4 contentText py-2 px-2 rounded-lg !text-blue-400 text-xs hover:!text-blue-500 transition-all duration-300 ease-in-out flex justify-center items-center gap-1'>Track Issue <FaAngleRight /></span></Link>
+                    <button onClick={() => { setSelectedId(issue.id); setSelectedView("DetailedIssue"); }} className='mr-4 mb-4 contentText py-2 px-2 rounded-lg !text-blue-400 text-xs hover:!text-blue-500 transition-all duration-300 ease-in-out flex justify-center items-center gap-1'>Track Issue <FaAngleRight /></button>
                   </div>
                   </div>
               </div>

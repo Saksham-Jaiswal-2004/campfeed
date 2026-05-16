@@ -15,7 +15,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 import { db } from "@/lib/firebase";
 import { collection, getDocs, getDoc, doc } from "firebase/firestore";
@@ -24,7 +23,7 @@ import { useUser } from "@/context/userContext";
 import { useRouter } from "next/navigation";
 import ShareButton from './ShareButton';
 
-const CampusIssues = ({setSelectedView}) => {
+const CampusIssues = ({setSelectedView, setSelectedId}) => {
   const [status, setStatus] = useState("Select Status");
   const [priority, setPriority] = useState("Select Priority");
   const [category, setCategory] = useState("Select Category");
@@ -337,8 +336,10 @@ const CampusIssues = ({setSelectedView}) => {
                   </div>
 
                   <div className='absolute bottom-0 right-0 flex'>
-                    <Link href="/" className=''><span className='mr-4 mb-4 border border-gray-700 contentText py-2 px-2 rounded-lg !text-white bg-blue-400/50 text-xs hover:bg-blue-400/70 transition-all duration-300 ease-in-out flex justify-center items-center gap-1'><FaRegThumbsUp /> {issue.upvotes} Votes</span></Link>
-                    <Link href="/" className=''><span className='mr-4 mb-4 contentText py-2 px-2 rounded-lg !text-blue-400 text-xs hover:!text-blue-500 transition-all duration-300 ease-in-out flex justify-center items-center gap-1'>View Full Report <FaAngleRight /></span></Link>
+                    <span className='mr-4 mb-4 border border-gray-700 contentText py-2 px-2 rounded-lg !text-white bg-blue-400/50 text-xs transition-all duration-300 ease-in-out flex justify-center items-center gap-1'>
+                      <FaRegThumbsUp /> {issue.upvotes || 0} Votes
+                    </span>
+                    <button onClick={() => { setSelectedId(issue.id); setSelectedView("DetailedCampusIssue"); }} className='mr-4 mb-4 contentText py-2 px-2 rounded-lg !text-blue-400 text-xs hover:!text-blue-500 transition-all duration-300 ease-in-out flex justify-center items-center gap-1'>View Full Report <FaAngleRight /></button>
                   </div>
                   </div>
                 {/* </Link> */}

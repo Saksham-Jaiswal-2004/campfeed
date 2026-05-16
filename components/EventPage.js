@@ -83,7 +83,7 @@ export default function EventPage({setSelectedView, id}) {
 
         <div className="w-[100%] h-[350px] bg-gray-600 rounded-lg overflow-hidden">
           <img 
-          src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/attachments/gen-images/public/overflowing-dumpster-x1cBEefLftHFa7DMvTW6HJwbBgrq54.png" 
+          src="/images/Skeleton.png" 
           alt="" 
           className="h-full w-full object-cover"
           />

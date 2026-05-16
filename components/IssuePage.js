@@ -1,0 +1,416 @@
+"use client"
+import React, { useEffect, useState } from "react";
+import { doc, getDoc, updateDoc, arrayUnion } from "firebase/firestore";
+import { db } from "@/lib/firebase";
+import { IoIosArrowForward } from "react-icons/io";
+import { CgDanger } from "react-icons/cg";
+import { MdOutlineInfo } from "react-icons/md";
+import { FiCheckCircle } from "react-icons/fi";
+import { FaPlus, FaCheck, FaTimes } from "react-icons/fa";
+import DeleteIssueModal from "@/components/DeleteIssueModal";
+import ShareButton from "@/components/ShareButton";
+import { useUser } from "@/context/userContext";
+
+const categoryOptions = [
+  { id: "CAT001", label: "Academic" },
+  { id: "CAT002", label: "Faculty/Department" },
+  { id: "CAT003", label: "Education & Assessment" },
+  { id: "CAT004", label: "Administrative/Office" },
+  { id: "CAT005", label: "Hostel/Accomodation" },
+  { id: "CAT006", label: "IT & Digital" },
+  { id: "CAT007", label: "Campus Facilities/Transport" },
+  { id: "CAT008", label: "Safety, Security & Discipline" },
+  { id: "CAT009", label: "Others" },
+];
+
+const priorityOptions = ["low", "medium", "high", "critical"];
+
+export default function IssuePage({ setSelectedView, id, mode = "public" }) {
+  const [data, setData] = useState(null);
+  const [creator, setCreator] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [updating, setUpdating] = useState(false);
+  const [note, setNote] = useState("");
+  const [isEditing, setIsEditing] = useState(false);
+  const [editForm, setEditForm] = useState({
+    title: "",
+    description: "",
+    category_id: "",
+    priority: "",
+  });
+  const [saveMessage, setSaveMessage] = useState("");
+  const { user } = useUser();
+
+  const effectiveMode = (mode === "creator" || (user && data && user.uid === data.student_id)) ? "creator" : "public";
+
+  useEffect(() => {
+    if (!id) return;
+
+    const fetch = async () => {
+      setLoading(true);
+      try {
+        const ref = doc(db, "issues", id);
+        const snap = await getDoc(ref);
+        if (!snap.exists()) {
+          setData(null);
+          return;
+        }
+        const issueData = snap.data();
+        setData(issueData);
+        setEditForm({
+          title: issueData.title || "",
+          description: issueData.description || "",
+          category_id: issueData.category_id || "",
+          priority: issueData.priority || "medium",
+        });
+
+        if (issueData.student_id) {
+          try {
+            const creatorRef = doc(db, "users", issueData.student_id);
+            const crSnap = await getDoc(creatorRef);
+            if (crSnap.exists()) setCreator(crSnap.data());
+          } catch (err) {
+            console.error(err);
+          }
+        }
+      } catch (err) {
+        console.error(err);
+        setData(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetch();
+  }, [id]);
+
+  if (!id) return <div className="h-screen w-screen flex justify-center items-center text-xl">Issue ID not provided</div>;
+  if (loading) return <p>Loading...</p>;
+  if (!data) return <p>Issue not found</p>;
+
+  const categoryLabel =
+    data.category_id === "CAT001"
+      ? "Academic"
+      : data.category_id === "CAT002"
+      ? "Faculty/Department"
+      : data.category_id === "CAT003"
+      ? "Education & Assessment"
+      : data.category_id === "CAT004"
+      ? "Administrative/Office"
+      : data.category_id === "CAT005"
+      ? "Hostel/Accomodation"
+      : data.category_id === "CAT006"
+      ? "IT & Digital"
+      : data.category_id === "CAT007"
+      ? "Campus Facilities/Transport"
+      : data.category_id === "CAT008"
+      ? "Safety, Security & Discipline"
+      : data.category_id === "CAT009"
+      ? "Others"
+      : "";
+
+  const createdAt = data.created_at?.toDate ? new Date(data.created_at.toDate()) : data.created_at ? new Date(data.created_at) : null;
+  const issueImages = Array.isArray(data.attachment_urls) ? data.attachment_urls : [];
+  const primaryImage = issueImages[0]?.url || "/images/Skeleton.png";
+
+  const handleChangeStatus = async (newStatus) => {
+    setUpdating(true);
+    try {
+      const ref = doc(db, "issues", id);
+      await updateDoc(ref, { status: newStatus });
+      setData((d) => ({ ...d, status: newStatus }));
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setUpdating(false);
+    }
+  };
+
+  const handleSaveIssue = async () => {
+    setUpdating(true);
+    setSaveMessage("");
+    try {
+      const ref = doc(db, "issues", id);
+      const payload = {
+        title: editForm.title.trim(),
+        description: editForm.description.trim(),
+        category_id: editForm.category_id,
+        priority: editForm.priority,
+        updated_at: new Date(),
+      };
+
+      await updateDoc(ref, payload);
+      setData((current) => ({ ...current, ...payload }));
+      setIsEditing(false);
+      setSaveMessage("Issue updated successfully.");
+    } catch (err) {
+      console.error(err);
+      setSaveMessage("Unable to save changes right now.");
+    } finally {
+      setUpdating(false);
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditForm({
+      title: data.title || "",
+      description: data.description || "",
+      category_id: data.category_id || "",
+      priority: data.priority || "medium",
+    });
+    setIsEditing(false);
+    setSaveMessage("");
+  };
+
+  const handleAddNote = async () => {
+    if (!note.trim()) return;
+    setUpdating(true);
+    try {
+      const ref = doc(db, "issues", id);
+      const payload = {
+        by: user?.uid || "system",
+        text: note.trim(),
+        created_at: new Date(),
+      };
+      await updateDoc(ref, { comments: arrayUnion(payload) });
+      setData((d) => ({ ...d, comments: [...(d.comments || []), payload] }));
+      setNote("");
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setUpdating(false);
+    }
+  };
+
+  return (
+    <div className="w-full h-screen overflow-y-auto flex flex-col items-center bg-transparent">
+      <div className="max-w-6xl w-full mt-8 px-6 pb-12">
+        <div className="flex items-center gap-3 text-xs text-gray-400 mb-3">
+          <button onClick={() => { setSelectedView("StudentDash"); }} className="hover:text-white">Dashboard</button>
+          <IoIosArrowForward />
+          <button onClick={() => { setSelectedView("UserIssues"); }} className="hover:text-white">Issues</button>
+          <IoIosArrowForward />
+          <span className="text-white/90 truncate max-w-[40ch]">{data.title || "Issue"}</span>
+        </div>
+
+        <div className="bg-gradient-to-b from-[#041227] to-[#020612] rounded-2xl shadow-xl overflow-hidden border border-gray-800">
+          <div className="relative w-full h-56 sm:h-64 md:h-72 lg:h-80">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={primaryImage} alt="" className="w-full h-full object-cover filter brightness-90" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
+            <div className="absolute left-6 bottom-6 text-white">
+              <h1 className="text-2xl sm:text-3xl font-semibold leading-tight">{data.title}</h1>
+              <div className="flex flex-wrap gap-2 mt-2">
+                {data.tags?.map((t, i) => (
+                  <span key={i} className="text-xs bg-white/6 backdrop-blur px-3 py-1 rounded-full border border-white/6">{t}</span>
+                ))}
+              </div>
+            </div>
+            <div className="absolute right-6 top-6 flex items-center gap-2">
+              <ShareButton title={data.title} text={`Issue: ${data.title}`} />
+            </div>
+          </div>
+
+          <div className="p-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-lg text-gray-300">{categoryLabel}</h2>
+                  <p className="text-sm text-gray-400 mt-1">ID • {id}</p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className={`px-3 py-1 rounded-full text-sm font-medium ${data.status === "resolved" ? "bg-green-500/10 text-green-400" : data.status === "rejected" ? "bg-red-500/10 text-red-400" : data.status === "in_progress" ? "bg-yellow-500/10 text-yellow-400" : "bg-gray-800 text-gray-300"}`}>{data.status}</span>
+                  <span className={`px-3 py-1 rounded-full text-sm font-medium ${data.priority === "high" ? "bg-orange-500/10 text-orange-400" : data.priority === "critical" ? "bg-red-500/10 text-red-400" : data.priority === "medium" ? "bg-yellow-500/10 text-yellow-400" : "bg-green-500/10 text-green-400"}`}>{data.priority || 'Normal'}</span>
+                </div>
+              </div>
+
+              <div className="mt-4 bg-transparent rounded-lg p-4 border border-gray-800">
+                <div className="flex items-center justify-between gap-3 mb-2">
+                  <h3 className="text-sm text-gray-300">Description</h3>
+                  {effectiveMode === "creator" && !isEditing && (
+                    <button
+                      onClick={() => setIsEditing(true)}
+                      className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md border border-gray-700 text-xs text-gray-200 hover:bg-white/5 transition-colors"
+                    >
+                      <FaPlus className="rotate-45" /> Edit Issue
+                    </button>
+                  )}
+                </div>
+
+                {isEditing && effectiveMode === "creator" ? (
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <label className="space-y-2">
+                        <span className="text-xs text-gray-400">Title</span>
+                        <input
+                          value={editForm.title}
+                          onChange={(e) => setEditForm((current) => ({ ...current, title: e.target.value }))}
+                          className="w-full rounded-lg bg-[#041025] border border-gray-800 px-3 py-2 text-sm text-gray-100 outline-none focus:border-cyan-400/60"
+                        />
+                      </label>
+
+                      <label className="space-y-2">
+                        <span className="text-xs text-gray-400">Category</span>
+                        <select
+                          value={editForm.category_id}
+                          onChange={(e) => setEditForm((current) => ({ ...current, category_id: e.target.value }))}
+                          className="w-full rounded-lg bg-[#041025] border border-gray-800 px-3 py-2 text-sm text-gray-100 outline-none focus:border-cyan-400/60"
+                        >
+                          {categoryOptions.map((category) => (
+                            <option key={category.id} value={category.id}>{category.label}</option>
+                          ))}
+                        </select>
+                      </label>
+                    </div>
+
+                    <label className="space-y-2 block">
+                      <span className="text-xs text-gray-400">Description</span>
+                      <textarea
+                        value={editForm.description}
+                        onChange={(e) => setEditForm((current) => ({ ...current, description: e.target.value }))}
+                        className="w-full min-h-[150px] rounded-lg bg-[#041025] border border-gray-800 px-3 py-2 text-sm text-gray-100 outline-none focus:border-cyan-400/60"
+                      />
+                    </label>
+
+                    <div className="flex flex-wrap items-center gap-3">
+                      <span className="text-xs text-gray-400">Priority</span>
+                      {priorityOptions.map((priority) => (
+                        <button
+                          key={priority}
+                          type="button"
+                          onClick={() => setEditForm((current) => ({ ...current, priority }))}
+                          className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${editForm.priority === priority ? "bg-cyan-500/15 text-cyan-300 border-cyan-400/30" : "bg-transparent text-gray-400 border-gray-700 hover:bg-white/5"}`}
+                        >
+                          {priority}
+                        </button>
+                      ))}
+                    </div>
+
+                    <div className="flex flex-wrap gap-3 pt-2">
+                      <button
+                        onClick={handleSaveIssue}
+                        disabled={updating}
+                        className="inline-flex items-center gap-2 px-4 py-2 rounded-md bg-gradient-to-r from-indigo-500 to-cyan-400 text-white shadow hover:opacity-95 disabled:opacity-60"
+                      >
+                        Save Changes
+                      </button>
+                      <button
+                        onClick={handleCancelEdit}
+                        className="inline-flex items-center gap-2 px-4 py-2 rounded-md border border-gray-700 text-gray-200 hover:bg-white/5 transition-colors"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+
+                    {saveMessage && (
+                      <p className="text-xs text-gray-400">{saveMessage}</p>
+                    )}
+                  </div>
+                ) : (
+                  <p className="text-sm text-gray-200 leading-relaxed whitespace-pre-line">{data.description}</p>
+                )}
+              </div>
+
+              <div className="mt-4 bg-[#031025] border border-gray-800 rounded-xl p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-sm text-gray-300">Issue Images</h3>
+                  <span className="text-xs text-gray-500">{issueImages.length} attachment{issueImages.length === 1 ? "" : "s"}</span>
+                </div>
+
+                {issueImages.length > 0 ? (
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                    {issueImages.map((image, index) => (
+                      <a
+                        key={image.url || index}
+                        href={image.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="group block overflow-hidden rounded-xl border border-gray-800 bg-black/20"
+                      >
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={image.url}
+                          alt={`Issue attachment ${index + 1}`}
+                          className="h-36 w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                        />
+                      </a>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-gray-500">No additional images uploaded.</p>
+                )}
+              </div>
+
+              {effectiveMode === "creator" && (
+                <div className="mt-5">
+                  <h3 className="text-sm text-gray-300 mb-3">Updates & Activity</h3>
+                  <div className="flex flex-col xl:flex-row gap-3 items-stretch xl:items-start">
+                    <textarea
+                      value={note}
+                      onChange={(e) => setNote(e.target.value)}
+                      placeholder="Add an update…"
+                      className="flex-1 min-h-[110px] p-3 rounded-xl bg-[#041025] border border-gray-800 text-sm text-gray-200 outline-none focus:border-cyan-400/60"
+                    />
+                    <div className="flex flex-wrap xl:flex-col gap-2">
+                      <button onClick={handleAddNote} disabled={updating} className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-md bg-gradient-to-r from-indigo-500 to-cyan-400 text-white shadow hover:opacity-95 disabled:opacity-60">
+                        <FaPlus /> Add Note
+                      </button>
+                      <button onClick={() => handleChangeStatus("in_progress")} disabled={updating} className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-md border border-gray-700 text-gray-200 hover:bg-white/5 transition-colors disabled:opacity-60">
+                        <FaTimes /> In Progress
+                      </button>
+                      <button onClick={() => handleChangeStatus("resolved")} disabled={updating} className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-md bg-green-600 text-white hover:brightness-95 disabled:opacity-60">
+                        <FaCheck /> Resolve
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="mt-4 space-y-3">
+                    {(data.comments || []).slice().reverse().map((c, i) => (
+                      <div key={i} className="bg-[#031025] border border-gray-800 rounded-lg p-3">
+                        <div className="flex items-center justify-between">
+                          <p className="text-xs text-gray-400">{c.by || 'Anonymous'}</p>
+                          <p className="text-xs text-gray-500">{c.created_at?.toDate ? new Date(c.created_at.toDate()).toLocaleString() : c.created_at?.toString()}</p>
+                        </div>
+                        <p className="mt-2 text-sm text-gray-200">{c.text}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <aside className="lg:col-span-1">
+              <div className="bg-[#031323] border border-gray-800 rounded-xl p-4 space-y-4">
+                <div>
+                  <h4 className="text-xs text-gray-400">Reported By</h4>
+                  <div className="flex items-center gap-3 mt-3">
+                    <div className="h-10 w-10 rounded-full bg-gradient-to-r from-indigo-500 to-cyan-400 flex items-center justify-center text-white font-semibold">{creator ? (creator.username?.charAt(0) || 'U') : 'U'}</div>
+                    <div>
+                      <p className="text-sm text-gray-200">{creator?.username || data.student_id}</p>
+                      <p className="text-xs text-gray-400">{creator?.email}</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <h4 className="text-xs text-gray-400">Submitted</h4>
+                  <p className="text-sm text-gray-200 mt-2">{createdAt ? createdAt.toLocaleString('en-GB', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' }) : '-'}</p>
+                </div>
+
+                <div>
+                  {effectiveMode === 'creator' ? (
+                    <div className="flex flex-col gap-2">
+                      <DeleteIssueModal issue={{ id, title: data.title }} onSuccess={() => { setSelectedView('UserIssues'); }} />
+                    </div>
+                  ) : (
+                    <button onClick={() => setSelectedView('UserIssues')} className="w-full inline-flex justify-center items-center gap-2 px-4 py-2 rounded-md border border-gray-700 text-gray-200 hover:bg-white/3">Track Issue</button>
+                  )}
+                </div>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

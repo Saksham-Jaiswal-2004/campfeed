@@ -34,6 +34,8 @@ import CampusIssues from "@/components/CampusIssues";
 import LogIssue from "@/components/LogIssue";
 import EventPage from "@/components/EventPage";
 import AnnouncementPage from "@/components/AnnouncementPage";
+import IssuePage from "@/components/IssuePage";
+import CampusIssuePage from "@/components/CampusIssuePage";
 
 const Page = () => {
 
@@ -106,8 +108,8 @@ const Page = () => {
 
       <div className="min-h-screen h-fit overflow-y-scroll w-[84vw] overflow-x-hidden fixed right-0 flex justify-center items-center">
         {selectedView === "StudentDash" && <StudentDash setSelectedView={setSelectedView} />}
-        {selectedView === "UserIssues" && <UserIssues setSelectedView={setSelectedView} />}
-        {selectedView === "AllIssues" && <CampusIssues setSelectedView={setSelectedView} />}
+        {selectedView === "UserIssues" && <UserIssues setSelectedView={setSelectedView} setSelectedId={setSelectedId} />}
+        {selectedView === "AllIssues" && <CampusIssues setSelectedView={setSelectedView} setSelectedId={setSelectedId} />}
         {selectedView === "EventList" && <EventsList setSelectedView={setSelectedView} setSelectedId={setSelectedId} />}
         {selectedView === "Announcements" && <AnnouncementList  setSelectedView={setSelectedView} setSelectedId={setSelectedId} />}
         {selectedView === "Notifications" && <Notifications />}
@@ -117,6 +119,8 @@ const Page = () => {
         {selectedView === "PostEvent" && <PostEvent />}
         {selectedView === "LogIssue" && <LogIssue setSelectedView={setSelectedView} />}
         {selectedView === "DetailedEvent" && <EventPage setSelectedView={setSelectedView} id={selectedId} /> }
+        {selectedView === "DetailedIssue" && <IssuePage setSelectedView={setSelectedView} id={selectedId} /> }
+        {selectedView === "DetailedCampusIssue" && <CampusIssuePage setSelectedView={setSelectedView} id={selectedId} /> }
         {selectedView === "DetailedAnnouncement" && <AnnouncementPage setSelectedView={setSelectedView} id={selectedId} /> }
       </div>
     </Sidebar>

@@ -37,7 +37,7 @@ const StudentDash = ({setSelectedView}) => {
   const [stats, setStats] = useState({
     totalEvents: 0,
     activeAnnouncements: 0,
-    totalRsvps: 0,
+    totalIssuesResolved: 0,
     totalUsers: 0,
   });
 
@@ -170,10 +170,9 @@ const StudentDash = ({setSelectedView}) => {
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
     const startTimestamp = Timestamp.fromDate(startOfMonth);
 
-    // 🔁 Events this month
     const eventsQuery = query(
       collection(db, "events"),
-      where("createdAt", ">=", startTimestamp)
+      // where("createdAt", ">=", startTimestamp)
     );
 
     const unsubscribeEvents = onSnapshot(eventsQuery, (snapshot) => {
@@ -192,7 +191,6 @@ const StudentDash = ({setSelectedView}) => {
 
     unsubscribes.push(unsubscribeEvents);
 
-    // 🔁 Users
     const unsubscribeUsers = onSnapshot(collection(db, "users"), (snapshot) => {
       setStats((prev) => ({
         ...prev,
@@ -202,7 +200,32 @@ const StudentDash = ({setSelectedView}) => {
 
     unsubscribes.push(unsubscribeUsers);
 
-    // Cleanup listeners on unmount
+    return () => unsubscribes.forEach((unsub) => unsub());
+  }, []);
+
+  useEffect(() => {
+    const unsubscribes = [];
+
+    // Get total count of all announcements in database
+    const unsubscribeAnnouncements = onSnapshot(collection(db, "announcements"), (snapshot) => {
+      setStats((prev) => ({
+        ...prev,
+        activeAnnouncements: snapshot.size,
+      }));
+    });
+
+    unsubscribes.push(unsubscribeAnnouncements);
+
+    // Get total count of all issues in database
+    const unsubscribeIssues = onSnapshot(collection(db, "issues"), (snapshot) => {
+      setStats((prev) => ({
+        ...prev,
+        totalIssuesResolved: snapshot.size,
+      }));
+    });
+
+    unsubscribes.push(unsubscribeIssues);
+
     return () => unsubscribes.forEach((unsub) => unsub());
   }, []);
 
@@ -224,7 +247,7 @@ const StudentDash = ({setSelectedView}) => {
             <div className='flex gap-5 justify-center items-center w-full mt-5'>
                 <div className='w-[23%] h-[135px] flex flex-col justify-center border border-gray-800 bg-[#020613] rounded-lg p-3'>
                     <div className='mb-5 flex justify-between pr-3'>
-                        <p className='contentText text-sm'>Total Events This Month</p>
+                        <p className='contentText text-sm'>Total Events</p>
                         <FaRegCalendar className='text-blue-600' />
                     </div>
 
@@ -244,11 +267,11 @@ const StudentDash = ({setSelectedView}) => {
 
                 <div className='w-[23%] h-[135px] flex flex-col justify-center border border-gray-800 bg-[#020613] rounded-lg p-3'>
                     <div className='mb-5 flex justify-between pr-3'>
-                        <p className='contentText text-sm'>Total Issues Resolved</p>
+                        <p className='contentText text-sm'>Total Issues Submitted</p>
                         <AiOutlineRise className='text-violet-600 text-xl' />
                     </div>
 
-                    <p className='subtitle text-3xl pl-2 mb-1'>{stats.totalRsvps}</p>
+                    <p className='subtitle text-3xl pl-2 mb-1'>{stats.totalIssuesResolved}</p>
                     <p className='text-[#64748b] text-xs'><span className='text-green-500'>+5%</span> from last week</p>
                 </div>
 

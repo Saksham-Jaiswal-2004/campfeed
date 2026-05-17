@@ -59,7 +59,7 @@ const Page = () => {
     { href: "/StudentDash", view: "EventList", label: "Events", icon: <IoIosCalendar /> },
     { href: "/StudentDash", view: "Announcements", label: "Anouncements", icon: <MdOutlineChatBubbleOutline /> },
     // { href: "/StudentDash", view: "Notifications", label: "Notifications", icon: <MdNotificationsNone /> },
-    { href: "/StudentDash", view: "Settings", label: "Settings", icon: <IoSettingsOutline /> },
+    // { href: "/StudentDash", view: "Settings", label: "Settings", icon: <IoSettingsOutline /> },
   ];
 
   const home = { href: "/", label: "Back to Campus", icon: <RiHome3Line /> };

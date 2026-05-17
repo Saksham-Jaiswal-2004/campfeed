@@ -84,7 +84,7 @@ const EventsList = ({setSelectedView, setSelectedId}) => {
                        <p className='contentText text-sm'>Total Events</p>
                    </div>
        
-                       <p className='subtitle text-3xl pl-2 mb-1 flex items-center gap-1'><span className='text-white text-4xl ml-1 mr-2'>•</span> 1</p>
+                       <p className='subtitle text-3xl pl-2 mb-1 flex items-center gap-1'><span className='text-white text-4xl ml-1 mr-2'>•</span> {events.length}</p>
                        <p className='text-[#64748b] text-xs'><span className='text-green-500'>+12%</span> from last month</p>
                 </div>
        
@@ -93,7 +93,7 @@ const EventsList = ({setSelectedView, setSelectedId}) => {
                         <p className='contentText text-sm'>Ongoing Events</p>
                     </div>
     
-                    <p className='subtitle text-3xl pl-2 mb-1 flex items-center gap-1'><span className='text-green-500 text-4xl ml-1 mr-2'>•</span> 2</p>
+                    <p className='subtitle text-3xl pl-2 mb-1 flex items-center gap-1'><span className='text-green-500 text-4xl ml-1 mr-2'>•</span> {events.filter(event => event.startDate.toDate() <= new Date() && event.endDate >= new Date()).length}</p>
                     <p className='text-[#64748b] text-xs'><span className='text-green-500'>+3%</span> from last month</p>
                 </div>
     
@@ -102,16 +102,16 @@ const EventsList = ({setSelectedView, setSelectedId}) => {
                         <p className='contentText text-sm'>Upcoming Events</p>
                     </div>
     
-                    <p className='subtitle text-3xl pl-2 mb-1 flex items-center gap-1'><span className='text-blue-500 text-4xl ml-1 mr-2'>•</span> 3</p>
+                    <p className='subtitle text-3xl pl-2 mb-1 flex items-center gap-1'><span className='text-blue-500 text-4xl ml-1 mr-2'>•</span> {events.filter(event => event.startDate.toDate() > new Date()).length}</p>
                     <p className='text-[#64748b] text-xs'><span className='text-green-500'>+5%</span> from last month</p>
                 </div>
     
                 <div className='w-[23%] h-[135px] flex flex-col justify-center border border-gray-800 bg-[#020613] rounded-lg p-3'>
                     <div className='mb-5 flex justify-between pr-3'>
-                        <p className='contentText text-sm'>Events Cancelled</p>
+                        <p className='contentText text-sm'>Events Completed</p>
                     </div>
     
-                    <p className='subtitle text-3xl pl-2 mb-1 flex items-center gap-1'><span className='text-red-500 text-4xl ml-1 mr-2'>•</span> 4</p>
+                    <p className='subtitle text-3xl pl-2 mb-1 flex items-center gap-1'><span className='text-red-500 text-4xl ml-1 mr-2'>•</span> {events.filter(event => event.endDate < new Date()).length}</p>
                     <p className='text-[#64748b] text-xs'><span className='text-green-500'>+5.2%</span> from last month</p>
                 </div>
             </div>

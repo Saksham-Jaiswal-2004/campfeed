@@ -18,7 +18,7 @@ import { collection, getDocs, getDoc, orderBy, query, doc } from "firebase/fires
 import { useUser } from "@/context/userContext";
 import { useRouter } from "next/navigation";
 
-const AnnouncementList = ({setSelectedView, setSelectedId}) => {
+const AnnouncementList = ({ setSelectedView, setSelectedId }) => {
   const [role, setRole] = useState("Select Role");
   const [priority, setPriority] = useState("Select Priority");
   const [audience, setAudience] = useState("Select Audience");
@@ -41,10 +41,10 @@ const AnnouncementList = ({setSelectedView, setSelectedId}) => {
 
       try {
         const q = query(
-                        collection(db, "announcements"),
-                        orderBy("createdAt", "desc")
-                      );
-                  
+          collection(db, "announcements"),
+          orderBy("createdAt", "desc")
+        );
+
         const snapshot = await getDocs(q);
         const announcementsWithUser = await Promise.all(
           snapshot.docs.map(async (docSnap) => {
@@ -114,41 +114,41 @@ const AnnouncementList = ({setSelectedView, setSelectedId}) => {
       </div>
 
       <div className='flex gap-5 justify-center items-center w-full mt-5'>
-          <div className='w-[23%] h-[135px] flex flex-col justify-center border border-gray-800 bg-[#020613] rounded-lg p-3'>
-             <div className='mb-5 flex justify-between pr-3'>
-                 <p className='contentText text-sm'>Total Announcements </p>
-             </div>
-  
-                 <p className='subtitle text-3xl pl-2 mb-1 flex items-center gap-1'><span className='text-white text-4xl ml-1 mr-2'>•</span> 1</p>
-                 <p className='text-[#64748b] text-xs'><span className='text-green-500'>+12%</span> from last month</p>
-          </div>
-    
-          <div className='w-[23%] h-[135px] flex flex-col justify-center border border-gray-800 bg-[#020613] rounded-lg p-3'>
-              <div className='mb-5 flex justify-between pr-3'>
-                  <p className='contentText text-sm'>High Priority</p>
-              </div>
-
-              <p className='subtitle text-3xl pl-2 mb-1 flex items-center gap-1'><span className='text-red-500 text-4xl ml-1 mr-2'>•</span> 2</p>
-              <p className='text-[#64748b] text-xs'><span className='text-green-500'>+3%</span> from last month</p>
+        <div className='w-[23%] h-[135px] flex flex-col justify-center border border-gray-800 bg-[#020613] rounded-lg p-3'>
+          <div className='mb-5 flex justify-between pr-3'>
+            <p className='contentText text-sm'>Total Announcements </p>
           </div>
 
-          <div className='w-[23%] h-[135px] flex flex-col justify-center border border-gray-800 bg-[#020613] rounded-lg p-3'>
-              <div className='mb-5 flex justify-between pr-3'>
-                <p className='contentText text-sm'>Medium Priority</p>
-              </div>
+          <p className='subtitle text-3xl pl-2 mb-1 flex items-center gap-1'><span className='text-white text-4xl ml-1 mr-2'>•</span> {announcements.length}</p>
+          <p className='text-[#64748b] text-xs'><span className='text-green-500'>+12%</span> from last month</p>
+        </div>
 
-              <p className='subtitle text-3xl pl-2 mb-1 flex items-center gap-1'><span className='text-yellow-500 text-4xl ml-1 mr-2'>•</span> 3</p>
-              <p className='text-[#64748b] text-xs'><span className='text-green-500'>+5%</span> from last month</p>
+        <div className='w-[23%] h-[135px] flex flex-col justify-center border border-gray-800 bg-[#020613] rounded-lg p-3'>
+          <div className='mb-5 flex justify-between pr-3'>
+            <p className='contentText text-sm'>High Priority</p>
           </div>
 
-          <div className='w-[23%] h-[135px] flex flex-col justify-center border border-gray-800 bg-[#020613] rounded-lg p-3'>
-              <div className='mb-5 flex justify-between pr-3'>
-                  <p className='contentText text-sm'>Low Priority</p>
-              </div>
+          <p className='subtitle text-3xl pl-2 mb-1 flex items-center gap-1'><span className='text-red-500 text-4xl ml-1 mr-2'>•</span> {announcements.filter(announcement => announcement.priority==="High").length}</p>
+          <p className='text-[#64748b] text-xs'><span className='text-green-500'>+3%</span> from last month</p>
+        </div>
 
-              <p className='subtitle text-3xl pl-2 mb-1 flex items-center gap-1'><span className='text-green-500 text-4xl ml-1 mr-2'>•</span> 4</p>
-              <p className='text-[#64748b] text-xs'><span className='text-green-500'>+5.2%</span> from last month</p>
+        <div className='w-[23%] h-[135px] flex flex-col justify-center border border-gray-800 bg-[#020613] rounded-lg p-3'>
+          <div className='mb-5 flex justify-between pr-3'>
+            <p className='contentText text-sm'>Medium Priority</p>
           </div>
+
+          <p className='subtitle text-3xl pl-2 mb-1 flex items-center gap-1'><span className='text-yellow-500 text-4xl ml-1 mr-2'>•</span> {announcements.filter(announcement => announcement.priority==="Medium").length}</p>
+          <p className='text-[#64748b] text-xs'><span className='text-green-500'>+5%</span> from last month</p>
+        </div>
+
+        <div className='w-[23%] h-[135px] flex flex-col justify-center border border-gray-800 bg-[#020613] rounded-lg p-3'>
+          <div className='mb-5 flex justify-between pr-3'>
+            <p className='contentText text-sm'>Low Priority</p>
+          </div>
+
+          <p className='subtitle text-3xl pl-2 mb-1 flex items-center gap-1'><span className='text-green-500 text-4xl ml-1 mr-2'>•</span> {announcements.filter(announcement => announcement.priority==="Low").length}</p>
+          <p className='text-[#64748b] text-xs'><span className='text-green-500'>+5.2%</span> from last month</p>
+        </div>
       </div>
 
       <div className='flex justify-start w-full my-6 pl-3 relative'>
@@ -222,7 +222,7 @@ const AnnouncementList = ({setSelectedView, setSelectedId}) => {
           <div className='grid grid-cols-1 justify-center items-center gap-2 w-full mb-10'>
             {filteredAnnouncements.map((announcement) => (
               <div key={announcement.id} className='w-full h-[30vh] border border-gray-800 bg-[#020613] rounded-lg overflow-hidden group'>
-                <button onClick={() => {setSelectedView("DetailedAnnouncement"); setSelectedId(announcement.id)}} className='cursor-pointer w-full h-full justify-start'>
+                <button onClick={() => { setSelectedView("DetailedAnnouncement"); setSelectedId(announcement.id) }} className='cursor-pointer w-full h-full justify-start'>
                   <div className='w-full h-full flex flex-col justify-between p-5 hover:bg-gray-900/30 transition-all duration-200 ease-in-out'>
                     <div className='relative'>
                       <h3 className='subtitle text-lg mb-1 group-hover:text-indigo-500 transition-all duration-200 ease-in-out w-fit'>{announcement.title}</h3>

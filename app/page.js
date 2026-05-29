@@ -6,52 +6,17 @@ import { BackgroundBeams } from "@/components/ui/background-beams";
 import { FocusCards } from "@/components/ui/focus-cards";
 import { FaRobot } from "react-icons/fa";
 import { FaCalendar } from "react-icons/fa";
-import { GoPeople } from "react-icons/go";
-import { CiCalendar } from "react-icons/ci";
-import { RiRobot2Line } from "react-icons/ri";
 import Image from "next/image";
 import Link from "next/link";
+import { cardData } from "@/constants/Cards";
+import { testimonialsData } from "@/constants/Testimonials";
+import { TbLayoutDashboardFilled } from "react-icons/tb";
 
 export default function Home() {
 
-  const cards = [
-    {
-      title: "Centralized Announcements",
-      src: "/images/featureImg-1.jpg",
-      desc: "Never miss a campus update — from exam notices to GDG meetups.",
-    },
-    {
-      title: "Event Hub",
-      src: "/images/featureImg-2.jpg",
-      desc: "View, RSVP, and participate in all your college events from one clean dashboard.",
-    },
-    {
-      title: "AI-Powered CampusBot",
-      src: "/images/featureImg-3.jpg",
-      desc: "Get instant answers to your campus-related questions using Gemini AI.",
-    },
-  ];
+  const cards = cardData;
 
-  const testimonials = [
-    {
-      quote: "CampFeed is a game-changer for IIIT Kalyani! From club meetups to hackathons, I finally know what’s happening *before* it ends.",
-      name: "Aarav Das",
-      designation: "CSE 3rd Year, IIIT Kalyani",
-      src: "/images/testImg-1.jpg"
-    },
-    {
-      quote: "Managing events for our coding club has become 10x easier. We post once, and the whole campus sees it—love the reach!",
-      name: "Sneha Roy",
-      designation: "Lead, CodeCell IIIT Kalyani",
-      src: "/images/testImg-3.jpg"
-    },
-    {
-      quote: "Honestly, I used to miss half the campus events. Now? CampFeed’s reminders make sure I don’t miss out on free pizza and cool workshops.",
-      name: "Ritik Ghosh",
-      designation: "ECE 2nd Year, IIIT Kalyani",
-      src: "/images/testImg-2.jpg"
-    }
-  ];
+  const testimonials = testimonialsData;
 
   return (
     <>
@@ -60,37 +25,37 @@ export default function Home() {
 
       <div className="min-h-[100vh] h-fit flex flex-col justify-center items-center">
 
-        <h1 className="title text-7xl mb-6 campfeed-title">CampFeed</h1>
-        <h3 className="subTitle mb-2 text-[#64748b] text-[0.95rem]">Your Smart Campus Assistant</h3>
-        <p className="contentText w-[40%] text-center text-base">Get real-time updates on events, announcements, and more — all in one place, powered by AI.</p>
+        <h1 className="title text-9xl mb-8 campfeed-title">CampFeed</h1>
+        <h3 className="subTitle mb-2 text-gray-300 text-lg">Your Unified Campus Platform</h3>
+        <p className="contentText w-[40%] text-center text-lg">Report issues, track announcements, discover events, and stay connected with everything happening across your campus - all in one smart dashboard.</p>
 
-        <div className="mt-8 flex justify-center items-center gap-6">
-          <Link href={"/Chatbot"}><button className='cursor-pointer btnText btn-gradient text-sm flex justify-center items-center gap-2'><FaRobot className="text-xl" /> Ask CampBot</button></Link>
-          <Link href={"/Events"}><button className='cursor-pointer btnText btn-gradient2 text-sm flex justify-center items-center gap-2'><FaCalendar className="text-base" /> View Events</button></Link>
-        </div>
-
-        <div className="flex justify-center items-center gap-16 text-sm mt-10 contentText">
-          <div className="flex justify-center items-center gap-2"><GoPeople className="text-xl" /> 2500+ Students</div>
-
-          <div className="flex justify-center items-center gap-2"><CiCalendar className="text-xl" /> 150+ Events</div>
-
-          <div className="flex justify-center items-center gap-2"><RiRobot2Line className="text-xl" /> AI Powered</div>
+        <div className="mt-12 flex justify-center items-center gap-12">
+          <Link href={"/Chatbot"}><button className='cursor-pointer btnText btn-gradient text-base flex justify-center items-center gap-2'><FaRobot className="text-3xl" /> Ask CampBot</button></Link>
+          <Link href={"/StudentDash"}><button className='cursor-pointer btnText btn-gradient2 text-base flex justify-center items-center gap-2'><TbLayoutDashboardFilled className="text-3xl" /> Go to Dashboard</button></Link>
         </div>
       </div>
 
-      <div className="w-full h-fit flex flex-col justify-center items-center mt-28">
-        <h2 className="subTitle text-3xl font-semibold mb-3">Why CampFeed? Seriously?</h2>
-        <p className="contentText w-1/2 text-center text-sm mb-10">You&apos;re still chasing event posters across 5 WhatsApp groups, begging for updates from CRs, and asking “Is today a holiday?” in class groups?</p>
+      <div className="flex justify-center items-center gap-8 px-8 py-10 mt-10 contentText bg-[#000512]">
+          <div className="flex flex-col gap-2 justify-center items-center mx-20 my-4 text-5xl text-gray-200">15k+ <span className="text-base! text-gray-400">Issues Resolved</span></div>
+          <div className="flex flex-col gap-2 justify-center items-center mx-20 my-4 text-5xl text-gray-200">500+ <span className="text-base! text-gray-400">Campus Events</span></div>
+          <div className="flex flex-col gap-2 justify-center items-center mx-20 my-4 text-5xl text-gray-200">24/7 <span className="text-base! text-gray-400">Announcements & Updates</span></div>
+          <div className="flex flex-col gap-2 justify-center items-center mx-20 my-4 text-5xl text-gray-200">3k+ <span className="text-base! text-gray-400">Students Connected</span></div>
+      </div>
+
+      <div className="w-full h-fit flex flex-col justify-center items-center mt-52">
+        <h2 className="subTitle text-5xl font-semibold mb-3">Why CampFeed? <span className="text-7xl">Seriously?</span></h2>
+        <p className="contentText w-1/2 text-center mb-10">Still reporting campus issues in random WhatsApp groups and hoping someone notices? Missing event updates, announcement deadlines, and important notices because everything&apos;s scattered everywhere?</p>
         <FocusCards cards={cards} />
       </div>
 
       <div className="w-full h-fit flex flex-col justify-center items-center mt-52">
-        <h2 className="subTitle text-3xl font-semibold mb-3 text-center">Still Not Convinced?<br />Don&apos;t Take Our Word for It...</h2>
-        <p className="contentText w-1/2 text-center text-sm mb-2">We didn&apos;t bribe them (much). CampFeed just makes student life smarter — and slightly less painful.</p>
+        <h2 className="subTitle text-7xl font-semibold text-center">Still Not Convinced?</h2>
+        <h2 className="subTitle text-5xl font-semibold mb-3 text-center">Don&apos;t Take Our Word for It...</h2>
+        <p className="contentText w-1/2 text-center mt-1 mb-2">We didn&apos;t bribe them (much). CampFeed just makes student life smarter - and slightly less painful.</p>
         <AnimatedTestimonials testimonials={testimonials} />
       </div>
 
-      <PinContainer title="Launch CampFeed" href="/Dashboard">
+      <PinContainer title="Launch CampFeed" href="/StudentDash">
         <div className="w-[70vw] h-[45vh] relative rounded-xl overflow-hidden shadow-lg flex gap-8">
           <Image
             src="/images/ctaImg.jpg"

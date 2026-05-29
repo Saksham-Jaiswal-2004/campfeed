@@ -31,9 +31,9 @@ const DeleteIssueModal = ({ issue, onSuccess, onError }) => {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <div className="px-2 py-1.5 text-sm rounded cursor-pointer hover:bg-red-500/10 text-red-500 flex items-center gap-2 w-full">
-          <MdDeleteOutline className='text-red-500' /> Delete
+      <DialogTrigger asChild className="bg-red-500/10 w-[45%]!">
+        <div className="px-2 py-1.5 text-sm rounded cursor-pointer hover:bg-red-500/20 text-red-500 flex items-center justify-center gap-1 w-full">
+          <MdDeleteOutline className='text-red-500 text-base' /> Delete
         </div>
       </DialogTrigger>
       <DialogContent className="bg-[#020613] border border-gray-700 rounded-lg">

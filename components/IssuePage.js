@@ -3,13 +3,12 @@ import React, { useEffect, useState } from "react";
 import { doc, getDoc, updateDoc, arrayUnion } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { IoIosArrowForward } from "react-icons/io";
-import { CgDanger } from "react-icons/cg";
-import { MdOutlineInfo } from "react-icons/md";
-import { FiCheckCircle } from "react-icons/fi";
+import { FaRegEdit } from "react-icons/fa";
 import { FaPlus, FaCheck, FaTimes } from "react-icons/fa";
 import DeleteIssueModal from "@/components/DeleteIssueModal";
 import ShareButton from "@/components/ShareButton";
 import { useUser } from "@/context/userContext";
+import { RxCross1 } from "react-icons/rx";
 
 const categoryOptions = [
   { id: "CAT001", label: "Academic" },
@@ -219,22 +218,14 @@ export default function IssuePage({ setSelectedView, id, mode = "public" }) {
                   <p className="text-sm text-gray-400 mt-1">ID • {id}</p>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className={`px-3 py-1 rounded-full text-sm font-medium ${data.status === "resolved" ? "bg-green-500/10 text-green-400" : data.status === "rejected" ? "bg-red-500/10 text-red-400" : data.status === "in_progress" ? "bg-yellow-500/10 text-yellow-400" : "bg-gray-800 text-gray-300"}`}>{data.status}</span>
-                  <span className={`px-3 py-1 rounded-full text-sm font-medium ${data.priority === "high" ? "bg-orange-500/10 text-orange-400" : data.priority === "critical" ? "bg-red-500/10 text-red-400" : data.priority === "medium" ? "bg-yellow-500/10 text-yellow-400" : "bg-green-500/10 text-green-400"}`}>{data.priority || 'Normal'}</span>
+                  <span className={`px-3 py-1 rounded-full text-sm font-medium ${data.status === "resolved" ? "bg-green-500/10 text-green-400" : data.status === "rejected" ? "bg-red-500/10 text-red-400" : data.status === "in_progress" ? "bg-yellow-500/10 text-yellow-400" : "bg-gray-800 text-gray-300"}`}>{data.status.charAt(0).toUpperCase() + data.status.slice(1)}</span>
+                  <span className={`px-3 py-1 rounded-full text-sm font-medium ${data.priority === "high" ? "bg-orange-500/10 text-orange-400" : data.priority === "critical" ? "bg-red-500/10 text-red-400" : data.priority === "medium" ? "bg-yellow-500/10 text-yellow-400" : "bg-green-500/10 text-green-400"}`}>{(data.priority.charAt(0).toUpperCase() + data.priority.slice(1)) || 'Normal'}</span>
                 </div>
               </div>
 
               <div className="mt-4 bg-transparent rounded-lg p-4 border border-gray-800">
                 <div className="flex items-center justify-between gap-3 mb-2">
                   <h3 className="text-sm text-gray-300">Description</h3>
-                  {effectiveMode === "creator" && !isEditing && (
-                    <button
-                      onClick={() => setIsEditing(true)}
-                      className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md border border-gray-700 text-xs text-gray-200 hover:bg-white/5 transition-colors"
-                    >
-                      <FaPlus className="rotate-45" /> Edit Issue
-                    </button>
-                  )}
                 </div>
 
                 {isEditing && effectiveMode === "creator" ? (
@@ -355,12 +346,6 @@ export default function IssuePage({ setSelectedView, id, mode = "public" }) {
                       <button onClick={handleAddNote} disabled={updating} className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-md bg-gradient-to-r from-indigo-500 to-cyan-400 text-white shadow hover:opacity-95 disabled:opacity-60">
                         <FaPlus /> Add Note
                       </button>
-                      <button onClick={() => handleChangeStatus("in_progress")} disabled={updating} className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-md border border-gray-700 text-gray-200 hover:bg-white/5 transition-colors disabled:opacity-60">
-                        <FaTimes /> In Progress
-                      </button>
-                      <button onClick={() => handleChangeStatus("resolved")} disabled={updating} className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-md bg-green-600 text-white hover:brightness-95 disabled:opacity-60">
-                        <FaCheck /> Resolve
-                      </button>
                     </div>
                   </div>
 
@@ -393,18 +378,51 @@ export default function IssuePage({ setSelectedView, id, mode = "public" }) {
                 </div>
 
                 <div>
-                  <h4 className="text-xs text-gray-400">Submitted</h4>
+                  <h4 className="text-xs text-gray-400">Submitted On</h4>
                   <p className="text-sm text-gray-200 mt-2">{createdAt ? createdAt.toLocaleString('en-GB', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' }) : '-'}</p>
                 </div>
 
-                <div>
+                <div className="mt-8 w-full">
                   {effectiveMode === 'creator' ? (
-                    <div className="flex flex-col gap-2">
-                      <DeleteIssueModal issue={{ id, title: data.title }} onSuccess={() => { setSelectedView('UserIssues'); }} />
+                    <div className="flex justify-center items-center gap-4 w-full">
+                      <button
+                      onClick={() => setIsEditing(!isEditing)}
+                      className=" w-[45%] inline-flex justify-center items-center gap-1 px-2 py-2 rounded text-xs text-gray-200 bg-white/10 hover:bg-white/15 transition-colors"
+                      >
+                        {!isEditing ? <><FaRegEdit className="text-sm" /> Edit</> : <><RxCross1 className="text-sm" /> Cancel</>}
+                      </button>
+
+                      {/* <span classname="w-[65%]"> */}
+                        <DeleteIssueModal issue={{ id, title: data.title }} onSuccess={() => { setSelectedView('UserIssues'); }} />
+                      {/* </span> */}
                     </div>
                   ) : (
                     <button onClick={() => setSelectedView('UserIssues')} className="w-full inline-flex justify-center items-center gap-2 px-4 py-2 rounded-md border border-gray-700 text-gray-200 hover:bg-white/3">Track Issue</button>
                   )}
+                </div>
+
+                <div className="mt-8">
+                  <h4 className="text-xs text-gray-400 mb-2">Mark As</h4>
+
+                  {effectiveMode === 'creator' ? (
+                    <div className="flex justify-center items-center gap-4 w-full">
+                      <button
+                      onClick={() => handleChangeStatus("in_progress")} 
+                      disabled={updating}
+                      className=" w-[45%] inline-flex justify-center items-center gap-1 px-2 py-2 rounded text-xs text-yellow-500 bg-yellow-500/15 hover:bg-yellow-500/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        In Progress
+                      </button>
+
+                      <button
+                      onClick={() => handleChangeStatus("resolved")} 
+                      disabled={updating}
+                      className=" w-[45%] inline-flex justify-center items-center gap-1 px-2 py-2 rounded text-xs text-green-500 bg-green-500/15 hover:bg-green-500/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        Resolved
+                      </button>
+                    </div>
+                  ) : ("")}
                 </div>
               </div>
             </aside>

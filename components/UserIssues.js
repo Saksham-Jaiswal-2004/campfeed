@@ -6,10 +6,8 @@ import { CgDanger } from "react-icons/cg";
 import { MdOutlineInfo } from "react-icons/md";
 import { FiCheckCircle } from "react-icons/fi";
 import { IoAddOutline } from "react-icons/io5";
-import { FaAngleUp } from "react-icons/fa6";
 import { SlOptionsVertical } from "react-icons/sl";
 import { FaRegThumbsUp } from "react-icons/fa";
-import { MdDeleteOutline } from "react-icons/md";
 import { FaRegEdit } from "react-icons/fa";
 import { MdOutlineImportExport } from "react-icons/md";
 import {
@@ -18,8 +16,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import Link from 'next/link';
-import Navbar from '@/components/Navbar';
 import { db } from "@/lib/firebase";
 import { collection, getDocs, getDoc, doc } from "firebase/firestore";
 import { onSnapshot, where, query, orderBy } from "firebase/firestore";
@@ -360,8 +356,8 @@ const UserIssues = ({setSelectedView, setSelectedId}) => {
 
                   </div>
                   <div className='absolute bottom-0 right-0 flex'>
-                    <Link href="/" className=''><span className='mr-4 mb-4 contentText py-2 px-2 rounded-lg !text-blue-400 text-xs hover:!text-blue-500 transition-all duration-300 ease-in-out flex justify-center items-center gap-1'><FaRegThumbsUp /> {issue.upvotes} Votes</span></Link>
-                    <button onClick={() => { setSelectedId(issue.id); setSelectedView("DetailedIssue"); }} className='mr-4 mb-4 contentText py-2 px-2 rounded-lg !text-blue-400 text-xs hover:!text-blue-500 transition-all duration-300 ease-in-out flex justify-center items-center gap-1'>Track Issue <FaAngleRight /></button>
+                    <span className='mr-4 mb-4 contentText py-2 px-2 rounded-lg !text-blue-400 text-xs flex justify-center items-center gap-1'><FaRegThumbsUp /> {issue.upvotes} Votes</span>
+                    <button onClick={() => { setSelectedId(issue.id); setSelectedView("DetailedIssue"); }} className='mr-4 mb-4 cursor-pointer contentText py-2 px-2 rounded-lg !text-blue-400 text-xs hover:!text-blue-500 transition-all duration-300 ease-in-out flex justify-center items-center gap-1'>Track Issue <FaAngleRight /></button>
                   </div>
                   </div>
               </div>

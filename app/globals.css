@@ -147,8 +147,8 @@ body {
 .navbar {
   border-bottom: 0.0001px solid rgba(128, 128, 128, 0.331);
   border-top: 0.0001px solid rgba(128, 128, 128, 0.331);
-  backdrop-filter: blur(6);
-  border-radius: 0.5rem;
+  backdrop-filter: blur(20);
+  border-radius: 100rem !important;
 }
 
 .campfeed-title {

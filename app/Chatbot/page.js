@@ -24,10 +24,8 @@ const Page = () => {
     setInput("");
     setLoading(true);
 
-    // Add user message
     setMessages((prev) => [...prev, { sender: "user", text: userText, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }]);
 
-    // Add Gemini loading message
     setMessages((prev) => [...prev, { sender: "gemini", text: "Responding...", time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }]);
 
     try {
@@ -39,7 +37,6 @@ const Page = () => {
 
       const data = await res.json();
 
-      // Replace last Gemini "..." message with real response
       setMessages((prev) => {
         const newMsgs = [...prev];
         newMsgs[newMsgs.length - 1] = { sender: "gemini", text: data.text, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) };
@@ -48,12 +45,11 @@ const Page = () => {
     } catch (err) {
       console.error("Error:", err);
 
-      // Replace Gemini message with error
       setMessages((prev) => {
         const newMsgs = [...prev];
         newMsgs[newMsgs.length - 1] = {
           sender: "gemini",
-          text: "❌ Something went wrong. Try again.",
+          text: "Something went wrong. Try again.",
           time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         };
         return newMsgs;

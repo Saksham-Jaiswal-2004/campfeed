@@ -29,6 +29,7 @@ export default function IssuePage({ setSelectedView, id, mode = "public" }) {
   const [creator, setCreator] = useState(null);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
+  const [noteUpdating, setNoteUpdating] = useState(false);
   const [note, setNote] = useState("");
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState({
@@ -163,7 +164,7 @@ export default function IssuePage({ setSelectedView, id, mode = "public" }) {
 
   const handleAddNote = async () => {
     if (!note.trim()) return;
-    setUpdating(true);
+    setNoteUpdating(true);
     try {
       const ref = doc(db, "issues", id);
       const payload = {
@@ -177,7 +178,7 @@ export default function IssuePage({ setSelectedView, id, mode = "public" }) {
     } catch (err) {
       console.error(err);
     } finally {
-      setUpdating(false);
+      setNoteUpdating(false);
     }
   };
 
@@ -334,31 +335,33 @@ export default function IssuePage({ setSelectedView, id, mode = "public" }) {
 
               {effectiveMode === "creator" && (
                 <div className="mt-5">
-                  <h3 className="text-sm text-gray-300 mb-3">Updates & Activity</h3>
-                  <div className="flex flex-col xl:flex-row gap-3 items-stretch xl:items-start">
+                  <h3 className="text-sm text-gray-300 mb-3">Updates & Comments</h3>
+                  <div className="relative flex flex-col h-[55vh] bg-[#041025] rounded-xl w-full overflow-y-hidden">
+                    <div className="mt-1 px-2 space-y-3 overflow-y-scroll h-[80%]">
+                      {(data.comments || []).slice().reverse().map((c, i) => (
+                        <div key={i} className="bg-blue-950 border border-gray-800 rounded-lg p-3 w-fit max-w-[70%]">
+                          <div className="flex items-center justify-between">
+                            <p className="text-xs text-gray-400">{c.by.name || 'Anonymous'}</p>
+                          </div>
+                          <p className="mt-1 text-sm text-gray-200">{c.text}</p>
+                          
+                          <p className="text-xs text-gray-500">{c.created_at?.toDate ? new Date(c.created_at.toDate()).toLocaleString() : c.created_at?.toString()}</p>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="absolute bottom-0 left-0 flex gap-2 justify-center items-center w-full h-[10vh] px-2 py-1">
                     <textarea
                       value={note}
                       onChange={(e) => setNote(e.target.value)}
-                      placeholder="Add an update…"
-                      className="flex-1 min-h-[110px] p-3 rounded-xl bg-[#041025] border border-gray-800 text-sm text-gray-200 outline-none focus:border-cyan-400/60"
+                      placeholder="Add a Comment..."
+                      className="flex-1 min-h-[100%] max-h-[20vh] w-[98%] p-3 z-10 rounded-l-xl bg-[#020612] text-sm text-gray-200 outline-none"
                     />
-                    <div className="flex flex-wrap xl:flex-col gap-2">
-                      <button onClick={handleAddNote} disabled={updating} className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-md bg-gradient-to-r from-indigo-500 to-cyan-400 text-white shadow hover:opacity-95 disabled:opacity-60">
-                        <FaPlus /> Add Note
+                      <button onClick={handleAddNote} disabled={noteUpdating} className="z-20 items-center justify-center gap-2 h-[92%] p-3 cursor-pointer rounded-r-xl bg-gradient-to-r from-indigo-500 to-cyan-400 text-white hover:opacity-90 transition-all ease-in-out duration-150 disabled:opacity-60">
+                        {/* <FaPlus /> */}
+                        Send
                       </button>
-                    </div>
-                  </div>
-
-                  <div className="mt-4 space-y-3">
-                    {(data.comments || []).slice().reverse().map((c, i) => (
-                      <div key={i} className="bg-[#031025] border border-gray-800 rounded-lg p-3">
-                        <div className="flex items-center justify-between">
-                          <p className="text-xs text-gray-400">{c.by || 'Anonymous'}</p>
-                          <p className="text-xs text-gray-500">{c.created_at?.toDate ? new Date(c.created_at.toDate()).toLocaleString() : c.created_at?.toString()}</p>
-                        </div>
-                        <p className="mt-2 text-sm text-gray-200">{c.text}</p>
                       </div>
-                    ))}
                   </div>
                 </div>
               )}
@@ -387,14 +390,12 @@ export default function IssuePage({ setSelectedView, id, mode = "public" }) {
                     <div className="flex justify-center items-center gap-4 w-full">
                       <button
                       onClick={() => setIsEditing(!isEditing)}
-                      className=" w-[45%] inline-flex justify-center items-center gap-1 px-2 py-2 rounded text-xs text-gray-200 bg-white/10 hover:bg-white/15 transition-colors"
+                      className=" w-full inline-flex justify-center items-center gap-1 px-2 py-2 rounded text-xs text-gray-200 bg-white/10 hover:bg-white/15 transition-colors"
                       >
                         {!isEditing ? <><FaRegEdit className="text-sm" /> Edit</> : <><RxCross1 className="text-sm" /> Cancel</>}
                       </button>
 
-                      {/* <span classname="w-[65%]"> */}
-                        <DeleteIssueModal issue={{ id, title: data.title }} onSuccess={() => { setSelectedView('UserIssues'); }} />
-                      {/* </span> */}
+                      <DeleteIssueModal issue={{ id, title: data.title }} onSuccess={() => { setSelectedView('UserIssues'); }} />
                     </div>
                   ) : (
                     <button onClick={() => setSelectedView('UserIssues')} className="w-full inline-flex justify-center items-center gap-2 px-4 py-2 rounded-md border border-gray-700 text-gray-200 hover:bg-white/3">Track Issue</button>

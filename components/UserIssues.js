@@ -315,17 +315,15 @@ const UserIssues = ({setSelectedView, setSelectedId}) => {
                         {/* <ShareButton title="" url="/" text={`Check out this Event: `} /> */}
                         <DropdownMenu>
                           <DropdownMenuTrigger className="border-none outline-none text-base cursor-pointer"><SlOptionsVertical /></DropdownMenuTrigger>
-                          <DropdownMenuContent>
-                            <DropdownMenuItem ><FaRegEdit className='!text-xs' /> Edit</DropdownMenuItem>
+                          <DropdownMenuContent className="flex flex-col justify-center items-center gap-1 px-2">
+                            <DropdownMenuItem className="flex justify-center items-center w-full bg-white/5 hover:bg-white/10! rounded-sm! gap-2" onClick={() => { setSelectedId(issue.id); setSelectedView("DetailedIssue"); }} ><FaRegEdit className='text-xs!' /> Edit</DropdownMenuItem>
                             <DeleteIssueModal 
                               issue={issue} 
                               onSuccess={() => {
-                                // Optional: Show success message or perform other actions
                                 toast.success("Issue Deleted Successfully!")
                                 console.log("Issue deleted successfully");
                               }}
                               onError={(error) => {
-                                // Optional: Show error message
                                 console.error("Failed to delete issue:", error);
                                 toast.error("Failed to Delete Issue!")
                               }}

@@ -36,6 +36,8 @@ import EventPage from "@/components/EventPage";
 import AnnouncementPage from "@/components/AnnouncementPage";
 import IssuePage from "@/components/IssuePage";
 import CampusIssuePage from "@/components/CampusIssuePage";
+import { BsBookmarks } from "react-icons/bs";
+import { LuTickets } from "react-icons/lu";
 
 const Page = () => {
 
@@ -58,6 +60,8 @@ const Page = () => {
     { href: "/StudentDash", view: "AllIssues", label: "All Campus Issues", icon: <LiaUniversitySolid /> },
     { href: "/StudentDash", view: "EventList", label: "Events", icon: <IoIosCalendar /> },
     { href: "/StudentDash", view: "Announcements", label: "Anouncements", icon: <MdOutlineChatBubbleOutline /> },
+    // { href: "/StudentDash", view: "StudentDash", label: "My Tickets", icon: <LuTickets /> },
+    // { href: "/StudentDash", view: "StudentDash", label: "My Bookmarks", icon: <BsBookmarks /> },
     // { href: "/StudentDash", view: "Notifications", label: "Notifications", icon: <MdNotificationsNone /> },
     // { href: "/StudentDash", view: "Settings", label: "Settings", icon: <IoSettingsOutline /> },
   ];

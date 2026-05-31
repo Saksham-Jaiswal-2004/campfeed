@@ -10,6 +10,8 @@ import { MdOutlineInfo } from "react-icons/md";
 import { FiCheckCircle } from "react-icons/fi";
 import ShareButton from "@/components/ShareButton";
 import { useEffect, useState } from "react";
+import { CiBookmark } from "react-icons/ci";
+import { PiWarningCircle } from "react-icons/pi";
 
 export default function AnnouncementPage({setSelectedView, id}) {
 
@@ -77,8 +79,16 @@ export default function AnnouncementPage({setSelectedView, id}) {
                         <h1 className="text-3xl title">{data.title}</h1>
                     </div>
 
-                    <div>
+                    <div className="flex justify-center items-center gap-2">
                         <ShareButton title={data.name} text={`Check out this Announcement: ${data.name}`} />
+
+                        <button className="text-lg px-3 py-2 border border-gray-700 hover:bg-gray-700/20 rounded-md contentText transition-all duration-200 ease-in-out">
+                          <CiBookmark />
+                        </button>
+                                                  
+                        <button className="text-lg px-3 py-2 border border-gray-700 hover:bg-gray-700/20 rounded-md contentText transition-all duration-200 ease-in-out">
+                          <PiWarningCircle />
+                        </button>
                     </div>
                 </div>
 

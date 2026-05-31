@@ -24,7 +24,7 @@ export default function ShareButton({ title, url, text = "" }) {
   return (
     <button
       onClick={handleShare}
-      className="text-sm px-4 py-3 border border-gray-700 hover:bg-gray-700/20 rounded-md contentText transition-all duration-200 ease-in-out"
+      className="text-lg px-3 py-2 border border-gray-700 hover:bg-gray-700/20 rounded-md contentText transition-all duration-200 ease-in-out"
     >
       <IoShareSocial />
     </button>

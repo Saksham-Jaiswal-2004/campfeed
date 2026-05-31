@@ -8,6 +8,8 @@ import { MdOutlineInfo } from "react-icons/md";
 import { FiCheckCircle } from "react-icons/fi";
 import { FaRegThumbsUp } from "react-icons/fa";
 import { useUser } from "@/context/userContext";
+import { CiBookmark } from "react-icons/ci";
+import { PiWarningCircle } from "react-icons/pi";
 import ShareButton from "@/components/ShareButton";
 
 const categoryLabels = {
@@ -130,8 +132,18 @@ export default function CampusIssuePage({ setSelectedView, id }) {
                 <h1 className="text-3xl sm:text-4xl font-semibold leading-tight">{issue.title}</h1>
                 <p className="mt-2 text-sm sm:text-base text-white/75 max-w-2xl line-clamp-3">{issue.description}</p>
               </div>
+            </div>
 
+            <div className="absolute right-6 top-6 h-fit w-fit flex items-center gap-2">
               <ShareButton title={issue.title} text={`Check out this issue: ${issue.title}`} />
+              
+              <button className="text-lg px-3 py-2 border border-gray-700 hover:bg-gray-700/20 rounded-md contentText transition-all duration-200 ease-in-out">
+                <CiBookmark />
+              </button>
+              
+              <button className="text-lg px-3 py-2 border border-gray-700 hover:bg-gray-700/20 rounded-md contentText transition-all duration-200 ease-in-out">
+                <PiWarningCircle />
+              </button>
             </div>
           </div>
 

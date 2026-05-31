@@ -9,6 +9,9 @@ import DeleteIssueModal from "@/components/DeleteIssueModal";
 import ShareButton from "@/components/ShareButton";
 import { useUser } from "@/context/userContext";
 import { RxCross1 } from "react-icons/rx";
+import { CiBookmark } from "react-icons/ci";
+import { PiWarningCircle } from "react-icons/pi";
+import { Switch } from "./ui/switch";
 
 const categoryOptions = [
   { id: "CAT001", label: "Academic" },
@@ -206,8 +209,16 @@ export default function IssuePage({ setSelectedView, id, mode = "public" }) {
                 ))}
               </div>
             </div>
-            <div className="absolute right-6 top-6 flex items-center gap-2">
+            <div className="absolute right-6 top-6 h-fit w-fit flex items-center gap-2">
               <ShareButton title={data.title} text={`Issue: ${data.title}`} />
+
+              <button className="text-lg px-3 py-2 border border-gray-700 hover:bg-gray-700/20 rounded-md contentText transition-all duration-200 ease-in-out">
+                <CiBookmark />
+              </button>
+
+              <button className="text-lg px-3 py-2 border border-gray-700 hover:bg-gray-700/20 rounded-md contentText transition-all duration-200 ease-in-out">
+                <PiWarningCircle />
+              </button>
             </div>
           </div>
 
@@ -425,6 +436,11 @@ export default function IssuePage({ setSelectedView, id, mode = "public" }) {
                     </div>
                   ) : ("")}
                 </div>
+
+                {isEditing &&<div className="mt-8 flex justify-between items-center px-2">
+                  <h4 className="text-sm text-gray-400 mb-2">Show Issue on Campus Feed</h4>
+                  <Switch />
+                </div>}
               </div>
             </aside>
           </div>

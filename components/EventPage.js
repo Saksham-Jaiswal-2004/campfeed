@@ -15,6 +15,8 @@ import { IoIosArrowForward } from "react-icons/io";
 import ShareButton from "@/components/ShareButton";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
+import { CiBookmark } from "react-icons/ci";
+import { PiWarningCircle } from "react-icons/pi";
 
 export default function EventPage({setSelectedView, id}) {
   const [data, setData] = useState(null);
@@ -76,8 +78,16 @@ export default function EventPage({setSelectedView, id}) {
               {data.description || "No description provided."}
             </p> */}
           </div>
-          <div>
+          <div className="flex justify-center items-center gap-2">
             <ShareButton title={data.name || "Event"} text={`Check out this Event: ${data.name || "Event"}`} />
+            
+            <button className="text-lg px-3 py-2 border border-gray-700 hover:bg-gray-700/20 rounded-md contentText transition-all duration-200 ease-in-out">
+              <CiBookmark />
+            </button>
+                          
+            <button className="text-lg px-3 py-2 border border-gray-700 hover:bg-gray-700/20 rounded-md contentText transition-all duration-200 ease-in-out">
+              <PiWarningCircle />
+            </button>
           </div>
         </div>
 

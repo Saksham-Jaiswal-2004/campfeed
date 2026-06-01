@@ -208,7 +208,7 @@ const AdminCampusIssues = ({setSelectedView, setSelectedId}) => {
               <div key={issue.id} className='w-full !h-fit flex justify-start items-center gap-1 border border-gray-800 bg-[#020613] rounded-lg overflow-hidden relative px-2 py-4'>
                 <p className='text-[0.7rem] w-[12%]'>{issue.id}</p>
                 
-                <p className='subtitle w-[24%] flex justify-center items-center text-sm group-hover:text-indigo-500 transition-all duration-200 ease-in-out text-wrap'>{issue.title || "No Title"}</p>
+                <p className='subtitle w-[24%] flex justify-center items-center text-sm text-wrap'>{issue.title || "No Title"}</p>
 
                   <p className='border w-[15%] mr-2 flex justify-center items-center border-gray-700 contentText py-1 px-2 rounded-lg text-xs !text-white'>
                     {

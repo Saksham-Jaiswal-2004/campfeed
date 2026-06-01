@@ -17,6 +17,14 @@ import {
   updateDoc,
   deleteDoc,
 } from "firebase/firestore";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { GrFormView } from "react-icons/gr";
+import { MdDelete } from "react-icons/md";
 
 const Announcements = ({ setSelectedView }) => {
 
@@ -24,6 +32,9 @@ const Announcements = ({ setSelectedView }) => {
   const [announcements, setAnnouncements] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
+  const [role, setRole] = useState("Select Role");
+  const [priority, setPriority] = useState("Select Priority");
+  const [audience, setAudience] = useState("Select Audience");
 
   useEffect(() => {
     const fetchMyAnnouncements = async () => {
@@ -67,6 +78,13 @@ const Announcements = ({ setSelectedView }) => {
     }
   };
 
+  const handleReset = () => {
+    setSearchQuery("")
+    setRole("Select Role");
+    setPriority("Select Priority");
+    setAudience("Select Audience");
+  };
+
   return (
     <div className='w-[84vw] h-screen overflow-y-scroll flex flex-col justify-start items-center'>
       <div className='flex gap-1 justify-between items-center w-full px-5 mt-6'>
@@ -80,9 +98,58 @@ const Announcements = ({ setSelectedView }) => {
         </div>
       </div>
 
-      <div className='flex justify-start w-full px-2 mt-6 relative'>
-        <CiSearch className='absolute contentText top-[28%] left-[1.6%]' />
-        <input type="search" name="anouncements" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} id="anouncements" placeholder='Search Anouncements by Name, Priority or Target Audience...' className='w-[50%] text-xs contentText !text-white rounded-sm pl-8 pr-4 py-2 border border-gray-700 focus:!border-gray-500 outline-none' />
+      <div className='flex justify-start w-full my-6 pl-3 relative'>
+        <CiSearch className='absolute contentText top-[28%] left-[2.5%]' />
+        <input
+          type="search"
+          name="announcements"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          id="announcements"
+          placeholder='Search Announcements...'
+          className='w-[40%] text-sm mx-2 contentText !text-white rounded-sm pl-8 pr-4 py-2 border border-gray-700 focus:!border-gray-500 outline-none'
+        />
+
+        <DropdownMenu>
+          <DropdownMenuTrigger className="border border-gray-700 hover:bg-white/5 transition-all ease-in-out duration-200 px-2 mx-1 rounded-sm">{role}</DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuItem onClick={() => setRole("All Roles")}>All Roles</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setRole("Admin")}>Admin</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setRole("Faculty")}>Faculty</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setRole("Student Club")}>Student Club</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        <DropdownMenu>
+          <DropdownMenuTrigger className="border border-gray-700 hover:bg-white/5 transition-all ease-in-out duration-200 px-2 mx-1 rounded-sm">{priority}</DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuItem onClick={() => setPriority("All Priorities")}>All Priorities</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setPriority("High")}>High Priority</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setPriority("Medium")}>Medium Priority</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setPriority("Low")}>Low Priority</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        <DropdownMenu>
+          <DropdownMenuTrigger className="border border-gray-700 hover:bg-white/5 transition-all ease-in-out duration-200 px-2 mx-1 rounded-sm">{audience}</DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuItem onClick={() => setAudience("All Audience")}>All Audience</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setAudience("Students")}>Student</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setAudience("Faculty")}>Faculty</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setAudience("Student Clubs")}>Student Clubs</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setAudience("CSE Department")}>CSE Department</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setAudience("ECE Department")}>ECE Department</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setAudience("AI/ML Department")}>AI/ML Department</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setAudience("Cybersecurity Department")}>Cybersecurity Department</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        <button
+          className='contextText border border-gray-700 px-4 py-2 rounded-sm hover:bg-gray-700/20 transition-all duration-200 ease-in-out mx-2'
+          onClick={handleReset}
+        >
+          Reset
+        </button>
       </div>
 
       {loading ? (
@@ -90,38 +157,36 @@ const Announcements = ({ setSelectedView }) => {
       ) : announcements.length === 0 ? (
         <p className="contentText mt-10">No announcements found.</p>
       ) : (
-        <div className='grid grid-cols-1 justify-center items-center gap-4 w-[82vw] my-6'>
+        <div className='grid grid-cols-1 justify items-center gap-2 w-[82vw] my-6'>
+          <div className='flex justify-between items-center px-2 w-full font-bold!'>
+            <p className='w-[12%] flex justify-center items-center'>ID</p>
+            <p className='w-[26%] flex justify-center items-center'>Announcement Title</p>
+            <p className='w-[14%] flex justify-center items-center'>Target Audience</p>
+            <p className='w-[9%] flex justify-center items-center'>Priority</p>
+            <p className='w-[12%] flex justify-center items-center'>Issued By</p>
+            <p className='w-[12%] flex justify-center items-center'>Issued On</p>
+            <p className='w-[8%] flex justify-center items-center'>Actions</p>
+          </div>
+
           {searchedAnnouncements.map((announcement) => (
-            <div key={announcement.id} className='w-[100%] h-[220px] border border-gray-700 rounded-xl overflow-hidden'>
-              <div className='w-full h-full flex flex-col justify-between p-5'>
-                <div className='relative'>
-                  <h3 className='subtitle text-lg mb-1'>{announcement.title}</h3>
-                  <p className='contentText text-xs w-[95%] flex gap-2 items-center'>{userData.username} <span>•</span> <span className='border border-gray-700 contentText py-[0.15rem] px-2 rounded-lg !text-white'>{userData.role}</span> <span>•</span> {new Date(announcement.createdAt.toDate()).toLocaleString("en-GB", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", hour12: true, })}</p>
-                  <div className='flex gap-2 text-xs mt-3'>
-                    {announcement.tags?.map((tag, index) => (
-                      <p key={index} className="border border-gray-700 bg-cyan-500/60 !text-white contentText py-1 px-2 rounded-lg">
-                        {tag}
-                      </p>
-                    ))}
-                  </div>
+            <div key={announcement.id} className='w-[100%] h-fit flex justify-between items-center px-4 py-4 bg-[#020613] border border-gray-800 rounded-md overflow-hidden'>
+              <p className='text-[0.7rem] w-[12%]'>{announcement.id}</p>
 
-                  <div className='absolute top-0 right-0 flex gap-2 text-xs justify-center items-center contentText'>
-                    {announcement.priority === "High" && <p className='flex justify-center items-center gap-1 text-red-400 bg-red-500/20 p-1 rounded-lg border border-red-800/30'><CgDanger /> High Priority</p>}
-                    {announcement.priority === "Medium" && <p className='flex justify-center items-center gap-1 text-yellow-400 bg-yellow-500/20 p-1 rounded-lg border border-yellow-800/30'><MdOutlineInfo /> Medium Priority</p>}
-                    {announcement.priority === "Low" && <p className='flex justify-center items-center gap-1 text-green-400 bg-green-500/20 p-1 rounded-lg border border-green-800/30'><FiCheckCircle /> Low Priority</p>}
-                    <span className='border border-gray-700 contentText py-1 px-2 rounded-lg !text-white bg-blue-400/70'>{announcement.targetAudience}</span>
-                    <button><FaRegEdit className='hover:text-cyan-600 transition-all duration-200 ease-in-out text-lg mx-1 ml-2' /></button>
-                    <button onClick={() => {deleteAnnouncement(announcement.id)}}><RiDeleteBin6Line className='hover:text-red-600 transition-all duration-200 ease-in-out text-lg mx-1 mr-2' /></button>
-                  </div>
-                </div>
+              <p className='subtitle w-[26%] flex justify-center items-center text-sm text-wrap'>{announcement.title || "No Title"}</p>
 
-                <div className='flex w-full h-fit justify-start'>
-                  <p className="contentText text-sm">{announcement.description}</p>
-                </div>
+              <p className='border border-gray-700 contentText flex justify-center items-center py-1 px-2 rounded-lg !text-white bg-blue-400/50 text-xs w-[14%]'>{announcement.targetAudience}</p>
 
-                <div className='flex w-full h-fit justify-start'>
-                  <button className='text-xs flex justify-center items-end gap-2 text-indigo-500 hover:text-indigo-700'>Read More <IoIosArrowDown /></button>
-                </div>
+              {announcement.priority === "High" && <p className='w-[9%] text-xs flex justify-center items-center gap-1 text-red-400 bg-red-500/20 p-1 rounded-lg border border-red-800/30'><CgDanger /> High Priority</p>}
+              {announcement.priority === "Medium" && <p className='w-[9%] text-xs flex justify-center items-center gap-1 text-yellow-400 bg-yellow-500/20 p-1 rounded-lg border border-yellow-800/30'><MdOutlineInfo /> Medium Priority</p>}
+              {announcement.priority === "Low" && <p className='w-[9%] text-xs flex justify-center items-center gap-1 text-green-400 bg-green-500/20 p-1 rounded-lg border border-green-800/30'><FiCheckCircle /> Low Priority</p>}
+
+              <p className='w-[12%] text-xs flex justify-center items-center'>{userData.username}</p>
+
+              <p className='w-[12%] text-xs flex justify-center items-center'>{new Date(announcement.createdAt.toDate()).toLocaleString("en-GB", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", hour12: true, })}</p>
+
+              <div className='w-[8%] flex justify-center items-center gap-4 text-gray-500'>
+               <div className='bg-gray-300/5 hover:text-gray-300 hover:bg-gray-300/10 px-2 py-2 rounded-sm'><GrFormView className='text-lg' /></div>
+               <div onClick={() => { deleteAnnouncement(announcement.id) }} className='bg-red-500/10 text-red-900 hover:text-red-700 hover:bg-red-500/20 px-2 py-2 rounded-sm'><MdDelete className='text-lg' /></div>
               </div>
             </div>
           ))}

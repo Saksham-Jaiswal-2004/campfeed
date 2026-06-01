@@ -82,7 +82,7 @@ const Users = () => {
       </div>
 
       <div className='flex gap-2 justify-center items-center w-[82vw] mt-5'>
-        <div className='w-[19.5%] h-[100px] flex flex-col justify-center border border-gray-700 rounded-lg p-3'>
+        <div className='w-[19.5%] h-[100px] flex flex-col justify-center border border-gray-800 rounded-lg p-3 bg-[#020613]'>
           <div className='mb-2 flex justify-between pr-3'>
             <p className='contentText text-sm'>Total Users</p>
             <FiUsers className='text-cyan-500 text-lg' />
@@ -91,7 +91,7 @@ const Users = () => {
           <p className='subtitle text-3xl px-4'>{users.length}</p>
         </div>
 
-        <div className='w-[19.5%] h-[100px] flex flex-col justify-center border border-gray-700 rounded-lg p-3'>
+        <div className='w-[19.5%] h-[100px] flex flex-col justify-center border border-gray-800 rounded-lg p-3  bg-[#020613]'>
           <div className='mb-2 flex justify-between pr-3'>
             <p className='contentText text-sm'>Admins</p>
             <FiShield className='text-lg text-violet-500' />
@@ -100,7 +100,7 @@ const Users = () => {
           <p className='subtitle text-3xl px-4'>{users.filter(user => user.role === "Admin").length}</p>
         </div>
 
-        <div className='w-[19.5%] h-[100px] flex flex-col justify-center border border-gray-700 rounded-lg p-3'>
+        <div className='w-[19.5%] h-[100px] flex flex-col justify-center border border-gray-800 rounded-lg p-3  bg-[#020613]'>
           <div className='mb-2 flex justify-between pr-3'>
             <p className='contentText text-sm'>Faculty</p>
             <FaChalkboardTeacher className='text-lg text-indigo-500' />
@@ -109,7 +109,7 @@ const Users = () => {
           <p className='subtitle text-3xl px-4'>{users.filter(user => user.role === "Faculty").length}</p>
         </div>
 
-        <div className='w-[19.5%] h-[100px] flex flex-col justify-center border border-gray-700 rounded-lg p-3'>
+        <div className='w-[19.5%] h-[100px] flex flex-col justify-center border border-gray-800 rounded-lg p-3  bg-[#020613]'>
           <div className='mb-2 flex justify-between pr-3'>
             <p className='contentText text-sm'>Student Club</p>
             <CiFlag1 className='text-lg text-yellow-500' />
@@ -118,7 +118,7 @@ const Users = () => {
           <p className='subtitle text-3xl px-4'>{users.filter(user => user.role === "Student Club").length}</p>
         </div>
 
-        <div className='w-[19.5%] h-[100px] flex flex-col justify-center border border-gray-700 rounded-lg p-3'>
+        <div className='w-[19.5%] h-[100px] flex flex-col justify-center border border-gray-800 rounded-lg p-3  bg-[#020613]'>
           <div className='mb-2 flex justify-between pr-3'>
             <p className='contentText text-sm'>Students</p>
             <PiStudentFill className='text-lg text-green-500' />
@@ -133,7 +133,7 @@ const Users = () => {
         <input type="search" name="users" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} id="events" placeholder='Search Users by Name, Email or Branch...' className='w-[40%] text-sm mx-2 contentText !text-white rounded-sm pl-8 pr-4 py-2 border border-gray-700 focus:!border-gray-500 outline-none' />
 
         <DropdownMenu>
-          <DropdownMenuTrigger>{role}</DropdownMenuTrigger>
+          <DropdownMenuTrigger className="border border-gray-700 hover:bg-white/5 transition-all ease-in-out duration-200 px-2 mx-1 rounded-sm">{role}</DropdownMenuTrigger>
           <DropdownMenuContent>
             <DropdownMenuItem onClick={() => setRole("All Roles")}>All Roles</DropdownMenuItem>
             <DropdownMenuItem onClick={() => setRole("Admin")}>Admin</DropdownMenuItem>
@@ -144,7 +144,7 @@ const Users = () => {
         </DropdownMenu>
 
         <DropdownMenu>
-          <DropdownMenuTrigger>{department}</DropdownMenuTrigger>
+          <DropdownMenuTrigger className="border border-gray-700 hover:bg-white/5 transition-all ease-in-out duration-200 px-2 mx-1 rounded-sm">{department}</DropdownMenuTrigger>
           <DropdownMenuContent>
             <DropdownMenuItem onClick={() => { setDepartment("All Departments") }}>All Departments</DropdownMenuItem>
             <DropdownMenuItem onClick={() => { setDepartment("CSE") }}>CSE</DropdownMenuItem>
@@ -158,17 +158,17 @@ const Users = () => {
       </div>
 
       <div className='w-[82vw] h-fit p-4 rounded-lg border border-gray-700'>
-        <div className='mb-4'>
+        {/* <div className='mb-4'>
           <h2 className='navText text-3xl'>Users - {filteredUsers.length}</h2>
-        </div>
+        </div> */}
 
-        <div className='flex gap-2 justify-center items-center px-5 mb-6'>
-          <p className='w-[28%] contentText text-xs'>User</p>
-          <p className='w-[12%] contentText text-xs'>Role</p>
-          <p className='w-[15%] contentText text-xs'>Department</p>
-          <p className='w-[15%] contentText text-xs'>Joined</p>
-          <p className='w-[15%] contentText text-xs'>Last Active</p>
-          <p className='w-[15%] contentText text-xs'>Actions</p>
+        <div className='flex gap-2 justify-between items-center px-5 mb-4'>
+          <p className='w-[28%] contentText text-xs flex justify-start items-center'>User</p>
+          <p className='w-[12%] contentText text-xs flex justify-center items-center'>Role</p>
+          <p className='w-[15%] contentText text-xs flex justify-center items-center'>Department</p>
+          <p className='w-[15%] contentText text-xs flex justify-center items-center'>Joined</p>
+          <p className='w-[15%] contentText text-xs flex justify-center items-center'>Last Active</p>
+          <p className='w-[15%] contentText text-xs flex justify-center items-center'>Actions</p>
         </div>
 
         {loading ? (
@@ -181,7 +181,7 @@ const Users = () => {
           </div>
         ) : (
           filteredUsers.map((user, index) => (
-            <div key={index} className='flex gap-2 justify-center items-center px-5 my-2 border-t-[0.1px] py-2 border-gray-600'>
+            <div key={index} className='flex gap-2 justify-between items-center px-5 my-2 border-t-[0.1px] py-2 border-gray-800'>
               <div className='w-[28%] text-base flex justify-start items-center gap-2'>
                 <div className='bg-gray-500 w-10 h-10 rounded-full flex justify-center items-center'>
                   {user.profilePic ? <img src={user.profilePic} alt={user.name} className='rounded-full w-10 h-10' /> : <span>{user?.name[0]}</span>}
@@ -192,15 +192,15 @@ const Users = () => {
                 </div>
               </div>
 
-              {user.role === "Admin" && <p className='w-[12%] text-xs text-violet-500'><span className='flex items-center gap-1 bg-violet-800/10 border border-violet-800 w-fit px-2 py-1 rounded-full'><FiShield />{user.role}</span></p>}
-              {user.role === "Faculty" && <p className='w-[12%] text-xs text-indigo-500'><span className='flex items-center gap-1 bg-indigo-800/10 border border-indigo-800 w-fit px-2 py-1 rounded-full'><FaChalkboardTeacher />{user.role}</span></p>}
-              {user.role === "Student Club" && <p className='w-[12%] text-xs text-yellow-500'><span className='flex items-center gap-1 bg-yellow-800/10 border border-yellow-800/80 w-fit px-2 py-1 rounded-full'><CiFlag1 />{user.role}</span></p>}
-              {user.role === "Student" && <p className='w-[12%] text-xs text-green-500'><span className='flex items-center gap-1 bg-green-800/10 border border-green-800 w-fit px-2 py-1 rounded-full'><PiStudentFill />{user.role}</span></p>}
+              {user.role === "Admin" && <p className='w-[12%] text-xs text-violet-500 flex justify-center items-center'><span className='flex items-center gap-1 bg-violet-800/10 border border-violet-800 w-fit px-2 py-1 rounded-full'><FiShield />{user.role}</span></p>}
+              {user.role === "Faculty" && <p className='w-[12%] text-xs text-indigo-500 flex justify-center items-center'><span className='flex items-center gap-1 bg-indigo-800/10 border border-indigo-800 w-fit px-2 py-1 rounded-full'><FaChalkboardTeacher />{user.role}</span></p>}
+              {user.role === "Student Club" && <p className='w-[12%] text-xs text-yellow-500 flex justify-center items-center'><span className='flex items-center gap-1 bg-yellow-800/10 border border-yellow-800/80 w-fit px-2 py-1 rounded-full'><CiFlag1 />{user.role}</span></p>}
+              {user.role === "Student" && <p className='w-[12%] text-xs text-green-500 flex justify-center items-center'><span className='flex items-center gap-1 bg-green-800/10 border border-green-800 w-fit px-2 py-1 rounded-full'><PiStudentFill />{user.role}</span></p>}
 
-              <p className='w-[15%] text-sm'>{user.branch}</p>
-              <p className='w-[15%] text-sm'>{new Date(user.metadata.creationTime).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", hour12: true })}</p>
-              <p className='w-[15%] text-sm'>{new Date(user.metadata.lastSignInTime).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", hour12: true })}</p>
-              <p className='w-[15%] text-sm'>
+              <p className='w-[15%] text-sm flex justify-center items-center'>{user.branch}</p>
+              <p className='w-[15%] text-sm flex justify-center items-center'>{new Date(user.metadata.creationTime).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", hour12: true })}</p>
+              <p className='w-[15%] text-sm flex justify-center items-center'>{new Date(user.metadata.lastSignInTime).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", hour12: true })}</p>
+              <p className='w-[15%] text-sm flex justify-center items-center'>
                 <select name="role" id={`role-${user.uid}`} defaultValue={user.role} onChange={(e) => {
                   const newRole = e.target.value;
                   if (userData.role === "Admin") {

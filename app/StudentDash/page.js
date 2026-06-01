@@ -88,7 +88,7 @@ const Page = () => {
             ))}
           </div>
 
-          <hr className="my-4" />
+          <hr className="my-4 border-gray-800" />
 
           <Link href={"/"}><SidebarLink key={home.href} link={home} /></Link>
           <SidebarLink key={Logout.href} link={Logout} onClick={handleLogout} />

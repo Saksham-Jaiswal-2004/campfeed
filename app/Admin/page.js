@@ -23,6 +23,11 @@ import PostEvent from "@/components/PostEvent";
 import { useUser } from "@/context/userContext";
 import { useRouter } from "next/navigation";
 import AdminSettings from "@/components/AdminSettings";
+import { MdOutlineAnalytics } from "react-icons/md";
+import { TbReportSearch } from "react-icons/tb";
+import { LiaUniversitySolid } from "react-icons/lia";
+import CampusIssues from "@/components/CampusIssues";
+import AdminCampusIssues from "@/components/AdminCampusIssues";
 
 const Page = () => {
 
@@ -52,7 +57,10 @@ const Page = () => {
     { href: "/Admin", view: "Dash", label: "Dashboard", icon: <MdOutlineDashboard /> },
     { href: "/Admin", view: "Events", label: "Events", icon: <IoIosCalendar /> },
     { href: "/Admin", view: "Announcements", label: "Anouncements", icon: <MdOutlineChatBubbleOutline /> },
+    { href: "/Admin", view: "AllIssues", label: "Campus Issues", icon: <LiaUniversitySolid /> },
+    { href: "/Admin", view: "Users", label: "Analytics", icon: <MdOutlineAnalytics /> },
     { href: "/Admin", view: "Users", label: "Users", icon: <GoPeople /> },
+    { href: "/Admin", view: "Users", label: "Reports", icon: <TbReportSearch /> },
     { href: "/Admin", view: "Settings", label: "Settings", icon: <IoSettingsOutline /> },
   ];
 
@@ -78,7 +86,7 @@ const Page = () => {
             ))}
           </div>
 
-          <hr className="my-4" />
+          <hr className="my-4 border-gray-800" />
 
           <Link href={"/"}><SidebarLink key={home.href} link={home} /></Link>
           <SidebarLink key={Logout.href} link={Logout} onClick={handleLogout} />
@@ -102,6 +110,7 @@ const Page = () => {
         {selectedView === "Dash" && <Dash setSelectedView={setSelectedView} />}
         {selectedView === "Events" && <Events setSelectedView={setSelectedView} />}
         {selectedView === "Announcements" && <Announcements setSelectedView={setSelectedView} />}
+        {selectedView === "AllIssues" && <AdminCampusIssues setSelectedView={setSelectedView} />}
         {selectedView === "Users" && <Users />}
         {selectedView === "Settings" && <AdminSettings />}
         {selectedView === "PostAnnouncement" && <PostAnnouncement />}

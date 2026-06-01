@@ -121,7 +121,7 @@ const EventsList = ({setSelectedView, setSelectedId}) => {
                 <input type="search" name="events" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} id="events" placeholder='Search Events by Name and Target Audience...' className='w-[40%] text-sm mx-2 contentText !text-white rounded-sm pl-8 pr-4 py-2 border border-gray-700 focus:!border-gray-500 outline-none' />
 
                 <DropdownMenu>
-                    <DropdownMenuTrigger>{audience}</DropdownMenuTrigger>
+                    <DropdownMenuTrigger className="border border-gray-700 hover:bg-white/5 transition-all ease-in-out duration-200 px-2 mx-1 rounded-sm">{audience}</DropdownMenuTrigger>
                     <DropdownMenuContent>
                         <DropdownMenuItem onClick={() => { setAudience("All Departments") }}>All Departments</DropdownMenuItem>
                         <DropdownMenuItem onClick={() => { setAudience("CSE Department") }}>CSE Department</DropdownMenuItem>

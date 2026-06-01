@@ -181,7 +181,7 @@ const UserIssues = ({setSelectedView, setSelectedId}) => {
         />
 
         <DropdownMenu>
-         <DropdownMenuTrigger>{status==="in_progress"?"In Progress":status==="resolved"?"Resolved":status==="rejected"?"Rejected":status}</DropdownMenuTrigger>
+         <DropdownMenuTrigger className="border border-gray-700 hover:bg-white/5 transition-all ease-in-out duration-200 px-2 mx-1 rounded-sm">{status==="in_progress"?"In Progress":status==="resolved"?"Resolved":status==="rejected"?"Rejected":status}</DropdownMenuTrigger>
          <DropdownMenuContent>
            <DropdownMenuItem onClick={() => setStatus("All Status")}>All Status</DropdownMenuItem>
            <DropdownMenuItem onClick={() => setStatus("in_progress")}>In Progress</DropdownMenuItem>
@@ -191,7 +191,7 @@ const UserIssues = ({setSelectedView, setSelectedId}) => {
        </DropdownMenu>
 
        <DropdownMenu>
-         <DropdownMenuTrigger>{priority==="high"?"High Priority":priority==="medium"?"Medium Priority":priority==="low"?"Low Priority":priority}</DropdownMenuTrigger>
+         <DropdownMenuTrigger className="border border-gray-700 hover:bg-white/5 transition-all ease-in-out duration-200 px-2 mx-1 rounded-sm">{priority==="high"?"High Priority":priority==="medium"?"Medium Priority":priority==="low"?"Low Priority":priority}</DropdownMenuTrigger>
          <DropdownMenuContent>
            <DropdownMenuItem onClick={() => setPriority("All Priorities")}>All Priorities</DropdownMenuItem>
            <DropdownMenuItem onClick={() => setPriority("high")}>High Priority</DropdownMenuItem>
@@ -201,7 +201,7 @@ const UserIssues = ({setSelectedView, setSelectedId}) => {
        </DropdownMenu>
 
        <DropdownMenu>
-         <DropdownMenuTrigger>{category}</DropdownMenuTrigger>
+         <DropdownMenuTrigger className="border border-gray-700 hover:bg-white/5 transition-all ease-in-out duration-200 px-2 mx-1 rounded-sm">{category}</DropdownMenuTrigger>
          <DropdownMenuContent>
            <DropdownMenuItem onClick={() => setCategory("All Categories")}>All Categories</DropdownMenuItem>
            <DropdownMenuItem onClick={() => setCategory("CAT001")}>Academic</DropdownMenuItem>

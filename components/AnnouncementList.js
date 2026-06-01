@@ -164,7 +164,7 @@ const AnnouncementList = ({ setSelectedView, setSelectedId }) => {
         />
 
         <DropdownMenu>
-          <DropdownMenuTrigger>{role}</DropdownMenuTrigger>
+          <DropdownMenuTrigger className="border border-gray-700 hover:bg-white/5 transition-all ease-in-out duration-200 px-2 mx-1 rounded-sm">{role}</DropdownMenuTrigger>
           <DropdownMenuContent>
             <DropdownMenuItem onClick={() => setRole("All Roles")}>All Roles</DropdownMenuItem>
             <DropdownMenuItem onClick={() => setRole("Admin")}>Admin</DropdownMenuItem>
@@ -174,7 +174,7 @@ const AnnouncementList = ({ setSelectedView, setSelectedId }) => {
         </DropdownMenu>
 
         <DropdownMenu>
-          <DropdownMenuTrigger>{priority}</DropdownMenuTrigger>
+          <DropdownMenuTrigger className="border border-gray-700 hover:bg-white/5 transition-all ease-in-out duration-200 px-2 mx-1 rounded-sm">{priority}</DropdownMenuTrigger>
           <DropdownMenuContent>
             <DropdownMenuItem onClick={() => setPriority("All Priorities")}>All Priorities</DropdownMenuItem>
             <DropdownMenuItem onClick={() => setPriority("High")}>High Priority</DropdownMenuItem>
@@ -184,7 +184,7 @@ const AnnouncementList = ({ setSelectedView, setSelectedId }) => {
         </DropdownMenu>
 
         <DropdownMenu>
-          <DropdownMenuTrigger>{audience}</DropdownMenuTrigger>
+          <DropdownMenuTrigger className="border border-gray-700 hover:bg-white/5 transition-all ease-in-out duration-200 px-2 mx-1 rounded-sm">{audience}</DropdownMenuTrigger>
           <DropdownMenuContent>
             <DropdownMenuItem onClick={() => setAudience("All Audience")}>All Audience</DropdownMenuItem>
             <DropdownMenuItem onClick={() => setAudience("Students")}>Student</DropdownMenuItem>

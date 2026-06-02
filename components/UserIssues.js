@@ -225,10 +225,6 @@ const UserIssues = ({setSelectedView, setSelectedId}) => {
       </div>
 
       <div className='w-full h-fit p-4 rounded-lg'>
-        {/* <div className='mb-4'>
-          <h2 className='navText text-xl'>Announcements - {filteredAnnouncements.length}</h2>
-        </div> */}
-
         {fetching ? (
           <div className='w-full h-full contentText flex justify-center items-center navText text-3xl'>
             Fetching Your Issues...

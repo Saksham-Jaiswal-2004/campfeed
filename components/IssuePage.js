@@ -4,7 +4,6 @@ import { doc, getDoc, updateDoc, arrayUnion } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { IoIosArrowForward } from "react-icons/io";
 import { FaRegEdit } from "react-icons/fa";
-import { FaPlus, FaCheck, FaTimes } from "react-icons/fa";
 import DeleteIssueModal from "@/components/DeleteIssueModal";
 import ShareButton from "@/components/ShareButton";
 import { useUser } from "@/context/userContext";
@@ -12,6 +11,8 @@ import { RxCross1 } from "react-icons/rx";
 import { CiBookmark } from "react-icons/ci";
 import { PiWarningCircle } from "react-icons/pi";
 import { Switch } from "./ui/switch";
+import { socket } from "@/lib/socket";
+import { useChatStore } from "@/store/chatStore";
 
 const categoryOptions = [
   { id: "CAT001", label: "Academic" },
@@ -43,6 +44,8 @@ export default function IssuePage({ setSelectedView, id, mode = "public" }) {
   });
   const [saveMessage, setSaveMessage] = useState("");
   const { user } = useUser();
+
+  const messages = useChatStore((state) => state.messages);
 
   const effectiveMode = (mode === "creator" || (user && data && user.uid === data.student_id)) ? "creator" : "public";
 
@@ -165,18 +168,29 @@ export default function IssuePage({ setSelectedView, id, mode = "public" }) {
     setSaveMessage("");
   };
 
-  const handleAddNote = async () => {
+  const handleAddNote = async (issueId) => {
     if (!note.trim()) return;
+
     setNoteUpdating(true);
+
     try {
-      const ref = doc(db, "issues", id);
-      const payload = {
-        by: user?.uid || "system",
-        text: note.trim(),
-        created_at: new Date(),
-      };
-      await updateDoc(ref, { comments: arrayUnion(payload) });
-      setData((d) => ({ ...d, comments: [...(d.comments || []), payload] }));
+      // const ref = doc(db, "issues", id);
+      // const payload = {
+      //   by: user?.uid || "system",
+      //   text: note.trim(),
+      //   created_at: new Date(),
+      // };
+      // await updateDoc(ref, { comments: arrayUnion(payload) });
+      // setData((d) => ({ ...d, comments: [...(d.comments || []), payload] }));
+
+      socket.emit("send_message", {
+        issueId,
+        senderId: user.uid,
+        senderName: user.username,
+        senderRole: user.role,
+        content: note,
+      });
+
       setNote("");
     } catch (err) {
       console.error(err);
@@ -349,14 +363,16 @@ export default function IssuePage({ setSelectedView, id, mode = "public" }) {
                   <h3 className="text-sm text-gray-300 mb-3">Updates & Comments</h3>
                   <div className="relative flex flex-col h-[55vh] bg-[#041025] rounded-xl w-full overflow-y-hidden">
                     <div className="mt-1 px-2 space-y-3 overflow-y-scroll h-[80%]">
-                      {(data.comments || []).slice().reverse().map((c, i) => (
+                      {/* {(data.comments || []).slice().reverse().map((c, i) => ( */}
+                      {(messages || []).slice().reverse().map((c, i) => (
                         <div key={i} className="bg-blue-950 border border-gray-800 rounded-lg p-3 w-fit max-w-[70%]">
                           <div className="flex items-center justify-between">
-                            <p className="text-xs text-gray-400">{c.by.name || 'Anonymous'}</p>
+                            {/* <p className="text-xs text-gray-400">{c.by.name || 'Anonymous'}</p> */}
                           </div>
-                          <p className="mt-1 text-sm text-gray-200">{c.text}</p>
+                          {/* <p className="mt-1 text-sm text-gray-200">{c.text}</p> */}
+                          <p className="mt-1 text-sm text-gray-200">{c.content}</p>
                           
-                          <p className="text-xs text-gray-500">{c.created_at?.toDate ? new Date(c.created_at.toDate()).toLocaleString() : c.created_at?.toString()}</p>
+                          {/* <p className="text-xs text-gray-500">{c.created_at?.toDate ? new Date(c.created_at.toDate()).toLocaleString() : c.created_at?.toString()}</p> */}
                         </div>
                       ))}
                     </div>

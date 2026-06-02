@@ -18,6 +18,7 @@ import { db } from "@/lib/firebase";
 import { collection, getDocs } from "firebase/firestore";
 import { doc, updateDoc } from "firebase/firestore";
 import { useUser } from "@/context/userContext";
+import { Switch } from './ui/switch';
 
 const Users = () => {
 
@@ -162,12 +163,13 @@ const Users = () => {
           <h2 className='navText text-3xl'>Users - {filteredUsers.length}</h2>
         </div> */}
 
-        <div className='flex gap-2 justify-between items-center px-5 mb-4'>
+        <div className='flex gap-0 justify-between items-center px-5 mb-4'>
           <p className='w-[28%] contentText text-xs flex justify-start items-center'>User</p>
-          <p className='w-[12%] contentText text-xs flex justify-center items-center'>Role</p>
-          <p className='w-[15%] contentText text-xs flex justify-center items-center'>Department</p>
+          <p className='w-[10%] contentText text-xs flex justify-center items-center'>Role</p>
+          <p className='w-[12%] contentText text-xs flex justify-center items-center'>Department</p>
           <p className='w-[15%] contentText text-xs flex justify-center items-center'>Joined</p>
           <p className='w-[15%] contentText text-xs flex justify-center items-center'>Last Active</p>
+          <p className='w-[5%] contentText text-xs flex justify-center items-center'>Disable</p>
           <p className='w-[15%] contentText text-xs flex justify-center items-center'>Actions</p>
         </div>
 
@@ -181,7 +183,7 @@ const Users = () => {
           </div>
         ) : (
           filteredUsers.map((user, index) => (
-            <div key={index} className='flex gap-2 justify-between items-center px-5 my-2 border-t-[0.1px] py-2 border-gray-800'>
+            <div key={index} className='flex gap-0 justify-between items-center px-5 my-2 border-t-[0.1px] py-2 border-gray-800'>
               <div className='w-[28%] text-base flex justify-start items-center gap-2'>
                 <div className='bg-gray-500 w-10 h-10 rounded-full flex justify-center items-center'>
                   {user.profilePic ? <img src={user.profilePic} alt={user.name} className='rounded-full w-10 h-10' /> : <span>{user?.name[0]}</span>}
@@ -192,14 +194,19 @@ const Users = () => {
                 </div>
               </div>
 
-              {user.role === "Admin" && <p className='w-[12%] text-xs text-violet-500 flex justify-center items-center'><span className='flex items-center gap-1 bg-violet-800/10 border border-violet-800 w-fit px-2 py-1 rounded-full'><FiShield />{user.role}</span></p>}
-              {user.role === "Faculty" && <p className='w-[12%] text-xs text-indigo-500 flex justify-center items-center'><span className='flex items-center gap-1 bg-indigo-800/10 border border-indigo-800 w-fit px-2 py-1 rounded-full'><FaChalkboardTeacher />{user.role}</span></p>}
-              {user.role === "Student Club" && <p className='w-[12%] text-xs text-yellow-500 flex justify-center items-center'><span className='flex items-center gap-1 bg-yellow-800/10 border border-yellow-800/80 w-fit px-2 py-1 rounded-full'><CiFlag1 />{user.role}</span></p>}
-              {user.role === "Student" && <p className='w-[12%] text-xs text-green-500 flex justify-center items-center'><span className='flex items-center gap-1 bg-green-800/10 border border-green-800 w-fit px-2 py-1 rounded-full'><PiStudentFill />{user.role}</span></p>}
+              {user.role === "Admin" && <p className='w-[10%] text-xs text-violet-500 flex justify-center items-center'><span className='flex items-center gap-1 bg-violet-800/10 border border-violet-800 w-fit px-2 py-1 rounded-full'><FiShield />{user.role}</span></p>}
+              {user.role === "Faculty" && <p className='w-[10%] text-xs text-indigo-500 flex justify-center items-center'><span className='flex items-center gap-1 bg-indigo-800/10 border border-indigo-800 w-fit px-2 py-1 rounded-full'><FaChalkboardTeacher />{user.role}</span></p>}
+              {user.role === "Student Club" && <p className='w-[10%] text-xs text-yellow-500 flex justify-center items-center'><span className='flex items-center gap-1 bg-yellow-800/10 border border-yellow-800/80 w-fit px-2 py-1 rounded-full'><CiFlag1 />{user.role}</span></p>}
+              {user.role === "Student" && <p className='w-[10%] text-xs text-green-500 flex justify-center items-center'><span className='flex items-center gap-1 bg-green-800/10 border border-green-800 w-fit px-2 py-1 rounded-full'><PiStudentFill />{user.role}</span></p>}
 
-              <p className='w-[15%] text-sm flex justify-center items-center'>{user.branch}</p>
+              <p className='w-[12%] text-sm flex justify-center items-center'>{user.branch}</p>
               <p className='w-[15%] text-sm flex justify-center items-center'>{new Date(user.metadata.creationTime).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", hour12: true })}</p>
               <p className='w-[15%] text-sm flex justify-center items-center'>{new Date(user.metadata.lastSignInTime).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", hour12: true })}</p>
+
+              <div className='w-[5%] flex justify-center items-center'>
+                <Switch />
+              </div>
+
               <p className='w-[15%] text-sm flex justify-center items-center'>
                 <select name="role" id={`role-${user.uid}`} defaultValue={user.role} onChange={(e) => {
                   const newRole = e.target.value;

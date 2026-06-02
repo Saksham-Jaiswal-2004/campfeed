@@ -1,5 +1,5 @@
 import { Server }from "socket.io";
-import { registerChatEvents }from "./chat.socket";
+import { registerChatEvents } from "./chat.socket.js";
 
 export function initializeSocket(io: Server) {
   io.on("connection", (socket) => {

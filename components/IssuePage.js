@@ -171,6 +171,8 @@ export default function IssuePage({ setSelectedView, id, mode = "public" }) {
   const handleAddNote = async (issueId) => {
     if (!note.trim()) return;
 
+    console.log("Handling")
+
     setNoteUpdating(true);
 
     try {
@@ -190,6 +192,8 @@ export default function IssuePage({ setSelectedView, id, mode = "public" }) {
         senderRole: user.role,
         content: note,
       });
+
+      console.log("Sent")
 
       setNote("");
     } catch (err) {
@@ -384,7 +388,7 @@ export default function IssuePage({ setSelectedView, id, mode = "public" }) {
                       placeholder="Add a Comment..."
                       className="flex-1 min-h-[100%] max-h-[20vh] w-[98%] p-3 z-10 rounded-l-xl bg-[#020612] text-sm text-gray-200 outline-none"
                     />
-                      <button onClick={handleAddNote} disabled={noteUpdating} className="z-20 items-center justify-center gap-2 h-[92%] p-3 cursor-pointer rounded-r-xl bg-gradient-to-r from-indigo-500 to-cyan-400 text-white hover:opacity-90 transition-all ease-in-out duration-150 disabled:opacity-60">
+                      <button onClick={() => handleAddNote(id)} disabled={noteUpdating} className="z-20 items-center justify-center gap-2 h-[92%] p-3 cursor-pointer rounded-r-xl bg-gradient-to-r from-indigo-500 to-cyan-400 text-white hover:opacity-90 transition-all ease-in-out duration-150 disabled:opacity-60">
                         {/* <FaPlus /> */}
                         Send
                       </button>

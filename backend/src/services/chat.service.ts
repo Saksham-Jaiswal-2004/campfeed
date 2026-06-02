@@ -1,5 +1,5 @@
-import { db } from "../config/firebaseAdmin";
-import { ChatMessage }from "../types/chat.types";
+import { db } from "../config/firebaseAdmin.js";
+import { ChatMessage } from "../types/chat.types.js";
 
 export async function saveMessage(message: ChatMessage) {
   await db

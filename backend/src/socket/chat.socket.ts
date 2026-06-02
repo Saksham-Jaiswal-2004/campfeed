@@ -1,5 +1,5 @@
 import { Server, Socket }from "socket.io";
-import { saveMessage }from "../services/chat.service";
+import { saveMessage } from "../services/chat.service.js";
 
 export function registerChatEvents(io: Server, socket: Socket) {
 

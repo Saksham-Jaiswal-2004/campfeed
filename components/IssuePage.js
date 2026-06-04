@@ -1,5 +1,5 @@
 "use client"
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { doc, getDoc, updateDoc, arrayUnion } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { IoIosArrowForward } from "react-icons/io";
@@ -13,6 +13,8 @@ import { PiWarningCircle } from "react-icons/pi";
 import { Switch } from "./ui/switch";
 import { socket } from "@/lib/socket";
 import { useChatStore } from "@/store/chatStore";
+import { FaArrowUp } from "react-icons/fa6";
+import { useIssueChat } from "@/hooks/useIssueChat";
 
 const categoryOptions = [
   { id: "CAT001", label: "Academic" },
@@ -43,11 +45,16 @@ export default function IssuePage({ setSelectedView, id, mode = "public" }) {
     priority: "",
   });
   const [saveMessage, setSaveMessage] = useState("");
+  const bottomRef = useRef(null);
   const { user } = useUser();
-
-  const messages = useChatStore((state) => state.messages);
+  const { messages } = useIssueChat(id);
+  const { addMessage } = useChatStore();
 
   const effectiveMode = (mode === "creator" || (user && data && user.uid === data.student_id)) ? "creator" : "public";
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
   useEffect(() => {
     if (!id) return;
@@ -185,6 +192,15 @@ export default function IssuePage({ setSelectedView, id, mode = "public" }) {
       // await updateDoc(ref, { comments: arrayUnion(payload) });
       // setData((d) => ({ ...d, comments: [...(d.comments || []), payload] }));
 
+      // addMessage({
+      //   issueId,
+      //   senderId: user.uid,
+      //   senderName: user.username,
+      //   senderRole: user.role,
+      //   content: note,
+      //   createdAt: Date.now(),
+      // });
+
       socket.emit("send_message", {
         issueId,
         senderId: user.uid,
@@ -193,7 +209,7 @@ export default function IssuePage({ setSelectedView, id, mode = "public" }) {
         content: note,
       });
 
-      console.log("Sent")
+      console.log("Sent");
 
       setNote("");
     } catch (err) {
@@ -202,6 +218,14 @@ export default function IssuePage({ setSelectedView, id, mode = "public" }) {
       setNoteUpdating(false);
     }
   };
+
+  const handleKeyDown = async (e, issueId) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      console.log("Pressed Key: ", e.key);
+      handleAddNote(issueId);
+    }
+  }
 
   return (
     <div className="w-full h-screen overflow-y-auto flex flex-col items-center bg-transparent">
@@ -248,7 +272,9 @@ export default function IssuePage({ setSelectedView, id, mode = "public" }) {
                   <p className="text-sm text-gray-400 mt-1">ID • {id}</p>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className={`px-3 py-1 rounded-full text-sm font-medium ${data.status === "resolved" ? "bg-green-500/10 text-green-400" : data.status === "rejected" ? "bg-red-500/10 text-red-400" : data.status === "in_progress" ? "bg-yellow-500/10 text-yellow-400" : "bg-gray-800 text-gray-300"}`}>{data.status.charAt(0).toUpperCase() + data.status.slice(1)}</span>
+                  <span className={`px-3 py-1 rounded-full text-sm font-medium ${data.status === "resolved" ? "bg-green-500/10 text-green-400" : data.status === "rejected" ? "bg-red-500/10 text-red-400" : data.status === "in_progress" ? "bg-yellow-500/10 text-yellow-400" : "bg-gray-800 text-gray-300"}`}>
+                  {data.status === "resolved" ? "Resolved" : data.status === "rejected" ? "Rejected" : data.status === "in_progress" ? "In Progress" : "Unknown Status"}
+                  </span>
                   <span className={`px-3 py-1 rounded-full text-sm font-medium ${data.priority === "high" ? "bg-orange-500/10 text-orange-400" : data.priority === "critical" ? "bg-red-500/10 text-red-400" : data.priority === "medium" ? "bg-yellow-500/10 text-yellow-400" : "bg-green-500/10 text-green-400"}`}>{(data.priority.charAt(0).toUpperCase() + data.priority.slice(1)) || 'Normal'}</span>
                 </div>
               </div>
@@ -365,32 +391,35 @@ export default function IssuePage({ setSelectedView, id, mode = "public" }) {
               {effectiveMode === "creator" && (
                 <div className="mt-5">
                   <h3 className="text-sm text-gray-300 mb-3">Updates & Comments</h3>
-                  <div className="relative flex flex-col h-[55vh] bg-[#041025] rounded-xl w-full overflow-y-hidden">
-                    <div className="mt-1 px-2 space-y-3 overflow-y-scroll h-[80%]">
+                  <div className="relative flex flex-col min-h-[55vh] h-fit bg-[#041025] rounded-xl w-full overflow-y-hidden justify-between">
+                    <div className="mt-1 px-2 space-y-3 overflow-y-scroll h-[46vh]">
                       {/* {(data.comments || []).slice().reverse().map((c, i) => ( */}
-                      {(messages || []).slice().reverse().map((c, i) => (
-                        <div key={i} className="bg-blue-950 border border-gray-800 rounded-lg p-3 w-fit max-w-[70%]">
+                      {(messages || []).slice().map((c, i) => (
+                        <div key={i} className="bg-blue-950 border border-gray-800 rounded-lg p-3 w-fit h-fit max-w-[70%]">
                           <div className="flex items-center justify-between">
                             {/* <p className="text-xs text-gray-400">{c.by.name || 'Anonymous'}</p> */}
                           </div>
                           {/* <p className="mt-1 text-sm text-gray-200">{c.text}</p> */}
-                          <p className="mt-1 text-sm text-gray-200">{c.content}</p>
+                          <p className="mt-1 text-sm text-gray-200 text-wrap w-full h-fit overflow-x-hidden">{c.content}</p>
                           
                           {/* <p className="text-xs text-gray-500">{c.created_at?.toDate ? new Date(c.created_at.toDate()).toLocaleString() : c.created_at?.toString()}</p> */}
                         </div>
                       ))}
+
+                      <div ref={bottomRef} ></div>
                     </div>
 
-                    <div className="absolute bottom-0 left-0 flex gap-2 justify-center items-center w-full h-[10vh] px-2 py-1">
+
+                    <div className="flex gap-2 justify-center items-center w-full h-fit px-2 py-1">
                     <textarea
                       value={note}
                       onChange={(e) => setNote(e.target.value)}
+                      onKeyDown={(e) => handleKeyDown(e, id)}
                       placeholder="Add a Comment..."
-                      className="flex-1 min-h-[100%] max-h-[20vh] w-[98%] p-3 z-10 rounded-l-xl bg-[#020612] text-sm text-gray-200 outline-none"
+                      className="flex-1 relative min-h-[100%] max-h-[20vh] w-full p-3 z-10 rounded-md resize-none bg-[#020612] text-sm text-gray-200 outline-none field-sizing-content"
                     />
-                      <button onClick={() => handleAddNote(id)} disabled={noteUpdating} className="z-20 items-center justify-center gap-2 h-[92%] p-3 cursor-pointer rounded-r-xl bg-gradient-to-r from-indigo-500 to-cyan-400 text-white hover:opacity-90 transition-all ease-in-out duration-150 disabled:opacity-60">
-                        {/* <FaPlus /> */}
-                        Send
+                      <button onClick={() => handleAddNote(id)} disabled={noteUpdating} className="z-20 absolute bottom-[0.6rem] right-4 items-center justify-center gap-2 h-fit p-2 cursor-pointer rounded-full bg-gradient-to-r from-indigo-500 to-cyan-400 text-white hover:text-white! text-gray-300! transition-all ease-in-out duration-150 disabled:bg-gray-500">
+                        <FaArrowUp />
                       </button>
                       </div>
                   </div>

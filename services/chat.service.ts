@@ -5,7 +5,6 @@ import {
   query,
   orderBy,
 } from "firebase/firestore";
-
 import { db } from "@/lib/firebase";
 
 export async function getIssueMessages(issueId: string) {

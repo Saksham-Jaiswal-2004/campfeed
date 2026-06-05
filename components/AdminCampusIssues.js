@@ -263,7 +263,7 @@ const AdminCampusIssues = ({setSelectedView, setSelectedId}) => {
                    </p>
 
                    <div className='w-[10%] flex justify-center items-center gap-4 text-gray-500'>
-                    <div className='bg-gray-300/5 hover:text-gray-300 hover:bg-gray-300/10 px-2 py-2 rounded-sm'><GrFormView className='text-lg' /></div>
+                    <div className='bg-gray-300/5 hover:text-gray-300 hover:bg-gray-300/10 px-2 py-2 rounded-sm' onClick={() => { setSelectedId(issue.id); setSelectedView("DetailedIssue"); }}><GrFormView className='text-lg' /></div>
                     <div className='bg-gray-300/5 hover:text-gray-300 hover:bg-gray-300/10 px-2 py-2 rounded-sm'><TbMessage2Cancel className='text-lg' /></div>
                     <div className='bg-red-500/10 text-red-900 hover:text-red-700 hover:bg-red-500/20 px-2 py-2 rounded-sm'><MdDelete className='text-lg' /></div>
                    </div>

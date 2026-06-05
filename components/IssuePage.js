@@ -46,9 +46,8 @@ export default function IssuePage({ setSelectedView, id, mode = "public" }) {
   });
   const [saveMessage, setSaveMessage] = useState("");
   const bottomRef = useRef(null);
-  const { user } = useUser();
+  const { user, userData } = useUser();
   const { messages } = useIssueChat(id);
-  const { addMessage } = useChatStore();
 
   const effectiveMode = (mode === "creator" || (user && data && user.uid === data.student_id)) ? "creator" : "public";
 
@@ -183,29 +182,11 @@ export default function IssuePage({ setSelectedView, id, mode = "public" }) {
     setNoteUpdating(true);
 
     try {
-      // const ref = doc(db, "issues", id);
-      // const payload = {
-      //   by: user?.uid || "system",
-      //   text: note.trim(),
-      //   created_at: new Date(),
-      // };
-      // await updateDoc(ref, { comments: arrayUnion(payload) });
-      // setData((d) => ({ ...d, comments: [...(d.comments || []), payload] }));
-
-      // addMessage({
-      //   issueId,
-      //   senderId: user.uid,
-      //   senderName: user.username,
-      //   senderRole: user.role,
-      //   content: note,
-      //   createdAt: Date.now(),
-      // });
-
       socket.emit("send_message", {
         issueId,
-        senderId: user.uid,
-        senderName: user.username,
-        senderRole: user.role,
+        senderId: userData.uid,
+        senderName: userData.username,
+        senderRole: userData.role,
         content: note,
       });
 
@@ -272,6 +253,7 @@ export default function IssuePage({ setSelectedView, id, mode = "public" }) {
                   <p className="text-sm text-gray-400 mt-1">ID • {id}</p>
                 </div>
                 <div className="flex items-center gap-2">
+                  <span className={`px-3 py-1 rounded-full text-sm font-medium bg-indigo-500/40! text-black"}`}>{data.upvotes} Upvote(s)</span>
                   <span className={`px-3 py-1 rounded-full text-sm font-medium ${data.status === "resolved" ? "bg-green-500/10 text-green-400" : data.status === "rejected" ? "bg-red-500/10 text-red-400" : data.status === "in_progress" ? "bg-yellow-500/10 text-yellow-400" : "bg-gray-800 text-gray-300"}`}>
                   {data.status === "resolved" ? "Resolved" : data.status === "rejected" ? "Rejected" : data.status === "in_progress" ? "In Progress" : "Unknown Status"}
                   </span>
@@ -328,7 +310,7 @@ export default function IssuePage({ setSelectedView, id, mode = "public" }) {
                           onClick={() => setEditForm((current) => ({ ...current, priority }))}
                           className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${editForm.priority === priority ? "bg-cyan-500/15 text-cyan-300 border-cyan-400/30" : "bg-transparent text-gray-400 border-gray-700 hover:bg-white/5"}`}
                         >
-                          {priority}
+                          {priority.charAt(0).toUpperCase() + priority.substring(1)}
                         </button>
                       ))}
                     </div>
@@ -337,7 +319,7 @@ export default function IssuePage({ setSelectedView, id, mode = "public" }) {
                       <button
                         onClick={handleSaveIssue}
                         disabled={updating}
-                        className="inline-flex items-center gap-2 px-4 py-2 rounded-md bg-gradient-to-r from-indigo-500 to-cyan-400 text-white shadow hover:opacity-95 disabled:opacity-60"
+                        className="inline-flex text-base items-center gap-2 px-4 py-2 rounded-md bg-gradient-to-r from-indigo-500 to-cyan-400 text-white shadow hover:opacity-95 disabled:opacity-60"
                       >
                         Save Changes
                       </button>
@@ -388,21 +370,18 @@ export default function IssuePage({ setSelectedView, id, mode = "public" }) {
                 )}
               </div>
 
-              {effectiveMode === "creator" && (
+              {(effectiveMode === "creator" || effectiveMode === "public") && (
                 <div className="mt-5">
                   <h3 className="text-sm text-gray-300 mb-3">Updates & Comments</h3>
                   <div className="relative flex flex-col min-h-[55vh] h-fit bg-[#041025] rounded-xl w-full overflow-y-hidden justify-between">
                     <div className="mt-1 px-2 space-y-3 overflow-y-scroll h-[46vh]">
-                      {/* {(data.comments || []).slice().reverse().map((c, i) => ( */}
                       {(messages || []).slice().map((c, i) => (
-                        <div key={i} className="bg-blue-950 border border-gray-800 rounded-lg p-3 w-fit h-fit max-w-[70%]">
-                          <div className="flex items-center justify-between">
-                            {/* <p className="text-xs text-gray-400">{c.by.name || 'Anonymous'}</p> */}
+                        <div key={i} className={`w-full my-1 flex items-center ${user.uid === c.senderId ? "justify-end" : "justify-start"}`}> 
+                          <div className={`border border-gray-800 rounded-t-lg px-3 py-1 w-fit h-fit max-w-[65%] ${user.uid === c.senderId ? "bg-indigo-700/80 rounded-bl-lg" : "bg-blue-950 rounded-br-lg"}`}>
+                            <p className="text-xs text-gray-400">{c.senderName?.split(' ')[0]}</p>
+                            <p className="my-1 text-sm text-gray-200 text-wrap w-full h-fit overflow-x-hidden">{c.content}</p>
+                            <p className="text-xs text-slate-400 flex justify-end">{new Date(c.createdAt).toLocaleString("en-IN", {day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit",})}</p>
                           </div>
-                          {/* <p className="mt-1 text-sm text-gray-200">{c.text}</p> */}
-                          <p className="mt-1 text-sm text-gray-200 text-wrap w-full h-fit overflow-x-hidden">{c.content}</p>
-                          
-                          {/* <p className="text-xs text-gray-500">{c.created_at?.toDate ? new Date(c.created_at.toDate()).toLocaleString() : c.created_at?.toString()}</p> */}
                         </div>
                       ))}
 
@@ -458,19 +437,20 @@ export default function IssuePage({ setSelectedView, id, mode = "public" }) {
                       <DeleteIssueModal issue={{ id, title: data.title }} onSuccess={() => { setSelectedView('UserIssues'); }} />
                     </div>
                   ) : (
-                    <button onClick={() => setSelectedView('UserIssues')} className="w-full inline-flex justify-center items-center gap-2 px-4 py-2 rounded-md border border-gray-700 text-gray-200 hover:bg-white/3">Track Issue</button>
+                    // <button onClick={() => setSelectedView('UserIssues')} className="w-full inline-flex justify-center items-center gap-2 px-4 py-2 rounded-md border border-gray-700 text-gray-200 hover:bg-white/3">Track Issue</button>
+                    ""
                   )}
                 </div>
 
                 <div className="mt-8">
                   <h4 className="text-xs text-gray-400 mb-2">Mark As</h4>
 
-                  {effectiveMode === 'creator' ? (
+                  {effectiveMode === 'creator' || effectiveMode === "public" ? (
                     <div className="flex justify-center items-center gap-4 w-full">
                       <button
                       onClick={() => handleChangeStatus("in_progress")} 
                       disabled={updating}
-                      className=" w-[45%] inline-flex justify-center items-center gap-1 px-2 py-2 rounded text-xs text-yellow-500 bg-yellow-500/15 hover:bg-yellow-500/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      className=" w-[48%] inline-flex justify-center items-center gap-1 px-2 py-2 rounded text-xs text-yellow-500 bg-yellow-500/15 hover:bg-yellow-500/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         In Progress
                       </button>
@@ -481,6 +461,18 @@ export default function IssuePage({ setSelectedView, id, mode = "public" }) {
                       className=" w-[45%] inline-flex justify-center items-center gap-1 px-2 py-2 rounded text-xs text-green-500 bg-green-500/15 hover:bg-green-500/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         Resolved
+                      </button>
+                    </div>
+                  ) : ("")}
+
+                  {effectiveMode === "public" ? (
+                    <div className="flex justify-center items-center gap-4 w-full mt-2">
+                      <button
+                      onClick={() => handleChangeStatus("rejected")} 
+                      disabled={updating}
+                      className=" w-[98%] inline-flex justify-center items-center gap-1 px-2 py-2 rounded text-xs text-red-500 bg-red-500/15 hover:bg-red-500/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        Rejected
                       </button>
                     </div>
                   ) : ("")}

@@ -28,10 +28,12 @@ import { TbReportSearch } from "react-icons/tb";
 import { LiaUniversitySolid } from "react-icons/lia";
 import CampusIssues from "@/components/CampusIssues";
 import AdminCampusIssues from "@/components/AdminCampusIssues";
+import IssuePage from "@/components/IssuePage";
 
 const Page = () => {
 
   const [selectedView, setSelectedView] = useState("Dash")
+  const [selectedId, setSelectedId] = useState("Dash")
   const { user, userData, login, logout, loading } = useUser();
   const router = useRouter();
 
@@ -110,11 +112,13 @@ const Page = () => {
         {selectedView === "Dash" && <Dash setSelectedView={setSelectedView} />}
         {selectedView === "Events" && <Events setSelectedView={setSelectedView} />}
         {selectedView === "Announcements" && <Announcements setSelectedView={setSelectedView} />}
-        {selectedView === "AllIssues" && <AdminCampusIssues setSelectedView={setSelectedView} />}
+        {selectedView === "AllIssues" && <AdminCampusIssues setSelectedView={setSelectedView} setSelectedId={setSelectedId} />}
         {selectedView === "Users" && <Users />}
         {selectedView === "Settings" && <AdminSettings />}
         {selectedView === "PostAnnouncement" && <PostAnnouncement />}
         {selectedView === "PostEvent" && <PostEvent />}
+
+        {selectedView === "DetailedIssue" && <IssuePage setSelectedView={setSelectedView} id={selectedId} /> }
       </div>
     </Sidebar>
   )

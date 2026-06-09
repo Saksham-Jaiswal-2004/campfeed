@@ -1,3 +1,4 @@
+import 'dotenv/config'
 import express from "express";
 import http from "http";
 import cors from "cors";
@@ -11,7 +12,7 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: ["http://localhost:3000", "https://campfeed.vercel.app/"],
     methods: ["GET", "POST"],
   },
 });

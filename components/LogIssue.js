@@ -30,12 +30,13 @@ import { Switch } from "./ui/switch";
 import { db } from '@/lib/firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { useUser } from '@/context/userContext';
+import { createNotification } from "@/services/notification.service";
 
 const categories = [
   { id: "CAT001", name: "Academic", icon: HiOutlineAcademicCap, color: "text-blue-500", bg: "bg-blue-100" },
   { id: "CAT002", name: "Faculty / Department", icon: FaChalkboardTeacher, color: "text-cyan-500", bg: "bg-cyan-100" },
   { id: "CAT003", name: "Examination & Assessment", icon: PiExam, color: "text-amber-500", bg: "bg-amber-100" },
-  { id: "CAT004", name: "Administrative / Office", icon: MdOutlineAdminPanelSettings ,color: "text-emerald-500", bg: "bg-emerald-100" },
+  { id: "CAT004", name: "Administrative / Office", icon: MdOutlineAdminPanelSettings, color: "text-emerald-500", bg: "bg-emerald-100" },
   { id: "CAT005", name: "Hostel & Accomodation", icon: MdOutlineHotel, color: "text-red-500", bg: "bg-red-100" },
   { id: "CAT006", name: "IT & Digital", icon: PiNetworkFill, color: "text-teal-500", bg: "bg-teal-100" },
   { id: "CAT007", name: "Campus Facilities / Transport", icon: MdOutlineMiscellaneousServices, color: "text-purple-500", bg: "bg-purple-100" },
@@ -51,7 +52,7 @@ const steps = [
   { id: 5, name: "Submit" },
 ];
 
-const LogIssue = ({setSelectedView}) => {
+const LogIssue = ({ setSelectedView }) => {
   const { user, userData } = useUser();
   const [currentStep, setCurrentStep] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -75,96 +76,114 @@ const LogIssue = ({setSelectedView}) => {
   };
 
   const handleFileUpload = (e) => {
-  const selectedFiles = Array.from(e.target.files);
+    const selectedFiles = Array.from(e.target.files);
 
-  const newFiles = selectedFiles.map((file) => ({
-    file,
-    preview: URL.createObjectURL(file),
-  }));
+    const newFiles = selectedFiles.map((file) => ({
+      file,
+      preview: URL.createObjectURL(file),
+    }));
 
-  setFormData((prev) => ({
-    ...prev,
-    files: [...prev.files, ...newFiles],
-  }));
-};
+    setFormData((prev) => ({
+      ...prev,
+      files: [...prev.files, ...newFiles],
+    }));
+  };
 
-const handleDrop = (e) => {
-  e.preventDefault();
-  const droppedFiles = Array.from(e.dataTransfer.files);
+  const handleDrop = (e) => {
+    e.preventDefault();
+    const droppedFiles = Array.from(e.dataTransfer.files);
 
-  const newFiles = droppedFiles.map((file) => ({
-    file,
-    preview: URL.createObjectURL(file),
-  }));
+    const newFiles = droppedFiles.map((file) => ({
+      file,
+      preview: URL.createObjectURL(file),
+    }));
 
-  setFormData((prev) => ({
-    ...prev,
-    files: [...prev.files, ...newFiles],
-  }));
-};
+    setFormData((prev) => ({
+      ...prev,
+      files: [...prev.files, ...newFiles],
+    }));
+  };
 
-const handleDragOver = (e) => {
-  e.preventDefault();
-};
+  const handleDragOver = (e) => {
+    e.preventDefault();
+  };
 
-const uploadImage = async (file, folder) => {
+  const uploadImage = async (file, folder) => {
 
-  const fd = new FormData();
-  fd.append("file", file);
-  fd.append("folder", folder);
+    const fd = new FormData();
+    fd.append("file", file);
+    fd.append("folder", folder);
 
-  const res = await fetch("/api/upload", {
-    method: "POST",
-    body: fd
-  });
+    const res = await fetch("/api/upload", {
+      method: "POST",
+      body: fd
+    });
 
-  const data = await res.json();
-  return data;
-};
+    const data = await res.json();
+    return data;
+  };
 
   const handleIssueSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
-    if (!user || !userData) 
-    {
+    if (!user || !userData) {
       alert("You must be logged in to post an event.");
       return;
     }
 
     try {
-        const uploadedImages = await Promise.all(
-          formData.files.map((item) =>
-            uploadImage(item.file, "issues")
-          )
-        );
+      const uploadedImages = await Promise.all(
+        formData.files.map((item) =>
+          uploadImage(item.file, "issues")
+        )
+      );
 
-        await addDoc(collection(db, "issues"), {
-          category_id: formData.category,
-          attachment_urls: uploadedImages,
-          thumbnail_url: null,
-          title: formData.title,
-          description: formData.description,
-          priority: formData.urgency,
-          shareOnFeed: formData.shareOnFeed,
-          is_anonymous: formData.anonymous,
-          status: "in_progress",
-          student_id: user.uid,
-          created_at: serverTimestamp(),
-          updated_at: serverTimestamp(),
-          resolved_at: null,
-          upvotes: 0,
-        });
+      await addDoc(collection(db, "issues"), {
+        category_id: formData.category,
+        attachment_urls: uploadedImages,
+        thumbnail_url: null,
+        title: formData.title,
+        description: formData.description,
+        priority: formData.urgency,
+        shareOnFeed: formData.shareOnFeed,
+        is_anonymous: formData.anonymous,
+        status: "in_progress",
+        student_id: user.uid,
+        created_at: serverTimestamp(),
+        updated_at: serverTimestamp(),
+        resolved_at: null,
+        upvotes: 0,
+      });
 
-        toast("Issue Posted Successfully")
-        reset();
-        setCurrentStep(6);
-        } catch (err) {
-            console.error("Error posting event:", err);
-            setCurrentStep(7);
-        } finally {
-            setLoading(false);
-        }
+      toast("Issue Posted Successfully")
+
+      const notification = {
+        userId: user.uid,
+        senderId: user.uid,
+        senderName: 'SJ',
+        type: "ISSUE_CREATED",
+        title: "New Issue Created Successfully",
+        message: `Your issue ${formData.title} have been logged successfully`,
+        isRead: false,
+        createdAt: Date.now(),
+      };
+
+      await createNotification(notification);
+
+      io.to(`user_${user.uid}`).emit(
+        "receive_notification",
+        notification
+      );
+
+      reset();
+      setCurrentStep(6);
+    } catch (err) {
+      console.error("Error posting event:", err);
+      setCurrentStep(7);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const reset = () => {
@@ -293,7 +312,7 @@ const uploadImage = async (file, folder) => {
                       className="absolute top-2 right-2 p-1 bg-background/80 rounded-full text-destructive hover:bg-background"
                       onClick={() => {
                         URL.revokeObjectURL(formData.files[i].preview);
-                      
+
                         setFormData((prev) => ({
                           ...prev,
                           files: prev.files.filter((_, idx) => idx !== i),
@@ -344,7 +363,7 @@ const uploadImage = async (file, folder) => {
                 <div htmlFor="desc" className="text-lg subtitle">
                   Detailed Description
                 </div>
-  
+
                 <div className="flex justify-between items-center text-sm">
                   <p className="text-muted-foreground">{formData.description.length}/500 characters</p>
                 </div>
@@ -394,19 +413,19 @@ const uploadImage = async (file, folder) => {
                     className={cn(
                       "flex flex-col bg-[#020316] justify-center items-center gap-3 px-2 py-8 rounded-xl border-1 border-gray-800 transition-all text-center",
                       formData.urgency === u.id
-                        ? `{ bg-[#03051d] ${u.id==="low" ? "border-green-500/50" : u.id==="medium" ? "border-yellow-500/50" : u.id==="high" ? "border-orange-500/50" : "border-red-500/50"} }`
+                        ? `{ bg-[#03051d] ${u.id === "low" ? "border-green-500/50" : u.id === "medium" ? "border-yellow-500/50" : u.id === "high" ? "border-orange-500/50" : "border-red-500/50"} }`
                         : "",
                     )}
                   >
                     <div
                       className={cn(
                         "h-12 w-12 rounded-full flex items-center justify-center shrink-0",
-                        formData.urgency === u.id ? `{ ${u.id==="low" ? "text-green-400/70" : u.id==="medium" ? "text-yellow-400/70" : u.id==="high" ? "text-orange-400/70" : "text-red-400/70"} }` : "",
+                        formData.urgency === u.id ? `{ ${u.id === "low" ? "text-green-400/70" : u.id === "medium" ? "text-yellow-400/70" : u.id === "high" ? "text-orange-400/70" : "text-red-400/70"} }` : "",
                       )}
                     >
                       <u.icon className="h-8 w-8" />
                     </div>
-                    <div className={`${formData.urgency === u.id ? u.id==="low" ? "text-green-400/80" : u.id==="medium" ? "text-yellow-400/80" : u.id==="high" ? "text-orange-400/80" : "text-red-400/80" : ""}`}>
+                    <div className={`${formData.urgency === u.id ? u.id === "low" ? "text-green-400/80" : u.id === "medium" ? "text-yellow-400/80" : u.id === "high" ? "text-orange-400/80" : "text-red-400/80" : ""}`}>
                       <p className="text-lg subTitle">{u.name}</p>
                       <p className="text-xs contentText">{u.desc}</p>
                     </div>
@@ -423,7 +442,7 @@ const uploadImage = async (file, folder) => {
                   </p>
                   <p className="text-xs text-muted-foreground">Allow others to upvote and comment on this issue</p>
                 </div>
-                <Switch checked={formData.shareOnFeed} onCheckedChange={(val) => {setFormData((prev) => ({ ...prev, shareOnFeed: val }))}} />
+                <Switch checked={formData.shareOnFeed} onCheckedChange={(val) => { setFormData((prev) => ({ ...prev, shareOnFeed: val })) }} />
               </div>
 
               <div className="flex justify-between items-center w-full">
@@ -433,7 +452,7 @@ const uploadImage = async (file, folder) => {
                   </p>
                   <p className="text-xs text-muted-foreground">Your issue will remain anonymous and won&apos;t appear with your name</p>
                 </div>
-                <Switch checked={formData.anonymous} onCheckedChange={(val) => {setFormData((prev) => ({ ...prev, anonymous: val }))}} />
+                <Switch checked={formData.anonymous} onCheckedChange={(val) => { setFormData((prev) => ({ ...prev, anonymous: val })) }} />
               </div>
             </div>
 
@@ -461,10 +480,10 @@ const uploadImage = async (file, folder) => {
 
               <div className="relative pt-2">
                 <h2 className="mt-5 subtitle">Title</h2>
-                <p className="contentText">{formData.title==="" ? "No Title" : formData.title}</p>
+                <p className="contentText">{formData.title === "" ? "No Title" : formData.title}</p>
 
                 <h2 className="mt-5 subtitle">Description</h2>
-                <p className="contentText">{formData.description==="" ? "No Description" : formData.description}</p>
+                <p className="contentText">{formData.description === "" ? "No Description" : formData.description}</p>
 
                 <h2 className="mt-5 subtitle">Attachments</h2>
                 <div className="flex flex-wrap justify-start items-center gap-4 mt-2">
@@ -482,27 +501,27 @@ const uploadImage = async (file, folder) => {
                     </div>
                   ))}
                 </div>
-                
+
                 <div className="absolute top-0 right-0 flex justify-center items-center gap-4 mt-2 mr-4">
                   <div className="flex justify-center items-center">
                     <p className="border border-gray-700 text-sm contentText py-1 px-3 rounded-lg !text-gray-400 bg-gray-500/10">
                       {
-                        formData.category==="CAT001"? categories[0].name :
-                        formData.category==="CAT002"? categories[1].name :
-                        formData.category==="CAT003"? categories[2].name :
-                        formData.category==="CAT004"? categories[3].name :
-                        formData.category==="CAT005"? categories[4].name :
-                        formData.category==="CAT006"? categories[5].name :
-                        formData.category==="CAT007"? categories[6].name :
-                        formData.category==="CAT008"? categories[7].name :
-                        formData.category==="CAT009"? categories[8].name : ""
+                        formData.category === "CAT001" ? categories[0].name :
+                          formData.category === "CAT002" ? categories[1].name :
+                            formData.category === "CAT003" ? categories[2].name :
+                              formData.category === "CAT004" ? categories[3].name :
+                                formData.category === "CAT005" ? categories[4].name :
+                                  formData.category === "CAT006" ? categories[5].name :
+                                    formData.category === "CAT007" ? categories[6].name :
+                                      formData.category === "CAT008" ? categories[7].name :
+                                        formData.category === "CAT009" ? categories[8].name : ""
                       }
                     </p>
                   </div>
-    
+
                   <div className="flex justify-center items-center gap-2">
                     <p className={`text-sm flex items-center gap-1 py-1 px-3 rounded-lg border ${formData.urgency === "critical" ? "text-red-400 bg-red-500/20 border-red-800/50" : formData.urgency === "high" ? "text-orange-400 bg-orange-500/20 border-orange-800/50" : formData.urgency === "medium" ? "text-yellow-400 bg-yellow-500/20 border-yellow-800/50" : formData.urgency === "low" ? "text-green-400 bg-green-500/20 border-green-800/50" : ""}`}>
-                      {formData.urgency.charAt(0).toUpperCase()+formData.urgency.substring(1)} Urgency
+                      {formData.urgency.charAt(0).toUpperCase() + formData.urgency.substring(1)} Urgency
                     </p>
                   </div>
                 </div>
@@ -510,12 +529,12 @@ const uploadImage = async (file, folder) => {
                 <div className="flex justify-between items-center mt-5">
                   <div className="flex flex-col gap-1">
                     <h4 className="flex justify-center items-center gap-1 mt-4 subtitle"><Share2 className="h-5 w-5" /> Share Issue on Community Feed</h4>
-                    <p className="contentText text-lg">{formData.shareOnFeed==true ? "Yes" : "No"}</p>
+                    <p className="contentText text-lg">{formData.shareOnFeed == true ? "Yes" : "No"}</p>
                   </div>
-  
+
                   <div className="flex flex-col gap-1">
                     <h4 className="flex justify-center items-center gap-1 mt-4 subtitle"><RiShieldUserLine className="h-5 w-5" /> Report Issue Anonymously</h4>
-                    <p className="contentText text-lg">{formData.anonymous==true ? "Yes" : "No"}</p>
+                    <p className="contentText text-lg">{formData.anonymous == true ? "Yes" : "No"}</p>
                   </div>
                 </div>
               </div>
@@ -525,12 +544,12 @@ const uploadImage = async (file, folder) => {
               <div variant="outline" size="lg" className="flex justify-center items-center h-14 bg-indigo-600/30 hover:bg-indigo-600/50 btnText rounded-lg px-16 py-2 cursor-pointer gap-2" onClick={prevStep}>
                 <ChevronLeft className="h-4 w-4" /> Back
               </div>
-              <button size="lg" 
-              className={`${loading? "bg-gray-500 hover:bg-gray-600 cursor-not-allowed" : "bg-indigo-600 hover:bg-indigo-700 cursor-pointer"} flex justify-center items-center h-14 btnText rounded-lg px-16 py-2 gap-2`}
-              onClick={handleIssueSubmit}
-              disabled={loading}
+              <button size="lg"
+                className={`${loading ? "bg-gray-500 hover:bg-gray-600 cursor-not-allowed" : "bg-indigo-600 hover:bg-indigo-700 cursor-pointer"} flex justify-center items-center h-14 btnText rounded-lg px-16 py-2 gap-2`}
+                onClick={handleIssueSubmit}
+                disabled={loading}
               >
-                {loading? "Submiting..." : "Submit"} <ChevronRight className="h-4 w-4" />
+                {loading ? "Submiting..." : "Submit"} <ChevronRight className="h-4 w-4" />
               </button>
             </div>
           </motion.div>
@@ -554,13 +573,13 @@ const uploadImage = async (file, folder) => {
                 Your issue has been submitted successfully. The concerned authorities will review it soon.
               </p>
             </div>
-            
+
             <div className="flex w-[70%] justify-between items-center gap-4 mt-16">
-              <div variant="outline" size="lg" className="flex justify-center items-center h-14 bg-indigo-600/30 hover:bg-indigo-600/50 btnText rounded-lg px-12 py-2 cursor-pointer gap-2" onClick={() => {setCurrentStep(1); reset()}}>
+              <div variant="outline" size="lg" className="flex justify-center items-center h-14 bg-indigo-600/30 hover:bg-indigo-600/50 btnText rounded-lg px-12 py-2 cursor-pointer gap-2" onClick={() => { setCurrentStep(1); reset() }}>
                 <ChevronLeft className="h-4 w-4" /> Report Another Issue
               </div>
               <div size="lg" className="flex justify-center items-center h-14 bg-indigo-600 hover:bg-indigo-700 btnText rounded-lg px-16 py-2 cursor-pointer gap-2">
-                <button onClick = {() => {setSelectedView("StudentDash")}} className="flex justify-center items-center">
+                <button onClick={() => { setSelectedView("StudentDash") }} className="flex justify-center items-center">
                   Dashboard <ChevronRight className="h-4 w-4" />
                 </button>
               </div>
@@ -586,13 +605,13 @@ const uploadImage = async (file, folder) => {
                 We couldn&apos;t submit your issue at the moment. Please try again in a few seconds.
               </p>
             </div>
-            
+
             <div className="flex w-[70%] justify-between items-center gap-4 mt-16">
-              <div variant="outline" size="lg" className="flex justify-center items-center h-14 bg-indigo-600/30 hover:bg-indigo-600/50 btnText rounded-lg px-12 py-2 cursor-pointer gap-2" onClick={() => {setCurrentStep(5)}}>
+              <div variant="outline" size="lg" className="flex justify-center items-center h-14 bg-indigo-600/30 hover:bg-indigo-600/50 btnText rounded-lg px-12 py-2 cursor-pointer gap-2" onClick={() => { setCurrentStep(5) }}>
                 <ChevronLeft className="h-4 w-4" /> Try Again
               </div>
               <div size="lg" className="flex justify-center items-center h-14 bg-indigo-600 hover:bg-indigo-700 btnText rounded-lg px-16 py-2 cursor-pointer gap-2">
-                <button onClick = {() => {setSelectedView("StudentDash")}} className="flex justify-center items-center">
+                <button onClick={() => { setSelectedView("StudentDash") }} className="flex justify-center items-center">
                   Dashboard <ChevronRight className="h-4 w-4" />
                 </button>
               </div>

@@ -1,11 +1,13 @@
-import { Server }from "socket.io";
+import { Server } from "socket.io";
 import { registerChatEvents } from "./chat.socket.js";
+import { setupNotificationSocket } from "./notification.socket.js";
 
 export function initializeSocket(io: Server) {
   io.on("connection", (socket) => {
       console.log("Connected:", socket.id);
       
       registerChatEvents(io, socket);
+      setupNotificationSocket(io, socket);
 
       socket.on("disconnect", () => {
           console.log("Disconnected:", socket.id);

@@ -9,6 +9,7 @@ import {
   doc,
   orderBy,
   limit,
+  writeBatch,
 } from "firebase/firestore";
 
 import { Notification } from "@/types/notification.types";
@@ -19,10 +20,11 @@ const NOTIF_COLLECTION = "notifications";
 export async function createNotification(data: Notification) {
   try {
     const docRef = await addDoc(collection(db, NOTIF_COLLECTION), data);
-    socket.emit('issue_created', data);
+    const notification = {...data, id: docRef.id,};
+    socket.emit("issue_created", notification);
 
     return docRef.id;
-  } catch(error) {
+  } catch (error) {
     console.log("Notificatio + Socket error: ", error);
     throw error;
   }
@@ -44,8 +46,21 @@ export async function getUserNotifications(userId: string) {
   })) as Notification[];
 }
 
-export async function markAsRead(id: string) {
+export async function markAsReadDB(id: string) {
   await updateDoc(doc(db, NOTIF_COLLECTION, id), {
     isRead: true,
   });
+}
+
+export async function markAllAsReadDB(userId: string) {
+  const q = query(collection(db, NOTIF_COLLECTION), where("userId", "==", userId), where("isRead", "==", false),);
+
+  const snapshot = await getDocs(q);
+  const batch = writeBatch(db);
+
+  snapshot.docs.forEach((docSnap) => {
+    batch.update(docSnap.ref, {isRead: true,});
+  });
+
+  await batch.commit();
 }

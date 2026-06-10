@@ -31,6 +31,7 @@ import { db } from '@/lib/firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { useUser } from '@/context/userContext';
 import { createNotification } from "@/services/notification.service";
+import { logIssue } from "@/services/issueService";
 
 const categories = [
   { id: "CAT001", name: "Academic", icon: HiOutlineAcademicCap, color: "text-blue-500", bg: "bg-blue-100" },
@@ -139,7 +140,7 @@ const LogIssue = ({ setSelectedView }) => {
         )
       );
 
-      await addDoc(collection(db, "issues"), {
+      const issueData = {
         category_id: formData.category,
         attachment_urls: uploadedImages,
         thumbnail_url: null,
@@ -154,32 +155,22 @@ const LogIssue = ({ setSelectedView }) => {
         updated_at: serverTimestamp(),
         resolved_at: null,
         upvotes: 0,
-      });
-
-      toast("Issue Posted Successfully")
-
-      const notification = {
-        userId: user.uid,
-        senderId: user.uid,
-        senderName: 'SJ',
-        type: "ISSUE_CREATED",
-        title: "New Issue Created Successfully",
-        message: `Your issue ${formData.title} have been logged successfully`,
-        isRead: false,
-        createdAt: Date.now(),
       };
 
-      await createNotification(notification);
+      const issueId = await logIssue(issueData, user);
 
-      io.to(`user_${user.uid}`).emit(
-        "receive_notification",
-        notification
-      );
+      if(issueId)
+      toast("Issue Posted Successfully")
+
+      // io.to(`user_${user.uid}`).emit(
+      //   "receive_notification",
+      //   notification
+      // );
 
       reset();
       setCurrentStep(6);
     } catch (err) {
-      console.error("Error posting event:", err);
+      console.error("Error logging issue:", err);
       setCurrentStep(7);
     } finally {
       setLoading(false);

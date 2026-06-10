@@ -12,11 +12,20 @@ import {
 } from "firebase/firestore";
 
 import { Notification } from "@/types/notification.types";
+import { socket } from "@/lib/socket";
 
 const NOTIF_COLLECTION = "notifications";
 
 export async function createNotification(data: Notification) {
-  return await addDoc(collection(db, NOTIF_COLLECTION), data);
+  try {
+    const docRef = await addDoc(collection(db, NOTIF_COLLECTION), data);
+    socket.emit('issue_created', data);
+
+    return docRef.id;
+  } catch(error) {
+    console.log("Notificatio + Socket error: ", error);
+    throw error;
+  }
 }
 
 export async function getUserNotifications(userId: string) {

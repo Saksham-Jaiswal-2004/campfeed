@@ -16,6 +16,6 @@ export interface Notification {
   title: string;
   message: string;
   isRead: boolean;
-//   entityId: string;
+  entityId: string;
   createdAt: number;
 }

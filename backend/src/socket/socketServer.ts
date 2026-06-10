@@ -7,6 +7,7 @@ export function initializeSocket(io: Server) {
       console.log("Connected:", socket.id);
       
       registerChatEvents(io, socket);
+
       setupNotificationSocket(io, socket);
 
       socket.on("disconnect", () => {

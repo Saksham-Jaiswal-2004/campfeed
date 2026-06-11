@@ -15,7 +15,14 @@ export const useChatStore = create<ChatStore>((set) => ({
 
   setMessages: (messages) => set({ messages }),
 
-  addMessage: (message) => set((state) => ({messages: [...state.messages, message], })),
+  addMessage: (message) =>
+    set((state) => {
+      const exists = state.messages.some((n) => n.id === message.id);
 
-  clearMessages: () => set({messages: [],}),
+      if (exists) return state;
+
+      return { messages: [...state.messages, message] };
+    }),
+
+  clearMessages: () => set({ messages: [] }),
 }));

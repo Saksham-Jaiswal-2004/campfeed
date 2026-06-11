@@ -24,6 +24,8 @@ const Page = () => {
     const [updating, setUpdating] = useState(false);
     const router = useRouter();
 
+    console.log("User Profile: ", userData);
+
     const handleLogout = async () => {
         toast("Logged Out Successfully!")
         await logout();

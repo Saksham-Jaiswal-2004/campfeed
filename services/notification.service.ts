@@ -21,11 +21,15 @@ export async function createNotification(data: Notification) {
   try {
     const docRef = await addDoc(collection(db, NOTIF_COLLECTION), data);
     const notification = {...data, id: docRef.id,};
+
+    if(notification.type.includes("ISSUE"))
+    socket.emit("issue_created", notification);
+
+    if(notification.type.includes("COMMENT"))
     socket.emit("issue_created", notification);
 
     return docRef.id;
   } catch (error) {
-    console.log("Notificatio + Socket error: ", error);
     throw error;
   }
 }

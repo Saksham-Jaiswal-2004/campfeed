@@ -15,6 +15,7 @@ import { socket } from "@/lib/socket";
 import { useChatStore } from "@/store/chatStore";
 import { FaArrowUp } from "react-icons/fa6";
 import { useIssueChat } from "@/hooks/useIssueChat";
+import { sendMessage } from "@/services/chat.service";
 
 const categoryOptions = [
   { id: "CAT001", label: "Academic" },
@@ -176,19 +177,11 @@ export default function IssuePage({ setSelectedView, id, mode = "public" }) {
 
   const handleAddNote = async (issueId) => {
     if (!note.trim()) return;
-
-    console.log("Handling")
-
     setNoteUpdating(true);
 
     try {
-      socket.emit("send_message", {
-        issueId,
-        senderId: userData.uid,
-        senderName: userData.username,
-        senderRole: userData.role,
-        content: note,
-      });
+      const message = {note, issueId};
+      sendMessage(message, userData);
 
       console.log("Sent");
 
@@ -203,7 +196,6 @@ export default function IssuePage({ setSelectedView, id, mode = "public" }) {
   const handleKeyDown = async (e, issueId) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      console.log("Pressed Key: ", e.key);
       handleAddNote(issueId);
     }
   }
@@ -377,7 +369,7 @@ export default function IssuePage({ setSelectedView, id, mode = "public" }) {
                     <div className="mt-1 px-2 space-y-3 overflow-y-scroll h-[46vh]">
                       {(messages || []).slice().map((c, i) => (
                         <div key={i} className={`w-full my-1 flex items-center ${user.uid === c.senderId ? "justify-end" : "justify-start"}`}> 
-                          <div className={`border border-gray-800 rounded-t-lg px-3 py-1 w-fit h-fit max-w-[65%] ${user.uid === c.senderId ? "bg-indigo-700/80 rounded-bl-lg" : "bg-blue-950 rounded-br-lg"}`}>
+                          <div className={`border border-gray-800 rounded-t-lg px-3 py-1 w-fit h-fit max-w-[65%] ${user.uid === c.senderId ? "bg-indigo-700/80 rounded-bl-lg" : "bg-blue-950/60 rounded-br-lg"}`}>
                             <p className="text-xs text-gray-400">{c.senderName?.split(' ')[0]}</p>
                             <p className="my-1 text-sm text-gray-200 text-wrap w-full h-fit overflow-x-hidden">{c.content}</p>
                             <p className="text-xs text-slate-400 flex justify-end">{new Date(c.createdAt).toLocaleString("en-IN", {day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit",})}</p>

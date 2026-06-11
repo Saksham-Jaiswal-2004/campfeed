@@ -162,11 +162,6 @@ const LogIssue = ({ setSelectedView }) => {
       if(issueId)
       toast("Issue Posted Successfully")
 
-      // io.to(`user_${user.uid}`).emit(
-      //   "receive_notification",
-      //   notification
-      // );
-
       reset();
       setCurrentStep(6);
     } catch (err) {

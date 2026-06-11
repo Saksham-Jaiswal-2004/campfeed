@@ -18,8 +18,6 @@ export const useNotificationsSocket = () => {
       const snap = await getDoc(doc(db, "users", user.uid));
       const trueUser = snap.data();
 
-      console.log("True user:", trueUser);
-
       socket.emit("join_user_room", trueUser?.uid);
 
       if (trueUser?.role === "Admin") {
@@ -31,7 +29,6 @@ export const useNotificationsSocket = () => {
 
     socket.on("receive_notification", (notification) => {
       addNotification(notification);
-      console.log("Notification: ", notification.title);
     });
 
     return () => {

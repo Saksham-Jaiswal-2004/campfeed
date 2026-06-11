@@ -15,8 +15,16 @@ export function registerChatEvents(io: Server, socket: Socket) {
 
   socket.on("send_message", async (message: ChatMessage) => {
     try {
-        await saveMessage(message);
-        io.to(`issue_${message.issueId}`).emit("receive_message", {...message, createdAt: Date.now()});
+        if(message.senderRole === "Admin")
+        {
+          io.to(`issue_${message.issueId}`).emit("receive_message", {...message, createdAt: Date.now()});
+          console.log("Emitting as Admin!");
+        }
+        else
+        {
+          io.to(`role_admin`).emit("receive_message", {...message, createdAt: Date.now()});
+          console.log("Emitting as user!");
+        }
       } catch (error) {
         console.error(error);
       }

@@ -1,11 +1,11 @@
+// import Footer from "@/components/Footer";
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
-import { PinContainer, PinPerspective } from "@/components/ui/3d-pin";
+import { PinContainer } from "@/components/ui/3d-pin";
 import { AnimatedTestimonials } from "@/components/ui/animated-testimonials";
 import { BackgroundBeams } from "@/components/ui/background-beams";
 import { FocusCards } from "@/components/ui/focus-cards";
 import { FaRobot } from "react-icons/fa";
-import { FaCalendar } from "react-icons/fa";
 import Image from "next/image";
 import Link from "next/link";
 import { cardData } from "@/constants/Cards";

@@ -5,6 +5,7 @@ import cors from "cors";
 import { Server } from "socket.io";
 import { initializeSocket } from "./socket/socketServer.js";
 import { connectRedis } from "./redis/redisClient.js";
+import ticketRoutes from "./routes/ticket.route.js";
 
 const app = express();
 app.use(cors());
@@ -22,6 +23,8 @@ const io = new Server(server, {
 //   origin: ["http://localhost:3000", "https://campfeed.vercel.app/"],
 //   credentials: true,
 // }));
+
+app.use("/api/tickets", ticketRoutes);
 
 initializeSocket(io);
 

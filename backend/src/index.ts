@@ -4,7 +4,6 @@ import http from "http";
 import cors from "cors";
 import { Server } from "socket.io";
 import { initializeSocket } from "./socket/socketServer.js";
-import { connectRedis } from "./redis/redisClient.js";
 import ticketRoutes from "./routes/ticket.route.js";
 
 const app = express();
@@ -34,8 +33,6 @@ app.get("/health", (req, res) => {
 });
 
 async function start() {
-  // await connectRedis();
-
   server.listen(3001, () => {
     console.log("Socket Server Running");
   });

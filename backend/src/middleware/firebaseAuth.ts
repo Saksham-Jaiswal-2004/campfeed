@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import admin from "firebase-admin";
-import { db } from "../config/firebaseAdmin.js";
+import { db, auth } from "../config/firebaseAdmin.js";
 
 export const firebaseAuth = async (
   req: Request,
@@ -16,7 +15,7 @@ export const firebaseAuth = async (
 
     const token = authHeader.split(" ")[1];
 
-    const decoded = await admin.auth().verifyIdToken(token);
+    const decoded = await auth.verifyIdToken(token);
 
     const userSnap = await db.collection("users").doc(decoded.uid).get();
     const userData = userSnap.data();

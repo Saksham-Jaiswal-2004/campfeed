@@ -16,9 +16,11 @@ type RSVPRequest = {
 };
 
 export const createRSVPAndTicket = async ({ eventId, user }: RSVPRequest) => {
+  const ticketId = crypto.randomUUID();
+
   const eventRef = db.collection("events").doc(eventId);
   const rsvpRef = db.collection("rsvps").doc();
-  const ticketRef = db.collection("tickets").doc();
+  const ticketRef = db.collection("tickets").doc(ticketId);
 
   return await db.runTransaction(async (transaction) => {
     const eventSnap = await transaction.get(eventRef);
@@ -41,12 +43,10 @@ export const createRSVPAndTicket = async ({ eventId, user }: RSVPRequest) => {
     }
 
     if (!event.isUnlimited) {
-      if ((event.currentRSVPs || 0) >= event.capacity) {
+      if ((event.registered || 0) >= event.capacity) {
         throw new Error("Event is full");
       }
     }
-
-    const ticketId = crypto.randomUUID();
 
     const token = generateTicketToken({
       ticketId,
@@ -73,7 +73,7 @@ export const createRSVPAndTicket = async ({ eventId, user }: RSVPRequest) => {
     });
 
     transaction.update(eventRef, {
-      currentRSVPs: (event.currentRSVPs || 0) + 1,
+      currentRSVPs: (event.registered || 0) + 1,
     });
 
     return {
@@ -108,19 +108,19 @@ export const generateAndSendTicket = async (data: {
       ? event.startDate.toDate()
       : new Date(event.startDate);
 
-  // console.log("EVENT DATA:", event);
+  console.log("EVENT DATA:", event);
 
-  // console.log("PDF DATA:", {
-  //   eventName: event.name,
-  //   venue: event.venue,
-  //   date: startDate.toLocaleDateString("en-IN"),
-  //   time: startDate.toLocaleTimeString("en-IN", {
-  //     hour: "2-digit",
-  //     minute: "2-digit",
-  //   }),
-  //   studentName: user.name,
-  //   studentEmail: user.email,
-  // });
+  console.log("PDF DATA:", {
+    eventName: event.name,
+    venue: event.venue,
+    date: startDate.toLocaleDateString("en-IN"),
+    time: startDate.toLocaleTimeString("en-IN", {
+      hour: "2-digit",
+      minute: "2-digit",
+    }),
+    studentName: user.name,
+    studentEmail: user.email,
+  });
 
   const pdfBuffer = await generateTicketPDF({
     eventName: event.name,

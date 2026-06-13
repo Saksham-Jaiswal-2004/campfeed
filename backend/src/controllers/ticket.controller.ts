@@ -128,7 +128,7 @@ export const verifyTicket = async (req: Request, res: Response) => {
 
     const user = (req as any).user;
 
-    if (!user || user.role !== "admin") {
+    if (!user || user.role !== "Admin") {
       return res.status(403).json({
         success: false,
         message: "Admin access required",
@@ -139,6 +139,8 @@ export const verifyTicket = async (req: Request, res: Response) => {
 
     const decoded = verifyTicketToken(token);
 
+    console.log("Decode: ", decoded)
+
     const ticketRef = db.collection("tickets").doc(decoded.ticketId);
 
     const ticketSnap = await ticketRef.get();
@@ -146,7 +148,7 @@ export const verifyTicket = async (req: Request, res: Response) => {
     if (!ticketSnap.exists) {
       return res.status(404).json({
         success: false,
-        message: "Invalid ticket",
+        message: `Invalid ticket ${decoded.ticketId}`,
       });
     }
 

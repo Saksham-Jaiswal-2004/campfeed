@@ -96,19 +96,40 @@ export const generateAndSendTicket = async (data: {
     id: string;
     name: string;
     venue: string;
-    date: string;
-    time: string;
+    startDate: any;
   };
 }) => {
   const { ticketId, token, user, event } = data;
 
   const qrImage = await generateQRCode(token);
 
+  const startDate =
+    typeof event.startDate?.toDate === "function"
+      ? event.startDate.toDate()
+      : new Date(event.startDate);
+
+  // console.log("EVENT DATA:", event);
+
+  // console.log("PDF DATA:", {
+  //   eventName: event.name,
+  //   venue: event.venue,
+  //   date: startDate.toLocaleDateString("en-IN"),
+  //   time: startDate.toLocaleTimeString("en-IN", {
+  //     hour: "2-digit",
+  //     minute: "2-digit",
+  //   }),
+  //   studentName: user.name,
+  //   studentEmail: user.email,
+  // });
+
   const pdfBuffer = await generateTicketPDF({
     eventName: event.name,
     venue: event.venue,
-    date: event.date,
-    time: event.time,
+    date: startDate.toLocaleDateString("en-IN"),
+    time: startDate.toLocaleTimeString("en-IN", {
+      hour: "2-digit",
+      minute: "2-digit",
+    }),
     studentName: user.name || "Student",
     studentEmail: user.email,
     ticketId,

@@ -118,6 +118,8 @@ export const generateTicketPDF = async (data: {
 
     const pdfBytes = await pdfDoc.save();
 
+    console.log("QR Generated!")
+
     return pdfBytes;
   } catch (error) {
     console.error("PDF Generation Error:", error);

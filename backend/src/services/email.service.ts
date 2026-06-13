@@ -12,7 +12,7 @@ export const sendTicketEmail = async (data: {
     const { to, studentName, eventName, pdfBuffer } = data;
 
     const emailResponse = await resend.emails.send({
-      from: process.env.EMAIL_FROM || "CampFeed <onboarding@resend.dev>",
+      from: process.env.EMAIL_FROM || "admin@sakshamassociates.in",
       to,
       subject: `CampFeed | Your Ticket for ${eventName}`,
       html: generateEmailTemplate(studentName, eventName),
@@ -23,6 +23,8 @@ export const sendTicketEmail = async (data: {
         },
       ],
     });
+
+    console.log("Email sent: ", emailResponse)
 
     return emailResponse;
   } catch (error) {

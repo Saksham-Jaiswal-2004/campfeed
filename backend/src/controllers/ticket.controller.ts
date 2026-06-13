@@ -52,10 +52,9 @@ export const rsvpToEvent = async (req: Request, res: Response) => {
       },
       event: {
         id: eventId,
-        name: event.title,
+        name: event.name,
         venue: event.venue,
-        date: event.date,
-        time: event.time,
+        startDate: event.startDate,
       },
     }).catch((err) => {
       console.error("Ticket pipeline failed:", err);

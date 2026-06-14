@@ -29,7 +29,7 @@ import { div } from 'motion/react-client';
 import { useNotificationStore } from '@/store/notificationStore';
 
 const StudentDash = ({setSelectedView}) => {
-      const { user, loading } = useUser();
+      const { user, loading, token } = useUser();
       const [announcements, setAnnouncements] = useState([]);
       const [events, setEvents] = useState([])
       const [issues, setIssues] = useState([])
@@ -234,11 +234,6 @@ const StudentDash = ({setSelectedView}) => {
     (state) => state.unreadCount
   );
 
-  async function token() {
-    if(!loading && user)
-      console.log("User Token: ", await user.getIdToken())
-  }
-
     return (
         <div className='w-[84vw] min-h-screen h-fit flex flex-col justify-start items-center'>
             <div className='flex gap-1 justify-between items-center w-full px-5 mt-6'>
@@ -249,12 +244,10 @@ const StudentDash = ({setSelectedView}) => {
 
                 <div className='flex gap-4'>
                     <button onClick = {() => {setSelectedView("Notifications")}} className='relative cursor-pointer btnText bg-indigo-600/20 hover:bg-indigo-700/30 text-gray-400 hover:text-white px-2 py-2 rounded-sm transition-all duration-200 ease-in-out flex justify-center items-center'>
-                    {/* <button onClick = {() => {}} className='relative cursor-pointer btnText bg-indigo-600/20 hover:bg-indigo-700/30 text-gray-400 hover:text-white px-2 py-2 rounded-sm transition-all duration-200 ease-in-out flex justify-center items-center'> */}
                       <MdNotificationsNone className='text-xl' />
                       { unreadCount != 0 ? <div className={`absolute top-1 right-1 bg-green-500 h-2 w-2 rounded-full animate-pulse`}></div> : "" }
                     </button>
-                    {/* <button onClick = {() => {setSelectedView("AllIssues")}} className='cursor-pointer btnText bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-sm text-sm transition-all duration-200 ease-in-out flex justify-center items-center gap-2'><TbMessageReport className='text-lg' /> Issues</button> */}
-                    <button onClick = {() => {token()}} className='cursor-pointer btnText bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-sm text-sm transition-all duration-200 ease-in-out flex justify-center items-center gap-2'><TbMessageReport className='text-lg' /> Issues</button>
+                    <button onClick = {() => {setSelectedView("AllIssues")}} className='cursor-pointer btnText bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-sm text-sm transition-all duration-200 ease-in-out flex justify-center items-center gap-2'><TbMessageReport className='text-lg' /> Issues</button>
                     <button onClick = {() => {setSelectedView("LogIssue")}} className='cursor-pointer btnText bg-indigo-600/30 hover:bg-indigo-600/50 px-4 py-2 rounded-sm text-sm transition-all duration-200 ease-in-out flex justify-center items-center gap-2'><IoAddOutline className='text-lg' /> Log an Issue</button>
                 </div>
             </div>

@@ -26,7 +26,7 @@ export async function createNotification(data: Notification) {
     socket.emit("issue_created", notification);
 
     if(notification.type.includes("COMMENT"))
-    socket.emit("issue_created", notification);
+    socket.emit("send_message", notification);
 
     return docRef.id;
   } catch (error) {

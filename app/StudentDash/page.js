@@ -63,7 +63,7 @@ const Page = () => {
     { href: "/StudentDash", view: "Announcements", label: "Anouncements", icon: <MdOutlineChatBubbleOutline /> },
     { href: "/StudentDash", view: "Tickets", label: "My Tickets", icon: <LuTickets /> },
     // { href: "/StudentDash", view: "StudentDash", label: "My Bookmarks", icon: <BsBookmarks /> },
-    // { href: "/StudentDash", view: "Notifications", label: "Notifications", icon: <MdNotificationsNone /> },
+    { href: "/StudentDash", view: "Notifications", label: "Notifications", icon: <MdNotificationsNone /> },
     // { href: "/StudentDash", view: "Settings", label: "Settings", icon: <IoSettingsOutline /> },
   ];
 
@@ -96,12 +96,12 @@ const Page = () => {
         </div>
 
         <div className="relative bg-cyan-800/40 border border-cyan-800 hover:bg-cyan-700/40 hover:border-cyan-600 rounded-md px-0 py-2 flex flex-col justify-center items-center gap-1 cursor-pointer">
-          <Link href="/Profile" className="flex flex-col justify-center items-center">
+          <Link href="/Profile" className="flex flex-col justify-center items-center w-full">
           <img src={userData?.profilePic} alt={userData?.name} className="rounded-full w-20 h-20" />
 
-          <div className="flex flex-col gap-0 justify-center items-center w-full">
+          <div className="flex flex-col gap-0 justify-center items-center w-full h-fit">
             <p className="text-base navText">{userData?.name}</p>
-            <p className="text-xs contentText text-wrap w-full text-center">{userData?.email.length>25 ? userData?.email.slice(0,25)+"..." : userData?.email}</p>
+            <p className="text-xs contentText text-wrap w-[100%] h-fit text-center">{userData?.email.length>20 ? userData?.email.slice(0, 22)+"..." : userData?.email}</p>
           </div>
 
           {userData?.role === "Admin" && <p className="absolute top-[-30px] left-2 text-xs text-purple-600 bg-purple-600/20 border border-purple-800 px-2 py-1 rounded-full navText">Admin</p>}

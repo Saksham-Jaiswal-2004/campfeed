@@ -69,8 +69,16 @@ export const UserProvider = ({ children }) => {
         };
     }, []);
 
+    const token = async () => {
+        try {
+            return await user.getIdToken();
+        } catch (err) {
+            throw err;
+        }
+    }
+
     return (
-        <UserContext.Provider value={{ user, userData, loading, login, logout }}>
+        <UserContext.Provider value={{ user, userData, loading, login, logout, token }}>
             {children}
         </UserContext.Provider>
     );

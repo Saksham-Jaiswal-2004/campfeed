@@ -20,8 +20,10 @@ export function registerChatEvents(io: Server, socket: Socket) {
           console.log("Emitting as Admin!");
         }
         else
-        {
-          io.to(`role_admin`).emit("receive_message", {...message, createdAt: Date.now()});
+          {
+            io.to(`role_admin`).emit("receive_message", {...message, createdAt: Date.now()});
+            io.to(`role_admin`).emit("receive_notification", {...message, createdAt: Date.now()});
+            io.to(`issue_${message.issueId}`).emit("receive_message", {...message, createdAt: Date.now()});
           console.log("Emitting as user!");
         }
       } catch (error) {

@@ -7,8 +7,9 @@ import { initializeSocket } from "./socket/socketServer.js";
 import ticketRoutes from "./routes/ticket.route.js";
 
 const app = express();
-app.use(express.json())
+
 app.use(cors());
+app.use(express.json())
 
 const server = http.createServer(app);
 
@@ -18,11 +19,6 @@ const io = new Server(server, {
     methods: ["GET", "POST"],
   },
 });
-
-// app.use(cors ({
-//   origin: ["http://localhost:3000", "https://campfeed.vercel.app/"],
-//   credentials: true,
-// }));
 
 app.use("/api/tickets", ticketRoutes);
 

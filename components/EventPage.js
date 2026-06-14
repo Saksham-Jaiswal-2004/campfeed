@@ -1,24 +1,20 @@
 "use client"
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import { notFound } from "next/navigation";
-import Navbar from "@/components/Navbar";
 import { FaRegCalendar } from "react-icons/fa6";
 import { SlClock } from "react-icons/sl";
 import { IoLocationOutline } from "react-icons/io5";
 import { GoPeople } from "react-icons/go";
 import { FaRegUser } from "react-icons/fa6";
 import { Progress } from "@/components/ui/progress";
-import Link from "next/link";
 import RSVPButton from "@/components/RSVPButton";
 import { IoIosArrowForward } from "react-icons/io";
 import ShareButton from "@/components/ShareButton";
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
 import { CiBookmark } from "react-icons/ci";
 import { PiWarningCircle } from "react-icons/pi";
 
-export default function EventPage({setSelectedView, id}) {
+export default function EventPage({ setSelectedView, id }) {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -64,9 +60,9 @@ export default function EventPage({setSelectedView, id}) {
 
       <div className="flex flex-col justify-center items-center mt-8 px-4 py-8 w-[85%] h-fit">
         <p className="mb-2 text-xs contentText flex justify-start items-center gap-2 w-full">
-          <button onClick={() => {setSelectedView("StudentDash")}} className="hover:text-white">Dashboard</button>
+          <button onClick={() => { setSelectedView("StudentDash") }} className="hover:text-white">Dashboard</button>
           <IoIosArrowForward />
-          <button onClick={() => {setSelectedView("EventList")}} className="hover:text-white">Events</button>
+          <button onClick={() => { setSelectedView("EventList") }} className="hover:text-white">Events</button>
           <IoIosArrowForward />
           <span className="!text-white !text-sm">{data.name || "Event"}</span>
         </p>
@@ -74,17 +70,14 @@ export default function EventPage({setSelectedView, id}) {
         <div className="flex justify-between items-center w-full my-4">
           <div>
             <h1 className="text-5xl title">{data.name || "Event"}</h1>
-            {/* <p className="text-[#9dacc2] dark:text-gray-300 whitespace-pre-line">
-              {data.description || "No description provided."}
-            </p> */}
           </div>
           <div className="flex justify-center items-center gap-2">
             <ShareButton title={data.name || "Event"} text={`Check out this Event: ${data.name || "Event"}`} />
-            
+
             <button className="text-lg px-3 py-2 border border-gray-700 hover:bg-gray-700/20 rounded-md contentText transition-all duration-200 ease-in-out">
               <CiBookmark />
             </button>
-                          
+
             <button className="text-lg px-3 py-2 border border-gray-700 hover:bg-gray-700/20 rounded-md contentText transition-all duration-200 ease-in-out">
               <PiWarningCircle />
             </button>
@@ -92,10 +85,10 @@ export default function EventPage({setSelectedView, id}) {
         </div>
 
         <div className="w-[100%] h-[350px] bg-gray-600 rounded-lg overflow-hidden">
-          <img 
-          src="/images/Skeleton.png" 
-          alt="" 
-          className="h-full w-full object-cover"
+          <img
+            src="/images/Skeleton.png"
+            alt=""
+            className="h-full w-full object-cover"
           />
         </div>
 
@@ -109,7 +102,7 @@ export default function EventPage({setSelectedView, id}) {
 
         <div className="w-full h-fit flex justify-center items-start gap-4 my-4">
           <div className="w-[68%] min-h-[50vh] h-fit border border-gray-700 rounded-md p-4">
-            <h2 className="subtitle text-3xl">{ data.name }</h2>
+            <h2 className="subtitle text-3xl">{data.name}</h2>
             <p className="px-4 mt-2 contentText">{data.description || "No description provided."}</p>
           </div>
 
@@ -140,9 +133,6 @@ export default function EventPage({setSelectedView, id}) {
               <hr className="w-full justify-self-center border border-gray-800 my-3" />
 
               <RSVPButton eventId={id} />
-              <button className="px-4 py-2 w-full contentText btnText text-sm rounded-sm hover:bg-gray-600/20 border border-gray-700 disabled:opacity-50">
-                Add to Calendar
-              </button>
             </div>
           </div>
         </div>
@@ -151,21 +141,21 @@ export default function EventPage({setSelectedView, id}) {
           <div className="w-[30%] h-fit min-h-[22vh] border border-gray-700 rounded-md p-4 flex justify-center items-center">
             {/* <h2 className="subtitle text-base">Related</h2> */}
             <div className="w-full h-[10vh] flex flex-col justify-center items-center gap-1">
-                <button className="px-4 py-2 w-full contentText text-sm rounded-sm hover:bg-gray-600/20 border border-gray-700 disabled:opacity-50"
-                onClick={() => {setSelectedView("Announcements")}}
-                >
-                  View All Announcements
-                </button>
-                <button className="px-4 py-2 w-full contentText text-sm rounded-sm hover:bg-gray-600/20 border border-gray-700 disabled:opacity-50"
-                onClick={() => {setSelectedView("EventList")}}
-                >
-                  Explore Events
-                </button>
-                <button className="px-4 py-2 w-full contentText text-sm rounded-sm hover:bg-gray-600/20 border border-gray-700 disabled:opacity-50"
-                onClick={() => {setSelectedView("LogIssue")}}
-                >
-                  Report an Issue
-                </button>
+              <button className="px-4 py-2 w-full contentText text-sm rounded-sm hover:bg-gray-600/20 border border-gray-700 disabled:opacity-50"
+                onClick={() => { setSelectedView("Announcements") }}
+              >
+                View All Announcements
+              </button>
+              <button className="px-4 py-2 w-full contentText text-sm rounded-sm hover:bg-gray-600/20 border border-gray-700 disabled:opacity-50"
+                onClick={() => { setSelectedView("EventList") }}
+              >
+                Explore Events
+              </button>
+              <button className="px-4 py-2 w-full contentText text-sm rounded-sm hover:bg-gray-600/20 border border-gray-700 disabled:opacity-50"
+                onClick={() => { setSelectedView("LogIssue") }}
+              >
+                Report an Issue
+              </button>
             </div>
           </div>
 

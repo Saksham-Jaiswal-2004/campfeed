@@ -3,26 +3,32 @@
 import { useEffect, useState } from "react";
 import { rsvpToEvent, unRsvpFromEvent } from "@/lib/rsvp";
 import { useUser } from "@/context/userContext";
-import { doc, getDoc } from "firebase/firestore";
+import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
 export default function RSVPButton({ eventId }) {
-  const { user } = useUser();
+  const { user, token } = useUser();
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [isRsvped, setIsRsvped] = useState(false);
 
-  // Fetch RSVP status on mount
   useEffect(() => {
     const checkRSVPStatus = async () => {
       if (!user) return;
 
-      const eventRef = doc(db, "events", eventId);
-      const eventSnap = await getDoc(eventRef);
+      try {
+        const q = query(
+          collection(db, "rsvps"),
+          where("eventId", "==", eventId),
+          where("userId", "==", user.uid)
+        );
 
-      if (eventSnap.exists()) {
-        const data = eventSnap.data();
-        setIsRsvped(data.rsvpedUsers?.includes(user.uid));
+        const snapshot = await getDocs(q);
+
+        setIsRsvped(!snapshot.empty);
+      } catch (err) {
+        console.error("Error checking RSVP:", err);
       }
     };
 
@@ -40,17 +46,17 @@ export default function RSVPButton({ eventId }) {
 
     try {
       if (isRsvped) {
-        await unRsvpFromEvent(eventId, user.uid);
+        await unRsvpFromEvent(eventId, await token());
         setIsRsvped(false);
       } else {
-        await rsvpToEvent(eventId, user.uid);
+        await rsvpToEvent(eventId, await token());
         setIsRsvped(true);
       }
     } catch (err) {
       setError(err.message);
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   return (
@@ -60,13 +66,10 @@ export default function RSVPButton({ eventId }) {
         disabled={loading}
         className="px-4 py-2 w-full bg-gradient-to-r from-indigo-500 to-cyan-500 text-white btnText text-sm rounded-sm hover:bg-gradient-to-br disabled:opacity-50"
       >
-        {loading
-          ? "Processing..."
-          : isRsvped
-          ? "Un-RSVP"
-          : "RSVP"}
+        {loading ? "Processing..." : isRsvped ? "Un-RSVP" : "RSVP"}
       </button>
-      {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
+
+      {/* {error && <p className="text-red-500 text-sm mt-1">{error}</p>} */}
     </div>
   );
 }

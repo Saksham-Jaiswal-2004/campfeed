@@ -1,6 +1,10 @@
 import { Request, Response } from "express";
 import { db } from "../config/firebaseAdmin.js";
-import { createRSVPAndTicket, generateAndSendTicket, } from "../services/ticket.service.js";
+import {
+  createRSVPAndTicket,
+  deleteRSVPAndTicket,
+  generateAndSendTicket,
+} from "../services/ticket.service.js";
 
 export const rsvpToEvent = async (req: Request, res: Response) => {
   try {
@@ -79,6 +83,62 @@ export const rsvpToEvent = async (req: Request, res: Response) => {
   }
 };
 
+export const unRsvpFromEvent = async (req: Request, res: Response) => {
+  try {
+    const { eventId } = req.body;
+
+    if (!eventId) {
+      return res.status(400).json({
+        success: false,
+        message: "eventId is required",
+      });
+    }
+
+    const user = (req as any).user;
+
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized",
+      });
+    }
+
+    const { deletedTicketId, deletedRsvpId } = await deleteRSVPAndTicket({
+      eventId,
+      user: {
+        uid: user.uid,
+      },
+    });
+
+    const eventRef = db.collection("events").doc(eventId);
+
+    await db.runTransaction(async (tx) => {
+      const eventSnap = await tx.get(eventRef);
+
+      if (!eventSnap.exists) {
+        return res.status(400).json({
+          success: false,
+          message: "Event Not Found",
+        });
+      }
+
+      const data = eventSnap.data();
+
+      tx.update(eventRef, {
+        registered: Math.max((data?.registered || 1) - 1, 0),
+      });
+    });
+
+    res.json({ success: true });
+  } catch (error: any) {
+    console.error("Un-RSVP Error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Internal server error",
+    });
+  }
+};
 
 export const getMyTickets = async (req: Request, res: Response) => {
   try {
@@ -139,7 +199,7 @@ export const verifyTicket = async (req: Request, res: Response) => {
 
     const decoded = verifyTicketToken(token);
 
-    console.log("Decode: ", decoded)
+    console.log("Decode: ", decoded);
 
     const ticketRef = db.collection("tickets").doc(decoded.ticketId);
 

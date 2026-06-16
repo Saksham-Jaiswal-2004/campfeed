@@ -7,6 +7,7 @@ import { TbMessageReport } from "react-icons/tb";
 import { CiClock2 } from "react-icons/ci";
 import { markAsReadDB, markAllAsReadDB } from '@/services/notification.service';
 import { FaRegFolderOpen } from "react-icons/fa6";
+import { IoNotificationsOffSharp } from "react-icons/io5";
 
 const Notifications = () => {
   const [view, setView] = useState("ALL");
@@ -44,6 +45,12 @@ const Notifications = () => {
     }
   };
 
+  const filteredNotifications = notifications.filter((notification) =>
+    view === "ALL"
+      ? true
+      : notification.type?.includes(view)
+  );
+
   return (
     <div className='w-full h-screen overflow-y-scroll flex flex-col justify-start items-center px-5'>
       <div className='flex gap-1 justify-between items-center w-full mt-6 mb-8'>
@@ -68,7 +75,7 @@ const Notifications = () => {
 
       <div className='w-full h-fit py-4 mt-2'>
         <div className='min-h-[70vh] h-fit w-[75%] px-1 flex flex-col gap-2'>
-          {notifications.filter((notification) => view === "ALL" ? true : notification.type?.includes(view)).map((notification) => (
+          {filteredNotifications.length > 0 ? (filteredNotifications.map((notification) => (
             <div key={notification.id} className={`relative cursor-pointer w-full h-[12vh] py-5 flex justify-start items-center rounded-md! overflow-hidden ${notification.isRead ? "bg-gray-800/45 hover:bg-gray-800/55 border-l-6 border-gray-600/80" : "bg-indigo-800/15 hover:bg-indigo-800/25 border-l-6 border-blue-600/80"}`}>
               <div className='w-[12%] h-full flex justify-center items-center'>
                 <div className={`flex justify-center items-center p-3 rounded-xl ${notification.isRead ? "bg-white/10" : "bg-indigo-800/30"}`}>
@@ -89,7 +96,13 @@ const Notifications = () => {
                 <FaRegFolderOpen className='text-base' />
               </div>
             </div>
-          ))}
+          ))) : (
+            <div className='w-full h-[60vh] flex flex-col justify-center items-center text-gray-500!'>
+              <IoNotificationsOffSharp className='text-3xl mb-1' />
+              <p className='text-xl'>You&apos;re all caught up</p>
+              <p className='text-base'>No current Notifications</p>
+            </div>
+          )}
         </div>
       </div>
     </div>

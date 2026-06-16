@@ -11,8 +11,6 @@ import { RxCross1 } from "react-icons/rx";
 import { CiBookmark } from "react-icons/ci";
 import { PiWarningCircle } from "react-icons/pi";
 import { Switch } from "./ui/switch";
-import { socket } from "@/lib/socket";
-import { useChatStore } from "@/store/chatStore";
 import { FaArrowUp } from "react-icons/fa6";
 import { useIssueChat } from "@/hooks/useIssueChat";
 import { sendMessage } from "@/services/chat.service";

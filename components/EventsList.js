@@ -33,6 +33,7 @@ const EventsList = ({setSelectedView, setSelectedId}) => {
     useEffect(() => {
         const fetchMyEvents = async () => {
             if (!user) return;
+            console.log("");
 
             try {
                 const q = query(

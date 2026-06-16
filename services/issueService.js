@@ -33,8 +33,18 @@ export async function logIssue(data, user) {
         await createNotification(notification);
 
         return docRef.id;
-    } catch(error) {
+    } catch (error) {
         console.log("Issue Error: ", error);
+        throw error;
+    }
+}
+
+export async function changeStatus(id, newStatus) {
+    try {
+        const ref = doc(db, "issues", id);
+        await updateDoc(ref, { status: newStatus });
+        
+    } catch (error) {
         throw error;
     }
 }

@@ -88,7 +88,7 @@ const Notifications = () => {
                 <p className='contentText text-xs'>{notification.message}</p>
               </div>
 
-              <div className='w-[15%] text-xs h-full flex gap-1 justify-center items-start'>
+              <div className='w-[18%] text-xs h-full flex gap-1 justify-center items-start'>
                 <p className='flex justify-center items-center gap-1'><CiClock2 className='text-base' />{new Date(notification.createdAt).toLocaleString("en-IN", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", })}</p>
               </div>
 

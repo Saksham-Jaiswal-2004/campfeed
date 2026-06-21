@@ -7,6 +7,7 @@ import { Server } from "socket.io";
 import { initializeSocket } from "./socket/socketServer.js";
 import ticketRoutes from "./routes/ticket.route.js";
 import eventRoutes from "./routes/events.route.js";
+import announcementRoutes from "./routes/announcements.route.js";
 
 const app = express();
 
@@ -17,13 +18,14 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: ["http://localhost:3000", "https://campfeed.vercel.app/"],
+    origin: ["http://localhost:3000", "https://campfeed.vercel.app"],
     methods: ["GET", "POST"],
   },
 });
 
 app.use("/api/tickets", ticketRoutes);
 app.use("/api/events", eventRoutes);
+app.use("/api/announcements", announcementRoutes);
 
 initializeSocket(io);
 

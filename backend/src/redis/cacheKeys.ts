@@ -1,6 +1,8 @@
 const cacheKeys = {
   announcements: "campus:announcements",
+
   events: "campus:events",
+  
   issues: "campus:issues",
 
   announcement: (id: string) => `campus:announcement:${id}`,

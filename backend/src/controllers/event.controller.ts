@@ -47,9 +47,9 @@ export async function createEvent(req: any, res: any) {
 
 export async function getEventById(req: any, res: any) {
     try {
-        const { id } = req.params;
+        const { eventId } = req.params;
 
-        const key = cacheKeys.event(id);
+        const key = cacheKeys.event(eventId);
 
         const cached = await getCache<any>(key);
 
@@ -60,7 +60,7 @@ export async function getEventById(req: any, res: any) {
             });
         }
 
-        const doc = await db.collection("events").doc(id).get();
+        const doc = await db.collection("events").doc(eventId).get();
 
         if (!doc.exists) {
             return res.status(404).json({ error: "Event not found" });

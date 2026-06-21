@@ -8,6 +8,7 @@ import { initializeSocket } from "./socket/socketServer.js";
 import ticketRoutes from "./routes/ticket.route.js";
 import eventRoutes from "./routes/events.route.js";
 import announcementRoutes from "./routes/announcements.route.js";
+import issueRoutes from "./routes/issues.route.js";
 
 const app = express();
 
@@ -26,6 +27,7 @@ const io = new Server(server, {
 app.use("/api/tickets", ticketRoutes);
 app.use("/api/events", eventRoutes);
 app.use("/api/announcements", announcementRoutes);
+app.use("/api/issues", issueRoutes);
 
 initializeSocket(io);
 

@@ -3,7 +3,11 @@ const cacheKeys = {
 
   events: "campus:events",
   
-  issues: "campus:issues",
+  campusIssues: "campus:issues",
+
+  adminIssues: "campus:admin-issues",
+  
+  userIssues: (id: string) => `campus:user-issues:${id}`,
 
   announcement: (id: string) => `campus:announcement:${id}`,
 

@@ -1,9 +1,5 @@
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import { notFound } from "next/navigation";
-import Navbar from "@/components/Navbar";
-import { SlClock } from "react-icons/sl";
-import Link from "next/link";
 import { IoIosArrowForward } from "react-icons/io";
 import { CgDanger } from "react-icons/cg";
 import { MdOutlineInfo } from "react-icons/md";
@@ -12,10 +8,12 @@ import ShareButton from "@/components/ShareButton";
 import { useEffect, useState } from "react";
 import { CiBookmark } from "react-icons/ci";
 import { PiWarningCircle } from "react-icons/pi";
+import { api } from "@/lib/api";
+import DataSkeleton from "./ui/DataSkeleton";
 
 export default function AnnouncementPage({setSelectedView, id}) {
 
-    const [data, setData] = useState(null);
+    const [announcement, setAnnouncement] = useState(null);
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
@@ -24,20 +22,18 @@ export default function AnnouncementPage({setSelectedView, id}) {
 
       const fetchAnnouncement = async () => {
         try {
-          const docRef = doc(db, "announcements", id);
-          const snap = await getDoc(docRef);
+          const a = await api(`/announcements/${id}`, "GET");
   
-          if (!snap.exists()) {
-            setData(null);
+          if (!a) {
+            setAnnouncement(null);
             return;
           }
+
+          setAnnouncement(a.data);
   
-          const announcementData = snap.data();
-          setData(announcementData);
-  
-          if (announcementData?.createdBy) {
+          if (a.data?.createdBy) {
             try {
-              const userSnap = await getDoc(doc(db, "users", announcementData.createdBy));
+              const userSnap = await getDoc(doc(db, "users", a.data.createdBy));
               if (userSnap.exists()) {
                 setUser(userSnap.data());
               }
@@ -47,7 +43,7 @@ export default function AnnouncementPage({setSelectedView, id}) {
           }
         } catch (err) {
           console.error(err);
-          setData(null);
+          setAnnouncement(null);
           setUser(null);
         } finally {
           setLoading(false);
@@ -59,8 +55,13 @@ export default function AnnouncementPage({setSelectedView, id}) {
     
     if (!id) return <div className="h-screen w-screen flex justify-center items-center text-xl">Announcement ID not provided</div>;
 
-    if (loading) return <p>Loading...</p>;
-    if (!data) return <p>Announcement not found</p>;
+    if (loading) return (
+    <div className="w-[80%] h-full flex flex-col justify-center items-center gap-8">
+      <DataSkeleton />
+      <DataSkeleton />
+    </div>
+  );
+    if (!announcement) return <p>Announcement not found</p>;
 
     return (
         <div className="w-full h-screen overflow-y-scroll flex flex-col justify-start items-center">
@@ -71,16 +72,16 @@ export default function AnnouncementPage({setSelectedView, id}) {
                   <IoIosArrowForward />
                   <button onClick={() => {setSelectedView("Announcements")}} className="hover:text-white">Announcements</button>
                   <IoIosArrowForward />
-                  <span className="!text-white !text-sm">{data.title || "Announcement"}</span>
+                  <span className="!text-white !text-sm">{announcement.title || "Announcement"}</span>
                 </p>
 
                 <div className="flex justify-between items-center w-full my-4">
                     <div>
-                        <h1 className="text-3xl title">{data.title}</h1>
+                        <h1 className="text-3xl title">{announcement.title}</h1>
                     </div>
 
                     <div className="flex justify-center items-center gap-2">
-                        <ShareButton title={data.name} text={`Check out this Announcement: ${data.name}`} />
+                        <ShareButton title={announcement.name} text={`Check out this Announcement: ${announcement.name}`} />
 
                         <button className="text-lg px-3 py-2 border border-gray-700 hover:bg-gray-700/20 rounded-md contentText transition-all duration-200 ease-in-out">
                           <CiBookmark />
@@ -93,7 +94,7 @@ export default function AnnouncementPage({setSelectedView, id}) {
                 </div>
 
                 <div className="flex gap-3 text-sm mt-2 flex-wrap w-full px-2">
-                    {data.tags?.map((tag, index) => (
+                    {announcement.tags?.map((tag, index) => (
                         <p key={index} className="border border-gray-700 bg-cyan-500/50 contentText py-1 px-2 rounded-lg">
                             {tag}
                         </p>
@@ -118,7 +119,7 @@ export default function AnnouncementPage({setSelectedView, id}) {
 
                         <hr className="border border-gray-800 my-4" />
 
-                        <p className="px-4 contentText text-sm">{data.description}</p>
+                        <p className="px-4 contentText text-sm">{announcement.description}</p>
                     </div>
 
                     <div className="flex flex-col justify-center items-center gap-4 w-[30%]">
@@ -128,17 +129,17 @@ export default function AnnouncementPage({setSelectedView, id}) {
                             <div className="w-full flex flex-col gap-5 items-start pl-6 mt-4">
                                 <div className="flex flex-col justify-center items-start gap-0">
                                     <p className="!text-gray-500 contentText text-base">Priority</p>
-                                    {data.priority === "High" && (
+                                    {announcement.priority === "High" && (
                                         <p className='text-xs flex items-center gap-1 text-red-400 bg-red-500/20 p-1 rounded-lg border border-red-800/30'>
                                             <CgDanger /> High Priority
                                         </p>
                                     )}
-                                    {data.priority === "Medium" && (
+                                    {announcement.priority === "Medium" && (
                                         <p className='text-xs flex items-center gap-1 text-yellow-400 bg-yellow-500/20 p-1 rounded-lg border border-yellow-800/30'>
                                             <MdOutlineInfo /> Medium Priority
                                         </p>
                                     )}
-                                    {data.priority === "Low" && (
+                                    {announcement.priority === "Low" && (
                                         <p className='text-xs flex items-center gap-1 text-green-400 bg-green-500/20 p-1 rounded-lg border border-green-800/30'>
                                             <FiCheckCircle /> Low Priority
                                         </p>
@@ -147,17 +148,17 @@ export default function AnnouncementPage({setSelectedView, id}) {
 
                                 <div className="flex flex-col justify-center items-start gap-0">
                                     <p className="!text-gray-500 contentText text-base">Target Audience</p>
-                                    <span className='border border-gray-700 contentText py-1 px-2 rounded-full !text-white bg-blue-400/70 text-sm'>{data.targetAudience}</span>
+                                    <span className='border border-gray-700 contentText py-1 px-2 rounded-full !text-white bg-blue-400/70 text-sm'>{announcement.targetAudience}</span>
                                 </div>
 
                                 <div className="flex flex-col justify-center items-start gap-0">
                                     <p className="!text-gray-500 contentText text-base">Published On</p>
-                                    <p className="flex contentText text-sm">{new Date(data.createdAt.toDate()).toLocaleString("en-GB", {
+                                    <p className="flex contentText text-sm">{new Date(announcement.createdAt._seconds * 1000).toLocaleString("en-GB", {
                                         weekday: "long",
                                         day: "2-digit",
                                         month: "long",
                                         year: "numeric",
-                                    })} at {new Date(data.createdAt.toDate()).toLocaleString("en-GB", {
+                                    })} at {new Date(announcement.createdAt._seconds * 1000).toLocaleString("en-GB", {
                                         hour: "2-digit",
                                         minute: "2-digit",
                                         hour12: true,

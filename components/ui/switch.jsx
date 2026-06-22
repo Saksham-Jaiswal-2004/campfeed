@@ -5,11 +5,7 @@ import { Switch as SwitchPrimitive } from "radix-ui"
 
 import { cn } from "@/lib/utils"
 
-function Switch({
-  className,
-  size = "default",
-  ...props
-}) {
+function Switch({className, size = "default", ...props}) {
   return (
     <SwitchPrimitive.Root
       data-slot="switch"

@@ -1,3 +1,4 @@
+import { FieldValue } from "firebase-admin/firestore";
 import { db } from "../config/firebaseAdmin.js";
 import cacheKeys from "../redis/cacheKeys.js";
 import { getCache, setCache, deleteCache } from "../redis/cacheService.js";
@@ -72,8 +73,8 @@ export async function createAnnouncement(req: any, res: any) {
   try {
     const announcement = {
       ...req.body,
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      createdAt: FieldValue.serverTimestamp(),
+      updatedAt: FieldValue.serverTimestamp(),
     };
 
     const docRef = await db.collection("announcements").add(announcement);
@@ -111,7 +112,7 @@ export async function editAnnouncement(req: any, res: any) {
 
     await docRef.update({
       ...req.body,
-      updatedAt: new Date(),
+      updatedAt: FieldValue.serverTimestamp(),
     });
 
     await Promise.all([

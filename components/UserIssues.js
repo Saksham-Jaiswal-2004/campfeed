@@ -24,6 +24,8 @@ import { useRouter } from "next/navigation";
 import { FaAngleRight } from 'react-icons/fa';
 import DeleteIssueModal from '@/components/DeleteIssueModal';
 import { toast } from 'sonner';
+import { api } from '@/lib/api';
+import DataSkeleton from './ui/DataSkeleton';
 
 const UserIssues = ({setSelectedView, setSelectedId}) => {
   const [status, setStatus] = useState("Select Status");
@@ -45,47 +47,47 @@ const UserIssues = ({setSelectedView, setSelectedId}) => {
   useEffect(() => {
   if (!user) return;
 
-  const issuesRef = query(
-    collection(db, "issues"),
-    where("student_id", "==", user.uid),
-    orderBy("created_at", "desc")
-  );
-
-  const unsubscribe = onSnapshot(issuesRef, async (snapshot) => {
+  const fetchUserIssues = async () => {
     try {
+      const i = await api(`/issues/userIssues/${user.uid}`, "GET");
+
+      const issuesData = i.data;
+
       const issuesWithUser = await Promise.all(
-        snapshot.docs.map(async (docSnap) => {
-          const issueData = docSnap.data();
+        issuesData.map(async (issue) => {
           let createdByData = {};
 
           try {
-            const userRef = doc(db, "users", issueData.student_id);
+            const userRef = doc(db, "users", issue.student_id);
+
             const userSnap = await getDoc(userRef);
 
             if (userSnap.exists()) {
               createdByData = userSnap.data();
             }
+
           } catch (error) {
             console.error("Error fetching user for issue:", error);
           }
 
           return {
-            id: docSnap.id,
-            ...issueData,
+            ...issue,
             createdByUser: createdByData,
           };
         })
       );
 
       setIssues(issuesWithUser);
+
     } catch (err) {
       console.error("Error fetching issues:", err);
     } finally {
       setFetching(false);
     }
-  });
+  };
 
-  return () => unsubscribe();
+  fetchUserIssues();
+
 }, [user]);
 
   const filteredIssues = useMemo(() => {
@@ -226,8 +228,8 @@ const UserIssues = ({setSelectedView, setSelectedId}) => {
 
       <div className='w-full h-fit p-4 rounded-lg'>
         {fetching ? (
-          <div className='w-full h-full contentText flex justify-center items-center navText text-3xl'>
-            Fetching Your Issues...
+          <div className='w-full h-full flex justify-center items-center'>
+            <DataSkeleton />
           </div>
         ) : filteredIssues.length === 0 ? (
           <div className='w-full h-full flex justify-center items-center navText text-3xl'>
@@ -266,7 +268,7 @@ const UserIssues = ({setSelectedView, setSelectedId}) => {
                           }
                         </span>
                         <span>•</span>
-                        {issue.created_at?.toDate().toLocaleDateString("en-IN", {
+                        {new Date(issue.created_at._seconds * 1000).toLocaleDateString("en-IN", {
                            day: "2-digit",
                            month: "short",
                            year: "numeric",

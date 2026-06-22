@@ -2,17 +2,19 @@ import { Server, Socket } from "socket.io";
 
 export function setupNotificationSocket(io: Server, socket: Socket) {
   socket.on("join_user_room", (userId: string) => {
-    console.log(`${socket.id} joined user_${userId}`);
     socket.join(`user_${userId}`);
   });
   
   socket.on("join_role_room", (role: string) => {
-    console.log(`${socket.id} joined role_${role}`);
     socket.join(`role_${role}`);
   });
 
   socket.on("issue_created", (data) => {
     io.to(`role_admin`).emit("receive_notification", data);
+    io.to(`user_${data.senderId}`).emit("receive_notification", data);
+  });
+
+  socket.on("issue_updated", (data) => {
     io.to(`user_${data.senderId}`).emit("receive_notification", data);
   });
 

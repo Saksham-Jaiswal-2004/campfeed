@@ -15,7 +15,7 @@ const router = Router();
 
 router.get("/campus-feed", firebaseAuth, getCampusIssues);
 
-router.get("/:userId", firebaseAuth, getUserIssues);
+router.get("/userIssues/:userId", firebaseAuth, getUserIssues);
 
 router.get("/admin", notAStudent, getAdminIssues);
 

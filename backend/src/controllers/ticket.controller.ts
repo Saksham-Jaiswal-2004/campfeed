@@ -5,6 +5,9 @@ import {
   deleteRSVPAndTicket,
   generateAndSendTicket,
 } from "../services/ticket.service.js";
+import cacheKeys from "../redis/cacheKeys.js";
+import { getCache, setCache, deleteCache } from "../redis/cacheService.js";
+import { FieldValue } from "firebase-admin/firestore";
 
 export const rsvpToEvent = async (req: Request, res: Response) => {
   try {
@@ -43,6 +46,11 @@ export const rsvpToEvent = async (req: Request, res: Response) => {
         message: "Event not found",
       });
     }
+
+    await Promise.all([
+      deleteCache(cacheKeys.events),
+      deleteCache(cacheKeys.event(eventId)),
+    ]);
 
     const event = eventSnap.data() as any;
 
@@ -223,7 +231,7 @@ export const verifyTicket = async (req: Request, res: Response) => {
 
     await ticketRef.update({
       used: true,
-      usedAt: new Date(),
+      usedAt: FieldValue.serverTimestamp(),
       verifiedBy: user.uid,
     });
 
@@ -236,7 +244,7 @@ export const verifyTicket = async (req: Request, res: Response) => {
     if (!rsvpQuery.empty) {
       await rsvpQuery.docs[0].ref.update({
         status: "attended",
-        checkedInAt: new Date(),
+        checkedInAt: FieldValue.serverTimestamp(),
       });
     }
 

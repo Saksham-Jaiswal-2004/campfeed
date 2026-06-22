@@ -14,6 +14,9 @@ import { Switch } from "./ui/switch";
 import { FaArrowUp } from "react-icons/fa6";
 import { useIssueChat } from "@/hooks/useIssueChat";
 import { sendMessage } from "@/services/chat.service";
+import { api } from "@/lib/api";
+import { changeStatus, editIssue } from "@/services/issueService";
+import DataSkeleton from "./ui/DataSkeleton";
 
 const categoryOptions = [
   { id: "CAT001", label: "Academic" },
@@ -43,6 +46,7 @@ export default function IssuePage({ setSelectedView, id, mode = "public" }) {
     category_id: "",
     priority: "",
   });
+  const [shareOnFeed, setShareOnFeed] = useState(false);
   const [saveMessage, setSaveMessage] = useState("");
   const bottomRef = useRef(null);
   const { user, userData } = useUser();
@@ -60,24 +64,25 @@ export default function IssuePage({ setSelectedView, id, mode = "public" }) {
     const fetch = async () => {
       setLoading(true);
       try {
-        const ref = doc(db, "issues", id);
-        const snap = await getDoc(ref);
-        if (!snap.exists()) {
+        const i = await api(`/issues/${id}`, "GET");
+
+        if (!i.data) {
           setData(null);
           return;
         }
-        const issueData = snap.data();
-        setData(issueData);
-        setEditForm({
-          title: issueData.title || "",
-          description: issueData.description || "",
-          category_id: issueData.category_id || "",
-          priority: issueData.priority || "medium",
-        });
 
-        if (issueData.student_id) {
+        setData(i.data);
+        setEditForm({
+          title: i.data.title || "",
+          description: i.data.description || "",
+          category_id: i.data.category_id || "",
+          priority: i.data.priority || "medium",
+        });
+        setShareOnFeed(i.data.shareOnFeed || false);
+
+        if (i.data.student_id) {
           try {
-            const creatorRef = doc(db, "users", issueData.student_id);
+            const creatorRef = doc(db, "users", i.data.student_id);
             const crSnap = await getDoc(creatorRef);
             if (crSnap.exists()) setCreator(crSnap.data());
           } catch (err) {
@@ -96,7 +101,12 @@ export default function IssuePage({ setSelectedView, id, mode = "public" }) {
   }, [id]);
 
   if (!id) return <div className="h-screen w-screen flex justify-center items-center text-xl">Issue ID not provided</div>;
-  if (loading) return <p>Loading...</p>;
+  if (loading) return (
+    <div className="w-[80%] h-full flex flex-col justify-center items-center gap-8">
+      <DataSkeleton />
+      <DataSkeleton />
+    </div>
+  );
   if (!data) return <p>Issue not found</p>;
 
   const categoryLabel =
@@ -120,15 +130,14 @@ export default function IssuePage({ setSelectedView, id, mode = "public" }) {
       ? "Others"
       : "";
 
-  const createdAt = data.created_at?.toDate ? new Date(data.created_at.toDate()) : data.created_at ? new Date(data.created_at) : null;
+  const createdAt = new Date(data.created_at._seconds * 1000)
   const issueImages = Array.isArray(data.attachment_urls) ? data.attachment_urls : [];
   const primaryImage = issueImages[0]?.url || "/images/Skeleton.png";
 
   const handleChangeStatus = async (newStatus) => {
     setUpdating(true);
     try {
-      const ref = doc(db, "issues", id);
-      await updateDoc(ref, { status: newStatus });
+      await changeStatus(id, newStatus);
       setData((d) => ({ ...d, status: newStatus }));
     } catch (err) {
       console.error(err);
@@ -141,16 +150,16 @@ export default function IssuePage({ setSelectedView, id, mode = "public" }) {
     setUpdating(true);
     setSaveMessage("");
     try {
-      const ref = doc(db, "issues", id);
       const payload = {
         title: editForm.title.trim(),
         description: editForm.description.trim(),
         category_id: editForm.category_id,
         priority: editForm.priority,
         updated_at: new Date(),
+        shareOnFeed: shareOnFeed,
       };
 
-      await updateDoc(ref, payload);
+      await editIssue(id, payload, user);
       setData((current) => ({ ...current, ...payload }));
       setIsEditing(false);
       setSaveMessage("Issue updated successfully.");
@@ -169,6 +178,7 @@ export default function IssuePage({ setSelectedView, id, mode = "public" }) {
       category_id: data.category_id || "",
       priority: data.priority || "medium",
     });
+    setShareOnFeed(shareOnFeed);
     setIsEditing(false);
     setSaveMessage("");
   };
@@ -470,7 +480,7 @@ export default function IssuePage({ setSelectedView, id, mode = "public" }) {
 
                 {isEditing &&<div className="mt-8 flex justify-between items-center px-2">
                   <h4 className="text-sm text-gray-400 mb-2">Show Issue on Campus Feed</h4>
-                  <Switch />
+                  <Switch checked={shareOnFeed} onCheckedChange={(checked) => {setShareOnFeed(checked);}} />
                 </div>}
               </div>
             </aside>

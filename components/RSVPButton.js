@@ -1,12 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { rsvpToEvent, unRsvpFromEvent } from "@/lib/rsvp";
+import { api } from "@/lib/api";
 import { useUser } from "@/context/userContext";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import { socket } from "@/lib/socket";
 
-export default function RSVPButton({ eventId }) {
+export default function RSVPButton({ eventId, registered }) {
   const { user, token } = useUser();
 
   const [loading, setLoading] = useState(false);
@@ -46,11 +47,13 @@ export default function RSVPButton({ eventId }) {
 
     try {
       if (isRsvped) {
-        await unRsvpFromEvent(eventId, await token());
+        const response = await api("/tickets/unrsvp", "POST", { eventId });
         setIsRsvped(false);
+        socket.emit('rsvp_changed', {eventId, registered: registered+1})
       } else {
-        await rsvpToEvent(eventId, await token());
+        const response = await api("/tickets/rsvp", "POST", { eventId })
         setIsRsvped(true);
+        socket.emit('rsvp_changed', {eventId, registered: registered-1})
       }
     } catch (err) {
       setError(err.message);
@@ -68,8 +71,6 @@ export default function RSVPButton({ eventId }) {
       >
         {loading ? "Processing..." : isRsvped ? "Un-RSVP" : "RSVP"}
       </button>
-
-      {/* {error && <p className="text-red-500 text-sm mt-1">{error}</p>} */}
     </div>
   );
 }

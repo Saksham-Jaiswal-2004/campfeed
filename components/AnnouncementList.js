@@ -11,12 +11,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import Link from 'next/link';
-import Navbar from '@/components/Navbar';
 import { db } from "@/lib/firebase";
 import { collection, getDocs, getDoc, orderBy, query, doc } from "firebase/firestore";
 import { useUser } from "@/context/userContext";
 import { useRouter } from "next/navigation";
+import { api } from '@/lib/api';
+import DataSkeleton from './ui/DataSkeleton';
 
 const AnnouncementList = ({ setSelectedView, setSelectedId }) => {
   const [role, setRole] = useState("Select Role");
@@ -36,49 +36,53 @@ const AnnouncementList = ({ setSelectedView, setSelectedId }) => {
   }, [loading, user]);
 
   useEffect(() => {
-    const fetchMyAnnouncements = async () => {
-      if (!user) return;
+  const fetchMyAnnouncements = async () => {
+    if (!user) return;
 
-      try {
-        const q = query(
-          collection(db, "announcements"),
-          orderBy("createdAt", "desc")
-        );
+    try {
+      const a = await api("/announcements/all-announcements", "GET");
 
-        const snapshot = await getDocs(q);
-        const announcementsWithUser = await Promise.all(
-          snapshot.docs.map(async (docSnap) => {
-            const announcementData = docSnap.data();
-            let createdByData = {};
+      const announcementData = a.data;
 
-            try {
-              const userRef = doc(db, "users", announcementData.createdBy);
-              const userSnap = await getDoc(userRef);
-              if (userSnap.exists()) {
-                createdByData = userSnap.data();
-              }
-            } catch (error) {
-              console.error("Error fetching user for announcement:", error);
+      const announcementsWithUser = await Promise.all(
+        announcementData.map(async (announcement) => {
+          let createdByData = {};
+
+          try {
+            const userRef = doc(db, "users", announcement.createdBy);
+
+            const userSnap = await getDoc(userRef);
+
+            if (userSnap.exists()) {
+              createdByData = userSnap.data();
             }
 
-            return {
-              id: docSnap.id,
-              ...announcementData,
-              createdByUser: createdByData,
-            };
-          })
-        );
+          } catch (error) {
+            console.error(
+              "Error fetching user for announcement:",
+              error
+            );
+          }
 
-        setAnnouncements(announcementsWithUser);
-      } catch (err) {
-        console.error("Error fetching announcements: ", err);
-      } finally {
-        setFetching(false);
-      }
-    };
+          return {
+            ...announcement,
+            createdByUser: createdByData,
+          };
+        })
+      );
 
-    fetchMyAnnouncements();
-  }, [user]);
+      setAnnouncements(announcementsWithUser);
+
+    } catch (err) {
+      console.error("Error fetching announcements:", err);
+    } finally {
+      setFetching(false);
+    }
+  };
+
+  fetchMyAnnouncements();
+
+}, [user]);
 
   const filteredAnnouncements = useMemo(() => {
     return announcements.filter((announcement) => {
@@ -207,12 +211,12 @@ const AnnouncementList = ({ setSelectedView, setSelectedId }) => {
 
       <div className='w-full h-fit p-4 rounded-lg'>
         <div className='mb-4'>
-          <h2 className='navText text-xl'>Announcements - {filteredAnnouncements.length}</h2>
+          {/* <h2 className='navText text-xl'>Announcements - {filteredAnnouncements.length}</h2> */}
         </div>
 
         {fetching ? (
-          <div className='w-full h-full flex justify-center items-center navText text-3xl'>
-            Fetching All Announcements...
+          <div className='w-full h-full flex justify-center items-center'>
+            <DataSkeleton />
           </div>
         ) : filteredAnnouncements.length === 0 ? (
           <div className='w-full h-full flex justify-center items-center navText text-3xl'>
@@ -231,7 +235,7 @@ const AnnouncementList = ({ setSelectedView, setSelectedId }) => {
                         <span>•</span>
                         <span className='border border-gray-700 contentText py-[0.15rem] px-2 rounded-lg !text-white'>{announcement.createdByUser?.role}</span>
                         <span>•</span>
-                        {new Date(announcement.createdAt.toDate()).toLocaleString("en-GB", {
+                        {new Date(announcement.createdAt._seconds * 1000).toLocaleString("en-GB", {
                           day: "2-digit",
                           month: "short",
                           year: "numeric",

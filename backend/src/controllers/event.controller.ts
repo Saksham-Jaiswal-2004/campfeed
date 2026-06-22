@@ -1,3 +1,4 @@
+import { FieldValue } from "firebase-admin/firestore";
 import { db } from "../config/firebaseAdmin.js";
 import cacheKeys from "../redis/cacheKeys.js";
 import { getCache, setCache, deleteCache } from "../redis/cacheService.js";
@@ -35,8 +36,8 @@ export async function createEvent(req: any, res: any) {
   try {
     const event = {
       ...req.body,
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      createdAt: FieldValue.serverTimestamp(),
+      updatedAt: FieldValue.serverTimestamp(),
     };
 
     const docRef = await db.collection("events").add(event);

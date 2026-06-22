@@ -1,9 +1,8 @@
 "use client";
 import React, { useState } from 'react';
-import { db } from "@/lib/firebase";
-import { doc, deleteDoc } from "firebase/firestore";
 import { Dialog, DialogTrigger, DialogContent } from "@/components/ui/dialog";
 import { MdDeleteOutline } from "react-icons/md";
+import { api } from '@/lib/api';
 
 const DeleteIssueModal = ({ issue, onSuccess, onError }) => {
   const [isDeleting, setIsDeleting] = useState(false);
@@ -12,8 +11,7 @@ const DeleteIssueModal = ({ issue, onSuccess, onError }) => {
   const handleDeleteIssue = async () => {
     setIsDeleting(true);
     try {
-      const issueRef = doc(db, "issues", issue.id);
-      await deleteDoc(issueRef);
+      await api(`/issues/${issue.id}/delete`, "DELETE")
       
       setOpen(false);
       if (onSuccess) {

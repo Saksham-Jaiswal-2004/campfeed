@@ -39,6 +39,7 @@ import CampusIssuePage from "@/components/CampusIssuePage";
 import { BsBookmarks } from "react-icons/bs";
 import { LuTickets } from "react-icons/lu";
 import Tickets from "@/components/Tickets";
+import Loader from "@/components/ui/Loader";
 
 const Page = () => {
 
@@ -53,7 +54,7 @@ const Page = () => {
     router.refresh;
   };
 
-  if (loading || !userData) return <div className="h-screen flex items-center justify-center title text-3xl">Authenticating...</div>;
+  if (loading || !userData) return <Loader />;
 
   const links = [
     { href: "/StudentDash", view: "StudentDash", label: "Dashboard", icon: <MdOutlineDashboard /> },

@@ -129,7 +129,7 @@ const LogIssue = ({ setSelectedView }) => {
     setLoading(true);
 
     if (!user || !userData) {
-      alert("You must be logged in to post an event.");
+      alert("You must be logged in to log an issue.");
       return;
     }
 
@@ -151,8 +151,6 @@ const LogIssue = ({ setSelectedView }) => {
         is_anonymous: formData.anonymous,
         status: "in_progress",
         student_id: user.uid,
-        created_at: serverTimestamp(),
-        updated_at: serverTimestamp(),
         resolved_at: null,
         upvotes: 0,
       };

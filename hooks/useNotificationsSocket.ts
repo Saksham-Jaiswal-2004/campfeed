@@ -13,14 +13,14 @@ export const useNotificationsSocket = () => {
 
   useEffect(() => {
     const init = async () => {
-      if (!user?.uid) return;
+      if (!user?.uid) {
+        console.log("User Id Null!")
+        return;
+      }
 
-      const snap = await getDoc(doc(db, "users", user.uid));
-      const trueUser = snap.data();
+      socket.emit("join_user_room", user?.uid);
 
-      socket.emit("join_user_room", trueUser?.uid);
-
-      if (trueUser?.role === "Admin") {
+      if (user?.role === "Admin") {
         socket.emit("join_role_room", "admin");
       }
     };

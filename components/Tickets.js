@@ -7,6 +7,7 @@ import { TbMessageReport } from "react-icons/tb";
 import { CiClock2 } from "react-icons/ci";
 import { markAsReadDB, markAllAsReadDB } from '@/services/notification.service';
 import { FaRegFolderOpen } from "react-icons/fa6";
+import BlockSkeleton from './ui/BlockSkeleton';
 
 const Tickets = () => {
   const [view, setView] = useState("ALL");
@@ -18,31 +19,6 @@ const Tickets = () => {
       router.push("/auth/Login");
     }
   }, [loading, user]);
-
-  //   const notifications = useNotificationStore((s) => s.notifications);
-  //   const setNotifications = useNotificationStore((s) => s.setNotifications);
-  //   const markAsRead = useNotificationStore((s) => s.markAsRead);
-  //   const markAll = useNotificationStore((s) => s.markAllAsRead);
-
-  //   const handleMarkAsRead = async (id) => {
-  //     const previous = useNotificationStore.getState().notifications;
-  //     markAsRead(id);
-  //     try {
-  //       await markAsReadDB(id);
-  //     } catch {
-  //       setNotifications(previous);
-  //     }
-  //   };
-
-  //   const handleMarkAll = async () => {
-  //     const previous = useNotificationStore.getState().notifications;
-  //     markAll();
-  //     try {
-  //       await markAllAsReadDB(user.uid);
-  //     } catch {
-  //       setNotifications(previous);
-  //     }
-  //   };
 
   return (
     <div className='w-full h-screen overflow-y-scroll flex flex-col justify-start items-center px-5'>
@@ -101,6 +77,12 @@ const Tickets = () => {
         </div>
 
         {/* <button onClick={() => handleMarkAll()} className='cursor-pointer btnText bg-indigo-600/30 hover:bg-indigo-600/50 px-4 py-2 rounded-sm text-sm transition-all duration-200 ease-in-out flex justify-center items-center gap-2' >Mark All as Read</button> */}
+      </div>
+
+      <div className="w-full h-full flex flex-wrap gap-10 justify-center items-center mt-10">
+        <BlockSkeleton />
+        <BlockSkeleton />
+        <BlockSkeleton />
       </div>
 
       <div className='w-full h-fit py-4 mt-2'>

@@ -1,22 +1,13 @@
-import { db } from "@/lib/firebase";
 import {
-    collection,
-    addDoc,
-    getDocs,
-    query,
-    where,
-    updateDoc,
-    doc,
-    orderBy,
-    limit,
+    serverTimestamp,
 } from "firebase/firestore";
 import { createNotification } from "./notification.service";
-
-const serviceCollection = "issues";
+import { api } from "@/lib/api";
 
 export async function logIssue(data, user) {
     try {
-        const docRef = await addDoc(collection(db, serviceCollection), data);
+        const response = await api("/issues/post-issue", "POST", data);
+        const issueId = response.docId;
 
         const notification = {
             userId: user.uid,
@@ -26,13 +17,13 @@ export async function logIssue(data, user) {
             title: "New Issue Created Successfully",
             message: `Your issue ${data.title} have been logged successfully`,
             isRead: false,
-            entityId: docRef.id,
-            createdAt: Date.now(),
+            entityId: issueId,
+            createdAt: serverTimestamp(),
         };
 
         await createNotification(notification);
 
-        return docRef.id;
+        return issueId;
     } catch (error) {
         console.log("Issue Error: ", error);
         throw error;
@@ -41,9 +32,29 @@ export async function logIssue(data, user) {
 
 export async function changeStatus(id, newStatus) {
     try {
-        const ref = doc(db, "issues", id);
-        await updateDoc(ref, { status: newStatus });
-        
+        await api(`/issues/${id}/edit`, "PATCH", {status: newStatus});
+    } catch (error) {
+        throw error;
+    }
+}
+
+export async function editIssue(id, payload, user) {
+    try {
+        await api(`/issues/${id}/edit`, "PATCH", payload);
+
+        const notification = {
+            userId: user.uid,
+            senderId: user.uid,
+            senderName: 'SJ',
+            type: "ISSUE_UPDATED",
+            title: "Issue Updated Successfully",
+            message: `Your issue ${payload.title} have been updated successfully`,
+            isRead: false,
+            entityId: id,
+            createdAt: serverTimestamp(),
+        };
+
+        await createNotification(notification);
     } catch (error) {
         throw error;
     }

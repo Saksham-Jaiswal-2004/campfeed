@@ -27,6 +27,7 @@ import { MdOutlineInfo } from "react-icons/md";
 import { FiCheckCircle } from "react-icons/fi";
 import { div } from 'motion/react-client';
 import { useNotificationStore } from '@/store/notificationStore';
+import DashLoader from './ui/DashLoader';
 
 const StudentDash = ({setSelectedView}) => {
       const { user, loading, token } = useUser();
@@ -254,7 +255,7 @@ const StudentDash = ({setSelectedView}) => {
                     </button>
                     <button onClick = {() => {setSelectedView("AllIssues")}} className='cursor-pointer btnText bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-sm text-sm transition-all duration-200 ease-in-out flex justify-center items-center gap-2'><TbMessageReport className='text-lg' /> Issues</button>
                     <button onClick = {() => {setSelectedView("LogIssue")}} className='cursor-pointer btnText bg-indigo-600/30 hover:bg-indigo-600/50 px-4 py-2 rounded-sm text-sm transition-all duration-200 ease-in-out flex justify-center items-center gap-2'><IoAddOutline className='text-lg' /> Log an Issue</button>
-                    <button onClick = {async () => {tokenId()}} className='cursor-pointer btnText bg-indigo-600/30 hover:bg-indigo-600/50 px-4 py-2 rounded-sm text-sm transition-all duration-200 ease-in-out flex justify-center items-center gap-2'><IoAddOutline className='text-lg' /> Token</button>
+                    {/* <button onClick = {async () => {tokenId()}} className='cursor-pointer btnText bg-indigo-600/30 hover:bg-indigo-600/50 px-4 py-2 rounded-sm text-sm transition-all duration-200 ease-in-out flex justify-center items-center gap-2'><IoAddOutline className='text-lg' /> Token</button> */}
                 </div>
             </div>
 
@@ -308,6 +309,7 @@ const StudentDash = ({setSelectedView}) => {
                     </div>
 
                     <div className='flex flex-col justify-center items-center px-2 gap-1'>
+                      {/* <DashLoader /> */}
                         {issues.map((issue) => (
                         <div key={issue.id} className='relative w-full flex-col border border-gray-800/60 cursor-pointer hover:bg-[#020818] rounded-sm px-5 py-2'>
                             <h3 className='text-base'>{issue.title}</h3>

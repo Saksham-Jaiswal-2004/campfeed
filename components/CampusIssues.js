@@ -22,6 +22,7 @@ import { onSnapshot, query, orderBy } from "firebase/firestore";
 import { useUser } from "@/context/userContext";
 import { useRouter } from "next/navigation";
 import ShareButton from './ShareButton';
+import DataSkeleton from './ui/DataSkeleton';
 
 const CampusIssues = ({setSelectedView, setSelectedId}) => {
   const [status, setStatus] = useState("Select Status");
@@ -226,8 +227,8 @@ const CampusIssues = ({setSelectedView, setSelectedId}) => {
         </div> */}
 
         {fetching ? (
-          <div className='w-full h-full contentText flex justify-center items-center navText text-3xl'>
-            Fetching All Issues...
+          <div className='w-full h-full flex justify-center items-center'>
+            <DataSkeleton />
           </div>
         ) : filteredIssues.length === 0 ? (
           <div className='w-full h-full contentText flex justify-center items-center navText text-3xl'>

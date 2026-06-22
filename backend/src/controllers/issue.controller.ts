@@ -1,3 +1,4 @@
+import { FieldValue } from "firebase-admin/firestore";
 import { db } from "../config/firebaseAdmin.js";
 import cacheKeys from "../redis/cacheKeys.js";
 import { getCache, setCache, deleteCache } from "../redis/cacheService.js";
@@ -143,8 +144,8 @@ export async function createIssue(req: any, res: any) {
   try {
     const issue = {
       ...req.body,
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      created_at: FieldValue.serverTimestamp(),
+      updated_at: FieldValue.serverTimestamp(),
     };
 
     const docRef = await db.collection("issues").add(issue);
@@ -182,6 +183,7 @@ export async function createIssue(req: any, res: any) {
 
     return res.json({
       success: true,
+      docId: docRef.id,
     });
   } catch (err: any) {
     return res.status(500).json({ error: err.message });
@@ -204,13 +206,17 @@ export async function editIssue(req: any, res: any) {
 
     await docRef.update({
       ...req.body,
-      updatedAt: new Date(),
+      updatedAt: FieldValue.serverTimestamp(),
     });
+
+    const shouldInvalidateCampus =
+      doc.data()?.shareOnFeed !== req.body.shareOnFeed ||
+      doc.data()?.shareOnFeed === true;
 
     await Promise.all([
       deleteCache(cacheKeys.adminIssues),
       deleteCache(cacheKeys.userIssues(doc.data()?.student_id)),
-      doc.data()?.shareOnFeed ? deleteCache(cacheKeys.campusIssues) : "",
+      shouldInvalidateCampus ? deleteCache(cacheKeys.campusIssues) : "",
     ]);
 
     return res.json({

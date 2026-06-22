@@ -22,8 +22,11 @@ export async function createNotification(data: Notification) {
     const docRef = await addDoc(collection(db, NOTIF_COLLECTION), data);
     const notification = {...data, id: docRef.id,};
 
-    if(notification.type.includes("ISSUE"))
+    if(notification.type.includes("ISSUE_CREATED"))
     socket.emit("issue_created", notification);
+
+    if(notification.type.includes("ISSUE_UPDATED"))
+    socket.emit("issue_updated", notification);
 
     if(notification.type.includes("COMMENT"))
     socket.emit("send_message", notification);

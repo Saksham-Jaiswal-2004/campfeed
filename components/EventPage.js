@@ -1,6 +1,4 @@
-"use client"
-import { doc, getDoc } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+"use client";
 import { FaRegCalendar } from "react-icons/fa6";
 import { SlClock } from "react-icons/sl";
 import { IoLocationOutline } from "react-icons/io5";
@@ -13,41 +11,40 @@ import ShareButton from "@/components/ShareButton";
 import { useEffect, useState } from "react";
 import { CiBookmark } from "react-icons/ci";
 import { PiWarningCircle } from "react-icons/pi";
+import { api } from "@/lib/api";
+import { eventService } from "@/services/events.service";
+import { useEventStore } from "@/store/eventStore";
+import DataSkeleton from "./ui/DataSkeleton";
 
 export default function EventPage({ setSelectedView, id }) {
-  const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const data = useEventStore((s) => s.selectedEvent);
+  const loading = useEventStore((s) => s.loading);
 
   useEffect(() => {
-    if (!id) return;
+    try {
+      eventService.fetchEventById(id);
+    } catch (err) {
+      console.error(err);
+      setData(null);
+    }
+  }, []);
 
-    const fetchEvent = async () => {
-      try {
-        const docRef = doc(db, "events", id);
-        const snap = await getDoc(docRef);
+  if (!id)
+    return (
+      <div className="h-screen w-screen flex justify-center items-center text-xl">
+        Event ID not provided
+      </div>
+    );
 
-        if (snap.exists()) {
-          setData(snap.data());
-        } else {
-          setData(null);
-        }
-      } catch (err) {
-        console.error(err);
-        setData(null);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchEvent();
-  }, [id]);
-
-  if (!id) return <div className="h-screen w-screen flex justify-center items-center text-xl">Event ID not provided</div>;
-
-  if (loading) return <p>Loading...</p>;
+  if (loading) return (
+    <div className="w-[80%] h-full flex flex-col justify-center items-center gap-8">
+      <DataSkeleton />
+      <DataSkeleton />
+    </div>
+  );
   if (!data) return <p>Event not found</p>;
 
-  const startDate = data.startDate?.toDate ? new Date(data.startDate.toDate()) : null;
+  const startDate = new Date(data.startDate?._seconds * 1000);
   const registered = data.registered ?? 0;
   const capacity = data.capacity ?? 1;
   const tags = data.tags ?? [];
@@ -57,12 +54,25 @@ export default function EventPage({ setSelectedView, id }) {
 
   return (
     <div className="w-full h-screen overflow-y-scroll flex flex-col justify-start items-center">
-
       <div className="flex flex-col justify-center items-center mt-8 px-4 py-8 w-[85%] h-fit">
         <p className="mb-2 text-xs contentText flex justify-start items-center gap-2 w-full">
-          <button onClick={() => { setSelectedView("StudentDash") }} className="hover:text-white">Dashboard</button>
+          <button
+            onClick={() => {
+              setSelectedView("StudentDash");
+            }}
+            className="hover:text-white"
+          >
+            Dashboard
+          </button>
           <IoIosArrowForward />
-          <button onClick={() => { setSelectedView("EventList") }} className="hover:text-white">Events</button>
+          <button
+            onClick={() => {
+              setSelectedView("EventList");
+            }}
+            className="hover:text-white"
+          >
+            Events
+          </button>
           <IoIosArrowForward />
           <span className="!text-white !text-sm">{data.name || "Event"}</span>
         </p>
@@ -72,7 +82,10 @@ export default function EventPage({ setSelectedView, id }) {
             <h1 className="text-5xl title">{data.name || "Event"}</h1>
           </div>
           <div className="flex justify-center items-center gap-2">
-            <ShareButton title={data.name || "Event"} text={`Check out this Event: ${data.name || "Event"}`} />
+            <ShareButton
+              title={data.name || "Event"}
+              text={`Check out this Event: ${data.name || "Event"}`}
+            />
 
             <button className="text-lg px-3 py-2 border border-gray-700 hover:bg-gray-700/20 rounded-md contentText transition-all duration-200 ease-in-out">
               <CiBookmark />
@@ -94,7 +107,10 @@ export default function EventPage({ setSelectedView, id }) {
 
         <div className="flex gap-3 text-sm mt-2 flex-wrap w-full px-2">
           {tags.map((tag, index) => (
-            <p key={index} className="border border-gray-700 bg-cyan-500/50 contentText py-1 px-2 rounded-lg">
+            <p
+              key={index}
+              className="border border-gray-700 bg-cyan-500/50 contentText py-1 px-2 rounded-lg"
+            >
               {tag}
             </p>
           ))}
@@ -103,28 +119,42 @@ export default function EventPage({ setSelectedView, id }) {
         <div className="w-full h-fit flex justify-center items-start gap-4 my-4">
           <div className="w-[68%] min-h-[50vh] h-fit border border-gray-700 rounded-md p-4">
             <h2 className="subtitle text-3xl">{data.name}</h2>
-            <p className="px-4 mt-2 contentText">{data.description || "No description provided."}</p>
+            <p className="px-4 mt-2 contentText">
+              {data.description || "No description provided."}
+            </p>
           </div>
 
           <div className="w-[30%] h-fit min-h-[50vh] border border-gray-700 rounded-md p-4">
             <h2 className="subtitle text-base">Event Information</h2>
 
             <div className="w-full flex flex-col gap-2 items-start pl-2 mt-4">
-              {startDate && (
-                <>
-                  <p className="flex justify-center items-center gap-2 text-sm navText contentText">
-                    <FaRegCalendar /> {startDate.toLocaleString("en-GB", { weekday: "long", day: "2-digit", month: "long", year: "numeric" })}
-                  </p>
-                  <p className="flex justify-center items-center gap-2 text-sm navText contentText">
-                    <SlClock /> {startDate.toLocaleString("en-GB", { hour: "2-digit", minute: "2-digit", hour12: true })}
-                  </p>
-                </>
-              )}
+              {/* {startDate && ( */}
+              <>
+                <p className="flex justify-center items-center gap-2 text-sm navText contentText">
+                  <FaRegCalendar />{" "}
+                  {startDate.toLocaleString("en-GB", {
+                    weekday: "long",
+                    day: "2-digit",
+                    month: "long",
+                    year: "numeric",
+                  })}
+                </p>
+                <p className="flex justify-center items-center gap-2 text-sm navText contentText">
+                  <SlClock />{" "}
+                  {startDate.toLocaleString("en-GB", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    hour12: true,
+                  })}
+                </p>
+              </>
+              {/* )} */}
               <p className="flex justify-center items-center gap-2 text-xs navText contentText">
                 <IoLocationOutline className="text-base" /> {venue}
               </p>
               <p className="flex justify-center items-center gap-2 text-xs navText contentText">
-                <GoPeople className="text-base" /> {registered}/{capacity} Registered
+                <GoPeople className="text-base" /> {registered}/{capacity}{" "}
+                Registered
               </p>
               <div className="w-full mt-1">
                 <Progress value={(registered / capacity) * 100} />
@@ -132,7 +162,7 @@ export default function EventPage({ setSelectedView, id }) {
 
               <hr className="w-full justify-self-center border border-gray-800 my-3" />
 
-              <RSVPButton eventId={id} />
+              <RSVPButton eventId={id} registered={registered} />
             </div>
           </div>
         </div>
@@ -141,18 +171,27 @@ export default function EventPage({ setSelectedView, id }) {
           <div className="w-[30%] h-fit min-h-[22vh] border border-gray-700 rounded-md p-4 flex justify-center items-center">
             {/* <h2 className="subtitle text-base">Related</h2> */}
             <div className="w-full h-[10vh] flex flex-col justify-center items-center gap-1">
-              <button className="px-4 py-2 w-full contentText text-sm rounded-sm hover:bg-gray-600/20 border border-gray-700 disabled:opacity-50"
-                onClick={() => { setSelectedView("Announcements") }}
+              <button
+                className="px-4 py-2 w-full contentText text-sm rounded-sm hover:bg-gray-600/20 border border-gray-700 disabled:opacity-50"
+                onClick={() => {
+                  setSelectedView("Announcements");
+                }}
               >
                 View All Announcements
               </button>
-              <button className="px-4 py-2 w-full contentText text-sm rounded-sm hover:bg-gray-600/20 border border-gray-700 disabled:opacity-50"
-                onClick={() => { setSelectedView("EventList") }}
+              <button
+                className="px-4 py-2 w-full contentText text-sm rounded-sm hover:bg-gray-600/20 border border-gray-700 disabled:opacity-50"
+                onClick={() => {
+                  setSelectedView("EventList");
+                }}
               >
                 Explore Events
               </button>
-              <button className="px-4 py-2 w-full contentText text-sm rounded-sm hover:bg-gray-600/20 border border-gray-700 disabled:opacity-50"
-                onClick={() => { setSelectedView("LogIssue") }}
+              <button
+                className="px-4 py-2 w-full contentText text-sm rounded-sm hover:bg-gray-600/20 border border-gray-700 disabled:opacity-50"
+                onClick={() => {
+                  setSelectedView("LogIssue");
+                }}
               >
                 Report an Issue
               </button>

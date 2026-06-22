@@ -18,6 +18,14 @@ export function setupNotificationSocket(io: Server, socket: Socket) {
     io.to(`user_${data.senderId}`).emit("receive_notification", data);
   });
 
+  socket.on("new_announcement", (data) => {
+    io.emit("receive_notification", data);
+  });
+
+  socket.on("new_event", (data) => {
+    io.emit("receive_notification", data);
+  });
+
   socket.on("send_notification", ({ userId, notification }) => {
     io.to(`user_${userId}`).emit("receive_notification", notification);
   });

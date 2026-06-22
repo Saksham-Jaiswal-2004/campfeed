@@ -31,7 +31,6 @@ const EventsList = ({ setSelectedView, setSelectedId }) => {
   }, [loading, user]);
 
   const events = useEventStore(s => s.events);
-
   const fetching = useEventStore(s => s.loading);
 
   useEffect(() => {

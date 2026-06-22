@@ -6,6 +6,7 @@ import { useUser } from "@/context/userContext";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { socket } from "@/lib/socket";
+import { useEventStore } from "@/store/eventStore";
 
 export default function RSVPButton({ eventId, registered }) {
   const { user, token } = useUser();
@@ -46,14 +47,25 @@ export default function RSVPButton({ eventId, registered }) {
     setError("");
 
     try {
+      const store = useEventStore.getState();
+      const event = store.events.find((e) => e.id === eventId);
+
       if (isRsvped) {
         const response = await api("/tickets/unrsvp", "POST", { eventId });
-        setIsRsvped(false);
-        socket.emit('rsvp_changed', {eventId, registered: registered+1})
+        if(response.success)
+        {
+          setIsRsvped(false);
+          store.updateEvent(eventId, {registered: event.registered-1})
+        }
+        // socket.emit('rsvp_changed', {eventId, registered: registered+1})
       } else {
         const response = await api("/tickets/rsvp", "POST", { eventId })
-        setIsRsvped(true);
-        socket.emit('rsvp_changed', {eventId, registered: registered-1})
+        if(response.success)
+          {
+            setIsRsvped(true);
+            store.updateEvent(eventId, {registered: event.registered+1})
+        }
+        // socket.emit('rsvp_changed', {eventId, registered: registered-1})
       }
     } catch (err) {
       setError(err.message);

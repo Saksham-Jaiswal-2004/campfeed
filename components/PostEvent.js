@@ -178,7 +178,12 @@ const PostEvent = () => {
                 tags: formData.tags.split(",").map(tag => tag.trim()).filter(tag => tag),
                 targetAudience: formData.targetAudience,
                 createdAt: serverTimestamp(),
-                createdBy: user.uid,
+                createdBy: {
+                    id: user.uid,
+                    name: user.displayName,
+                    email: user.email,
+                    profileImage: user.photoURL,
+                },
                 eventPosterURL: uploadedImages,
             });
 

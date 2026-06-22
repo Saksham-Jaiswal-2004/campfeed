@@ -10,48 +10,25 @@ import { CiBookmark } from "react-icons/ci";
 import { PiWarningCircle } from "react-icons/pi";
 import { api } from "@/lib/api";
 import DataSkeleton from "./ui/DataSkeleton";
+import { useAnnouncementStore } from "@/store/announcementStore";
+import { announcementService } from "@/services/announcements.service";
 
 export default function AnnouncementPage({setSelectedView, id}) {
 
-    const [announcement, setAnnouncement] = useState(null);
+    const announcement = useAnnouncementStore((s) => s.selectedAnnouncement)
+    const loading = useAnnouncementStore((s) => s.loading)
+
     const [user, setUser] = useState(null);
-    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
       if (!id) return;
-
-      const fetchAnnouncement = async () => {
         try {
-          const a = await api(`/announcements/${id}`, "GET");
-  
-          if (!a) {
-            setAnnouncement(null);
-            return;
-          }
-
-          setAnnouncement(a.data);
-  
-          if (a.data?.createdBy) {
-            try {
-              const userSnap = await getDoc(doc(db, "users", a.data.createdBy));
-              if (userSnap.exists()) {
-                setUser(userSnap.data());
-              }
-            } catch (err) {
-              console.error(err);
-            }
-          }
+          announcementService.fetchAnnouncementById(id);
         } catch (err) {
           console.error(err);
-          setAnnouncement(null);
           setUser(null);
-        } finally {
-          setLoading(false);
         }
-      };
-
-      fetchAnnouncement();
-    }, [id]);
+    }, []);
     
     if (!id) return <div className="h-screen w-screen flex justify-center items-center text-xl">Announcement ID not provided</div>;
 
@@ -81,7 +58,7 @@ export default function AnnouncementPage({setSelectedView, id}) {
                     </div>
 
                     <div className="flex justify-center items-center gap-2">
-                        <ShareButton title={announcement.name} text={`Check out this Announcement: ${announcement.name}`} />
+                        <ShareButton title={announcement.title} text={`Check out this Announcement: ${announcement.title}`} />
 
                         <button className="text-lg px-3 py-2 border border-gray-700 hover:bg-gray-700/20 rounded-md contentText transition-all duration-200 ease-in-out">
                           <CiBookmark />
@@ -105,15 +82,15 @@ export default function AnnouncementPage({setSelectedView, id}) {
                     <div className="w-[68%] min-h-[75vh] h-fit border border-gray-700 rounded-md p-4">
                         <div className="flex gap-3 justify-start items-center px-2">
                             <div>
-                                <img src={user.profilePic} alt={user.name} className="rounded-full w-15 h-15" />
+                                <img src={user?.profilePic} alt={user?.name} className="rounded-full w-15 h-15" />
                             </div>
 
                             <div className="w-full">
                                 <div className="flex justify-between items-center w-full">
-                                    <h3>{user.username}</h3>
+                                    <h3>{user?.username}</h3>
                                     <span className='border border-gray-700 contentText py-[0.15rem] px-2 rounded-lg !text-white !text-xs'>{user?.role}</span>
                                 </div>
-                                <p className="text-xs contentText">{user.email}</p>
+                                <p className="text-xs contentText">{user?.email}</p>
                             </div>
                         </div>
 

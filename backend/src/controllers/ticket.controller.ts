@@ -183,6 +183,43 @@ export const getMyTickets = async (req: Request, res: Response) => {
   }
 };
 
+export const getTicketById = async (req: any, res: Response) => {
+  try {
+    const user = (req as any).user;
+    const { ticketId } = req.params;
+
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized",
+      });
+    }
+
+    const doc = await db.collection("tickets").doc(ticketId).get();
+
+    if (!doc.exists) {
+      return res.status(404).json({ error: "Ticket not found" });
+    }
+
+    const ticket = {
+      id: doc.id,
+      ...doc.data(),
+    };
+
+    return res.status(200).json({
+      success: true,
+      data: ticket,
+    });
+  } catch (error: any) {
+    console.error("Fetch Ticket Error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch ticket",
+    });
+  }
+};
+
 export const verifyTicket = async (req: Request, res: Response) => {
   try {
     const { token } = req.body;

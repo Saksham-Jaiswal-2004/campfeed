@@ -11,78 +11,30 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { db } from "@/lib/firebase";
-import { collection, getDocs, getDoc, orderBy, query, doc } from "firebase/firestore";
 import { useUser } from "@/context/userContext";
-import { useRouter } from "next/navigation";
-import { api } from '@/lib/api';
 import DataSkeleton from './ui/DataSkeleton';
+import { useAnnouncements } from '@/hooks/useAnnouncements';
+import { announcementService } from '@/services/announcements.service';
+import { useAnnouncementStore } from '@/store/announcementStore';
 
 const AnnouncementList = ({ setSelectedView, setSelectedId }) => {
   const [role, setRole] = useState("Select Role");
   const [priority, setPriority] = useState("Select Priority");
   const [audience, setAudience] = useState("Select Audience");
-  const { user, loading } = useUser();
-  const [announcements, setAnnouncements] = useState([]);
-  const [fetching, setFetching] = useState(true);
+  const { user } = useUser();
   const [searchQuery, setSearchQuery] = useState("");
   const [expanded, setExpanded] = useState({});
-  const router = useRouter();
+
+  const announcements = useAnnouncementStore(s => s.announcements)
+  const loading = useAnnouncementStore(s => s.loading)
 
   useEffect(() => {
-    if (!loading && !user) {
-      router.push("/auth/Login");
-    }
-  }, [loading, user]);
-
-  useEffect(() => {
-  const fetchMyAnnouncements = async () => {
-    if (!user) return;
-
     try {
-      const a = await api("/announcements/all-announcements", "GET");
-
-      const announcementData = a.data;
-
-      const announcementsWithUser = await Promise.all(
-        announcementData.map(async (announcement) => {
-          let createdByData = {};
-
-          try {
-            const userRef = doc(db, "users", announcement.createdBy);
-
-            const userSnap = await getDoc(userRef);
-
-            if (userSnap.exists()) {
-              createdByData = userSnap.data();
-            }
-
-          } catch (error) {
-            console.error(
-              "Error fetching user for announcement:",
-              error
-            );
-          }
-
-          return {
-            ...announcement,
-            createdByUser: createdByData,
-          };
-        })
-      );
-
-      setAnnouncements(announcementsWithUser);
-
+      announcementService.fetchAnnouncements();
     } catch (err) {
       console.error("Error fetching announcements:", err);
-    } finally {
-      setFetching(false);
     }
-  };
-
-  fetchMyAnnouncements();
-
-}, [user]);
+}, []);
 
   const filteredAnnouncements = useMemo(() => {
     return announcements.filter((announcement) => {
@@ -211,10 +163,9 @@ const AnnouncementList = ({ setSelectedView, setSelectedId }) => {
 
       <div className='w-full h-fit p-4 rounded-lg'>
         <div className='mb-4'>
-          {/* <h2 className='navText text-xl'>Announcements - {filteredAnnouncements.length}</h2> */}
         </div>
 
-        {fetching ? (
+        {loading ? (
           <div className='w-full h-full flex justify-center items-center'>
             <DataSkeleton />
           </div>

@@ -69,9 +69,18 @@ export const createRSVPAndTicket = async ({ eventId, user }: RSVPRequest) => {
       ticketId,
     });
 
+    const eventDoc = await db.collection("events").doc(eventId).get();
+    const eventData = eventDoc.data()
+
     transaction.set(ticketRef, {
       ticketId,
-      eventId,
+      event: {
+        id: eventDoc.id,
+        name: eventData?.name,
+        venue: eventData?.venue,
+        startDate: eventData?.startDate,
+        endDate: eventData?.endDate,
+      },
       userId: user.uid,
       token,
       used: false,

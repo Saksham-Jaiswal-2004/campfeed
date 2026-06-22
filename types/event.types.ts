@@ -7,19 +7,14 @@ export interface Event {
   contactInfo: string;
   targetAudience: string;
   tags: string[];
-
-  createdBy: string;
-
   capacity: number;
   registered: number;
-
   eventPosterURL: string | null;
-
   startDate: string;
   endDate: string;
   createdAt: string;
-
   createdByUser?: {
+    id?: string,
     name?: string;
     avatar?: string;
     email?: string;

@@ -31,7 +31,12 @@ const PostAnnouncement = () => {
                 ...formData,
                 tags: formData.tags.split(",").map(tag => tag.trim()).filter(Boolean),
                 createdAt: serverTimestamp(),
-                createdBy: user.uid,
+                createdBy: {
+                    id: user.uid,
+                    name: user.displayName,
+                    email: user.email,
+                    profileImage: user.photoURL,
+                },
                 expiryDate: formData.expiryDate ? new Date(formData.expiryDate) : null,
             };
 

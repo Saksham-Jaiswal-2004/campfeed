@@ -150,7 +150,12 @@ const LogIssue = ({ setSelectedView }) => {
         shareOnFeed: formData.shareOnFeed,
         is_anonymous: formData.anonymous,
         status: "in_progress",
-        student_id: user.uid,
+        createdBy: {
+            id: user.uid,
+            name: user.displayName,
+            email: user.email,
+            profileImage: user.photoURL,
+        },
         resolved_at: null,
         upvotes: 0,
       };

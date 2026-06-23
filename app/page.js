@@ -1,4 +1,4 @@
-// import Footer from "@/components/Footer";
+"use client"
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 import { PinContainer } from "@/components/ui/3d-pin";
@@ -11,12 +11,16 @@ import Link from "next/link";
 import { cardData } from "@/constants/Cards";
 import { testimonialsData } from "@/constants/Testimonials";
 import { TbLayoutDashboardFilled } from "react-icons/tb";
+import { useUser } from "@/context/userContext";
+import Loader from "@/components/ui/Loader";
 
 export default function Home() {
 
   const cards = cardData;
-
   const testimonials = testimonialsData;
+  const { user, userData, login, logout, loading } = useUser();
+
+  if (loading) return <Loader />;
 
   return (
     <>

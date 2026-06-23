@@ -23,6 +23,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import Link from "next/link";
+import BlockSkeleton from "./ui/BlockSkeleton";
 
 const Events = ({ setSelectedView }) => {
   const { user, userData } = useUser();
@@ -114,7 +115,11 @@ const Events = ({ setSelectedView }) => {
       </div>
 
       {loading ? (
-        <p className="contentText mt-10">Loading your events...</p>
+        <div className="w-full h-full flex flex-wrap gap-10 justify-center items-center">
+          <BlockSkeleton />
+          <BlockSkeleton />
+          <BlockSkeleton />
+        </div>
       ) : events.length === 0 ? (
         <p className="contentText mt-10">No events found.</p>
       ) : (

@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { GrFormView } from "react-icons/gr";
 import { MdDelete } from "react-icons/md";
+import DataSkeleton from './ui/DataSkeleton';
 
 const Announcements = ({ setSelectedView }) => {
 
@@ -153,7 +154,10 @@ const Announcements = ({ setSelectedView }) => {
       </div>
 
       {loading ? (
-        <p className="contentText mt-10">Loading your announcements...</p>
+        <div className='w-full h-full flex flex-col justify-center items-center gap-8'>
+          <DataSkeleton />
+          <DataSkeleton />
+        </div>
       ) : announcements.length === 0 ? (
         <p className="contentText mt-10">No announcements found.</p>
       ) : (

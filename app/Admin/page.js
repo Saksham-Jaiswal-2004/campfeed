@@ -63,7 +63,7 @@ const Page = () => {
     { href: "/Admin", view: "Users", label: "Analytics", icon: <MdOutlineAnalytics /> },
     { href: "/Admin", view: "Users", label: "Users", icon: <GoPeople /> },
     { href: "/Admin", view: "Users", label: "Reports", icon: <TbReportSearch /> },
-    { href: "/Admin", view: "Settings", label: "Settings", icon: <IoSettingsOutline /> },
+    // { href: "/Admin", view: "Settings", label: "Settings", icon: <IoSettingsOutline /> },
   ];
 
   const home = { href: "/", label: "Back to Campus", icon: <RiHome3Line /> };

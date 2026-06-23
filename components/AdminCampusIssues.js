@@ -26,6 +26,7 @@ import { GrFormView } from "react-icons/gr";
 import { MdDelete } from "react-icons/md";
 import { TbMessage2Cancel } from "react-icons/tb";
 import { CiExport } from "react-icons/ci";
+import DataSkeleton from './ui/DataSkeleton';
 
 const AdminCampusIssues = ({setSelectedView, setSelectedId}) => {
   const [status, setStatus] = useState("Select Status");
@@ -184,8 +185,9 @@ const AdminCampusIssues = ({setSelectedView, setSelectedId}) => {
 
       <div className='w-full h-fit p-4 rounded-lg'>
         {fetching ? (
-          <div className='w-full h-full contentText flex justify-center items-center navText text-3xl'>
-            Fetching All Issues...
+          <div className='w-full h-full flex flex-col justify-center items-center gap-8'>
+            <DataSkeleton />
+            <DataSkeleton />
           </div>
         ) : filteredIssues.length === 0 ? (
           <div className='w-full h-full contentText flex justify-center items-center navText text-3xl'>

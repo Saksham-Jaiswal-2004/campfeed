@@ -26,7 +26,7 @@ const Navbar = () => {
 
     return (
         <div className='w-screen fixed top-0 left-0 flex justify-center items-center pt-3 z-[999]'>
-          <div className='w-[75%] flex justify-between items-center px-10 py-4 navbar bg-black/10'>
+          <div className='w-[75%] flex justify-between items-center px-10 py-4 navbar rounded-xl! bg-[#020613]/80'>
               <div className="logo cursor-pointer">
                   <Link href={"/"} prefetch={true} className='flex justify-center items-center gap-2'>
                       <div className='h-9 w-9 rounded-lg bg-gradient-to-r from-indigo-500 to-cyan-400 flex justify-center items-center'>

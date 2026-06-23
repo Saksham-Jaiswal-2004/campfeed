@@ -46,6 +46,7 @@ export const UserProvider = ({ children }) => {
             await signOut(auth);
             setUser(null);
             setUserData(null);
+            setLoading(false);
         } catch (err) {
             console.error("Logout failed:", err.message);
         }

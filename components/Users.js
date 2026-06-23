@@ -19,6 +19,7 @@ import { collection, getDocs } from "firebase/firestore";
 import { doc, updateDoc } from "firebase/firestore";
 import { useUser } from "@/context/userContext";
 import { Switch } from './ui/switch';
+import { Skeleton } from './ui/skeleton';
 
 const Users = () => {
 
@@ -164,18 +165,25 @@ const Users = () => {
         </div> */}
 
         <div className='flex gap-0 justify-between items-center px-5 mb-4'>
-          <p className='w-[28%] contentText text-xs flex justify-start items-center'>User</p>
+          <p className='w-[25%] contentText text-xs flex justify-start items-center'>User</p>
           <p className='w-[10%] contentText text-xs flex justify-center items-center'>Role</p>
           <p className='w-[12%] contentText text-xs flex justify-center items-center'>Department</p>
+          <p className='w-[5%] contentText text-xs flex justify-center items-center'>Active</p>
           <p className='w-[15%] contentText text-xs flex justify-center items-center'>Joined</p>
-          <p className='w-[15%] contentText text-xs flex justify-center items-center'>Last Active</p>
+          <p className='w-[15%] contentText text-xs flex justify-center items-center'>Last Signed In</p>
           <p className='w-[5%] contentText text-xs flex justify-center items-center'>Disable</p>
-          <p className='w-[15%] contentText text-xs flex justify-center items-center'>Actions</p>
+          <p className='w-[12%] contentText text-xs flex justify-center items-center'>Actions</p>
         </div>
 
         {loading ? (
-          <div className='w-full h-full flex justify-center items-center'>
-            <p className="text-white text-xl px-4 py-2">Loading users...</p>
+          <div className='w-full h-full flex justify-center items-center mb-6'>
+            <div className="flex w-full max-w-6xl flex-col gap-2">
+              {Array.from({ length: 6 }).map((_, index) => (
+                <div className="flex gap-4" key={index}>
+                  <Skeleton className="h-12 w-full flex-1" />
+                </div>
+              ))}
+            </div>
           </div>
         ) : filteredUsers.length === 0 ? (
           <div className='w-full h-full flex justify-center items-center'>
@@ -184,7 +192,7 @@ const Users = () => {
         ) : (
           filteredUsers.map((user, index) => (
             <div key={index} className='flex gap-0 justify-between items-center px-5 my-2 border-t-[0.1px] py-2 border-gray-800'>
-              <div className='w-[28%] text-base flex justify-start items-center gap-2'>
+              <div className='w-[25%] text-base flex justify-start items-center gap-2'>
                 <div className='bg-gray-500 w-10 h-10 rounded-full flex justify-center items-center'>
                   {user.profilePic ? <img src={user.profilePic} alt={user.name} className='rounded-full w-10 h-10' /> : <span>{user?.name[0]}</span>}
                 </div>
@@ -200,6 +208,7 @@ const Users = () => {
               {user.role === "Student" && <p className='w-[10%] text-xs text-green-500 flex justify-center items-center'><span className='flex items-center gap-1 bg-green-800/10 border border-green-800 w-fit px-2 py-1 rounded-full'><PiStudentFill />{user.role}</span></p>}
 
               <p className='w-[12%] text-sm flex justify-center items-center'>{user.branch}</p>
+              <p className='w-[5%] text-sm flex justify-center items-center'><span className='border border-gray-700 bg-slate-900 p-[0.35rem] rounded-full'></span></p>
               <p className='w-[15%] text-sm flex justify-center items-center'>{new Date(user.metadata.creationTime).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", hour12: true })}</p>
               <p className='w-[15%] text-sm flex justify-center items-center'>{new Date(user.metadata.lastSignInTime).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", hour12: true })}</p>
 
@@ -207,7 +216,7 @@ const Users = () => {
                 <Switch />
               </div>
 
-              <p className='w-[15%] text-sm flex justify-center items-center'>
+              <p className='w-[12%] text-sm flex justify-center items-center'>
                 <select name="role" id={`role-${user.uid}`} defaultValue={user.role} onChange={(e) => {
                   const newRole = e.target.value;
                   if (userData.role === "Admin") {

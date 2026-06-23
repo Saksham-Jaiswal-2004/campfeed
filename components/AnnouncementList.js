@@ -169,7 +169,7 @@ const AnnouncementList = ({ setSelectedView, setSelectedId }) => {
           <div className='w-full h-full flex justify-center items-center'>
             <DataSkeleton />
           </div>
-        ) : filteredAnnouncements.length === 0 ? (
+        ) : !loading && filteredAnnouncements.length === 0 ? (
           <div className='w-full h-full flex justify-center items-center navText text-3xl'>
             No Present Announcements
           </div>

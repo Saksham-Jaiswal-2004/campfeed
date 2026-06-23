@@ -2,10 +2,15 @@ import { api } from "@/lib/api";
 import { useAnnouncementStore } from "@/store/announcementStore";
 
 export const announcementService = {
-  async fetchAnnouncements() {
+  async fetchAnnouncements(force = false) {
     const store = useAnnouncementStore.getState();
 
+    if (!force && store.announcements.length > 0) {
+      return store.announcements;
+    }
+
     try {
+      store.setLoading(true);
       const res = await api("/announcements/all-announcements", "GET", undefined);
 
       store.setAnnouncements(res.data);
@@ -13,8 +18,9 @@ export const announcementService = {
       return res.data;
     } catch (err: any) {
       store.setError(err.message);
-
       throw err;
+    } finally {
+      store.setLoading(false);
     }
   },
 

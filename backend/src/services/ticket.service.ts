@@ -4,6 +4,7 @@ import { generateTicketToken } from "../utils/token.js";
 import { generateQRCode } from "./qr.service.js";
 import { generateTicketPDF } from "./pdf.service.js";
 import { sendTicketEmail } from "./email.service.js";
+import { uploadBuffer } from "./uploadBuffer.service.js";
 
 type RSVPRequest = {
   eventId: string;
@@ -82,8 +83,15 @@ export const createRSVPAndTicket = async ({ eventId, user }: RSVPRequest) => {
         endDate: eventData?.endDate,
       },
       userId: user.uid,
+      attendee: {
+        id: user.uid,
+        name: user.name,
+        email: user.email,
+      },
       token,
       used: false,
+      qrURL: "",
+      pdfURL: "",
       createdAt: new Date(),
     });
 
@@ -183,6 +191,12 @@ export const generateAndSendTicket = async (data: {
     ticketId,
     qrImageBase64: qrImage,
   });
+
+  const qrUpload: any = await uploadBuffer(Buffer.from(qrImage.split(",")[1], "base64"), "tickets/qr", "image");
+  const pdfUpload: any = await uploadBuffer(Buffer.from(pdfBuffer), "tickets/pdf", "raw");
+  
+  const ticketRef = db.collection("tickets").doc(ticketId);
+  await ticketRef.update({qrURL: qrUpload.secure_url, pdfURL: pdfUpload.secure_url});
 
   await sendTicketEmail({
     to: user.email,

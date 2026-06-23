@@ -12,4 +12,11 @@ export interface Ticket {
     venue: string;
     startDate: string;
   };
+  attendee?: {
+    id: string;
+    name: string;
+    email: string;
+  };
+  qrURL: string;
+  pdfURL: string;
 }

@@ -1,18 +1,5 @@
 import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
 
-/**
- * CampFeed Luxury Event Ticket (Portrait)
- * Theme: Eventbrite VIP × Conference Pass
- * Features:
- * - Premium dark header
- * - Status badge
- * - Centered QR section
- * - Structured attendee information
- * - Ticket metadata
- * - Elegant separators
- * - No banner image
- */
-
 export const generateTicketPDF = async (data: {
   eventName: string;
   venue: string;

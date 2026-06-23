@@ -1,7 +1,7 @@
 "use client";
 import { createContext, useContext, useEffect, useState } from "react";
 import { auth, db } from "@/lib/firebase";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, serverTimestamp, Timestamp, updateDoc } from "firebase/firestore";
 import { signInWithPopup, GoogleAuthProvider, signOut } from "firebase/auth";
 
 const UserContext = createContext(null);
@@ -16,6 +16,7 @@ export const UserProvider = ({ children }) => {
             const userRef = doc(db, "users", uid);
             const docSnap = await getDoc(userRef);
             if (docSnap.exists()) {
+                await updateDoc(userRef, {"metadata.lastSignInTime": new Date().toUTCString()})
                 setUserData(docSnap.data());
             } else {
                 console.warn("⚠️ Firestore user document not found.");
@@ -30,9 +31,11 @@ export const UserProvider = ({ children }) => {
     const login = async () => {
         const provider = new GoogleAuthProvider();
         try {
+            setLoading(true);
             const result = await signInWithPopup(auth, provider);
             setUser(result.user);
             await fetchUserData(result.user.uid);
+            setLoading(false);
         } catch (err) {
             console.error("Login failed:", err.message);
         }

@@ -33,7 +33,7 @@
     "**/*.mts",
     "**/*.ts",
     "**/*.tsx"
-  ],
+, "backend/src/services/uploadBuffer.service.js"  ],
   "exclude": [
     "node_modules"
   ]

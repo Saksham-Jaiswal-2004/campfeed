@@ -14,12 +14,15 @@ const Page = () => {
     useEffect(() => {
         if (loading || userData === undefined) return;
 
+        console.log("User: ", user);
+        console.log("UserData: ", userData);
+
         if (user && userData === null) {
             router.replace("/auth/ProfilePage");
         } else if (user && userData) {
             router.replace("/StudentDash");
         }
-    }, [loading, user, userData, router]);
+    }, [loading, router]);
 
     const handleLogin = async () => {
         try {

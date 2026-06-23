@@ -2,18 +2,16 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useUser } from "@/context/userContext";
 import { useRouter } from "next/navigation";
-import { useNotificationStore } from '@/store/notificationStore';
-import { TbMessageReport } from "react-icons/tb";
-import { CiClock2 } from "react-icons/ci";
-import { markAsReadDB, markAllAsReadDB } from '@/services/notification.service';
-import { FaRegFolderOpen } from "react-icons/fa6";
 import BlockSkeleton from './ui/BlockSkeleton';
 import { useTickets } from '@/hooks/useTickets';
 import { ticketService } from '@/services/ticket.service';
 import { Timestamp } from 'firebase/firestore';
+import TicketModal from './TicketModal';
 
 const Tickets = () => {
   const [view, setView] = useState("ALL");
+  const [open, setOpen] = useState(false);
+  const [selectedTicket, setSelectedTicket] = useState(null);
   const { user } = useUser();
   const router = useRouter();
 
@@ -30,7 +28,6 @@ const Tickets = () => {
       ticketService.fetchMyTickets();
     } catch (err) {
       console.error(err);
-      setData(null);
     }
   }, []);
 
@@ -110,17 +107,17 @@ const Tickets = () => {
             <BlockSkeleton />
             <BlockSkeleton />
           </div>
-        ) : filteredTickets.length === 0 ? (
+        ) : !loading && filteredTickets.length === 0 ? (
           <div className='h-fit min-h-[300px] w-full justify-center items-center flex'>
             <h1 className='text-2xl text-gray-500'>No Ticket Available</h1>
           </div>
         ) : (
           <div className='min-h-[220px] h-fit w-[100%] px-1 flex flex-wrap justify-between items-center gap-y-5'>
             {filteredTickets.map((ticket) => (
-            <div key={ticket.id} className='bg-[#081849]/10 hover:bg-[#081849]/20 border border-gray-800 w-[49%] h-[300px] rounded-lg px-8 py-5'>
+            <div key={ticket.id} className='group bg-[#081849]/10 hover:bg-[#081849]/20 border border-gray-800 hover:border-indigo-500/30 w-[49%] h-[300px] rounded-lg px-8 py-5' onClick={() => {setSelectedTicket(ticket); setOpen(true);}}>
               <div className='relative w-full h-[30%]'>
                 <p className='contentText text-sm'>Event Ticket</p>
-                <h2 className='subtitle text-2xl mt-3'>{ticket.event.name}</h2>
+                <h2 className='subtitle text-2xl mt-3 group-hover:text-indigo-500'>{ticket.event.name}</h2>
 
                 {ticket.used ? 
                 <p className='absolute top-0 right-0 border border-blue-500 bg-blue-500/20 text-sm text-blue-500 px-2 py-1 rounded-xl'>Used</p>
@@ -174,6 +171,8 @@ const Tickets = () => {
               </div>
             </div>
             ))}
+
+            <TicketModal ticket={selectedTicket} open={open} setOpen={setOpen} />
           </div>
         )}
       </div>

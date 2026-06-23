@@ -2,17 +2,23 @@ import { api } from "@/lib/api";
 import { useTicketStore } from "@/store/ticketStore";
 
 export const ticketService = {
-  async fetchMyTickets() {
+  async fetchMyTickets(force = false) {
     const store = useTicketStore.getState();
 
+    if (!force && store.tickets.length > 0) {
+      return store.tickets;
+    }
+
     try {
+      store.setLoading(true);
       const res = await api("/tickets/my-tickets", "GET", undefined);
 
       store.setTickets(res.data);
     } catch (err: any) {
       store.setError(err.message);
-
       throw err;
+    } finally {
+      store.setLoading(false);
     }
   },
 

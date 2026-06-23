@@ -10,7 +10,7 @@ export const generateQRCode = async (token: string): Promise<string> => {
     const qrImage = await QRCode.toDataURL(qrData, {
       errorCorrectionLevel: "H",
       margin: 2,
-      scale: 6,
+      scale: 10,
       color: {
         dark: "#000000",
         light: "#FFFFFF",

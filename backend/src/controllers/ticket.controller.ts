@@ -244,15 +244,14 @@ export const verifyTicket = async (req: Request, res: Response) => {
 
     const decoded = verifyTicketToken(token);
 
-    console.log("Decode: ", decoded);
-
     const ticketRef = db.collection("tickets").doc(decoded.ticketId);
 
     const ticketSnap = await ticketRef.get();
 
     if (!ticketSnap.exists) {
-      return res.status(404).json({
+      return res.status(200).json({
         success: false,
+        status: "ERROR",
         message: `Invalid ticket ${decoded.ticketId}`,
       });
     }
@@ -260,8 +259,9 @@ export const verifyTicket = async (req: Request, res: Response) => {
     const ticket = ticketSnap.data() as any;
 
     if (ticket.used) {
-      return res.status(400).json({
+      return res.status(200).json({
         success: false,
+        status: "ALREADY_USED",
         message: "Ticket already used",
       });
     }
@@ -287,6 +287,7 @@ export const verifyTicket = async (req: Request, res: Response) => {
 
     return res.status(200).json({
       success: true,
+      status: "VALID",
       message: "Ticket verified successfully",
       data: {
         ticketId: decoded.ticketId,

@@ -18,6 +18,9 @@ import { db } from "@/lib/firebase";
 import { useEffect, useState } from "react";
 import { Progress } from "@/components/ui/progress"
 import { useUser } from '@/context/userContext';
+import { AiOutlineScan } from "react-icons/ai";
+import Link from 'next/link';
+import { MdNotificationsNone } from 'react-icons/md';
 
 const Dash = ({ setSelectedView }) => {
 
@@ -136,6 +139,8 @@ const Dash = ({ setSelectedView }) => {
     return () => unsubscribes.forEach((unsub) => unsub());
   }, []);
 
+  const unreadCount = 0;
+
   return (
     <div className='w-[84vw] min-h-screen h-fit flex flex-col justify-start items-center overflow-y-scroll'>
       <div className='flex gap-1 justify-between items-center w-full px-5 mt-6'>
@@ -145,6 +150,11 @@ const Dash = ({ setSelectedView }) => {
         </div>
 
         <div className='flex gap-4'>
+          <button onClick = {() => {setSelectedView("Notifications")}} className='relative cursor-pointer btnText bg-indigo-600/20 hover:bg-indigo-700/30 text-gray-400 hover:text-white px-2 py-2 rounded-sm transition-all duration-200 ease-in-out flex justify-center items-center'>
+            <MdNotificationsNone className='text-xl' />
+            { unreadCount != 0 ? <div className={`absolute top-1 right-1 bg-green-500 h-2 w-2 rounded-full animate-pulse`}></div> : "" }
+          </button>
+          <Link href={"/Scanner"} className='relative cursor-pointer btnText bg-indigo-600/20 hover:bg-indigo-700/30 text-gray-400 hover:text-white px-2 py-2 rounded-sm transition-all duration-200 ease-in-out flex justify-center items-center'><AiOutlineScan className='text-lg' /></Link>
           <button onClick={() => { setSelectedView("PostEvent") }} className='cursor-pointer btnText bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-sm text-sm transition-all duration-200 ease-in-out flex justify-center items-center gap-2'><IoAddOutline className='text-lg' /> Add Event</button>
           <button onClick={() => { setSelectedView("PostAnnouncement") }} className='cursor-pointer btnText bg-indigo-600/30 hover:bg-indigo-600/50 px-4 py-2 rounded-sm text-sm transition-all duration-200 ease-in-out flex justify-center items-center gap-2'><IoAddOutline className='text-lg' /> New Announcement</button>
         </div>

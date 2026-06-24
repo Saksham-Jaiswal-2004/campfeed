@@ -13,6 +13,7 @@ import { testimonialsData } from "@/constants/Testimonials";
 import { TbLayoutDashboardFilled } from "react-icons/tb";
 import { useUser } from "@/context/userContext";
 import Loader from "@/components/ui/Loader";
+import { FaAngleRight } from "react-icons/fa6";
 
 export default function Home() {
 
@@ -27,11 +28,11 @@ export default function Home() {
       <Navbar />
       <BackgroundBeams className="z-[-1]" />
 
-      <div className="min-h-[100vh] h-fit flex flex-col justify-center items-center">
+      <div className="min-h-[100vh] h-fit flex flex-col justify-center items-center relative">
 
-        <h1 className="title text-9xl mb-8 campfeed-title">CampFeed</h1>
-        <h3 className="subTitle mb-2 text-gray-300 text-lg">Your Unified Campus Platform</h3>
-        <p className="contentText w-[40%] text-center text-lg">Report issues, track announcements, discover events, and stay connected with everything happening across your campus - all in one smart dashboard.</p>
+        <h1 className="title text-[9rem] mb-4 campfeed-title">CampFeed</h1>
+        <h3 className="absolute top-[18%] border border-gray-600 px-5 py-2 shadow-slate-300 shadow-sm backdrop-blur-lg rounded-full subTitle mb-2 text-gray-400 text-sm flex justify-center items-center gap-2">Your Unified Campus Platform <FaAngleRight /></h3>
+        <p className="contentText w-[42%] text-center text-lg font-extralight! tracking-wider">Report issues, track announcements, discover events, and stay connected with everything happening across your campus - all in one smart dashboard.</p>
 
         <div className="mt-12 flex justify-center items-center gap-12">
           <Link href={"/Chatbot"}><button className='cursor-pointer btnText btn-gradient text-base flex justify-center items-center gap-2'><FaRobot className="text-3xl" /> Ask CampBot</button></Link>

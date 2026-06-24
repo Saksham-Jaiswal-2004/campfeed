@@ -149,12 +149,10 @@ body {
   box-shadow: 0 1px 10px rgba(94, 58, 238, 0.35);
 }
 
-.navbar {
-  border-bottom: 0.0001px solid rgba(128, 128, 128, 0.331);
-  border-top: 0.0001px solid rgba(128, 128, 128, 0.331);
+/* .navbar {
   backdrop-filter: blur(20);
-  border-radius: 100rem !important;
-}
+  box-shadow: 1px 1px 8px #242424;
+} */
 
 .campfeed-title {
   background: linear-gradient(135deg, #801dd7, #8250f7, #3f89ff);

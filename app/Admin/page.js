@@ -34,6 +34,7 @@ import EventPage from "@/components/EventPage";
 import AnnouncementPage from "@/components/AnnouncementPage";
 import Analytics from "@/components/Analytics";
 import Reports from "@/components/Reports";
+import Notifications from "@/components/Notification";
 
 const Page = () => {
 
@@ -124,9 +125,10 @@ const Page = () => {
         {selectedView === "Users" && <Users />}
         {selectedView === "Reports" && <Reports />}
         {selectedView === "Settings" && <AdminSettings />}
-        {selectedView === "PostAnnouncement" && <PostAnnouncement />}
+        {selectedView === "PostAnnouncement" && <PostAnnouncement setSelectedView={setSelectedView} />}
         {selectedView === "PostEvent" && <PostEvent setSelectedView={setSelectedView} />}
 
+        {selectedView === "Notifications" && <Notifications /> }
         {selectedView === "DetailedIssue" && <IssuePage setSelectedView={setSelectedView} id={selectedId} /> }
         {selectedView === "DetailedEvent" && <EventPage setSelectedView={setSelectedView} id={selectedId} /> }
         {selectedView === "DetailedAnnouncement" && <AnnouncementPage setSelectedView={setSelectedView} id={selectedId} /> }

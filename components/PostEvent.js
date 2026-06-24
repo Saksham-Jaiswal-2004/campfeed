@@ -1,7 +1,5 @@
 import React from "react";
 import { useState } from "react";
-import { db } from "@/lib/firebase";
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { useUser } from "@/context/userContext";
 import { toast } from "sonner";
 import ImageCropper from "./ui/ImageCropper";
@@ -159,27 +157,6 @@ const PostEvent = ({ setSelectedView }) => {
       );
 
       const { files, ...eventData } = formData;
-
-      // await addDoc(collection(db, "events"), {
-      //   ...eventData,
-      //   capacity: parseInt(formData.capacity),
-      //   registered: 0,
-      //   startDate: start,
-      //   endDate: end,
-      //   tags: formData.tags
-      //     .split(",")
-      //     .map((tag) => tag.trim())
-      //     .filter((tag) => tag),
-      //   targetAudience: formData.targetAudience,
-      //   createdAt: serverTimestamp(),
-      //   createdBy: {
-      //     id: user.uid,
-      //     name: user.displayName,
-      //     email: user.email,
-      //     profileImage: user.photoURL,
-      //   },
-      //   eventPosterURL: uploadedImages,
-      // });
 
       const eventToPost = {
         ...eventData,
@@ -692,7 +669,7 @@ const PostEvent = ({ setSelectedView }) => {
             >
               <button
                 onClick={() => {
-                  setSelectedView("StudentDash");
+                  setSelectedView("Dash");
                   setIsForm(true);
                   handleResetForm();
                 }}

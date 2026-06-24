@@ -34,15 +34,16 @@ const DeleteIssueModal = ({ entityType, entity, onSuccess, onError }) => {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild className="bg-red-500/10 w-full">
-        return({entityType === "Announcement" ? 
-          <button className='bg-red-500/10 text-red-900 hover:text-red-700 hover:bg-red-500/20 px-2 py-2 rounded-sm'><MdDelete className='text-lg' /></button>
-         :
+      {entityType === "Announcement" && <DialogTrigger asChild className="bg-red-500/10 w-full">
+          <button className='bg-red-500/10 text-red-900 hover:text-red-700 hover:bg-red-500/20 px-2 py-2 rounded-sm flex justify-center items-center'><MdDelete className='text-lg' /></button>
+      </DialogTrigger>
+      }
+      {entityType !== "Announcement" && <DialogTrigger asChild className="bg-red-500/10 w-full">
           <div className="px-2 py-1.5 text-sm rounded cursor-pointer hover:bg-red-500/20 text-red-500 flex items-center justify-center gap-1 w-full">
             <MdDeleteOutline className='text-red-500 text-base' /> {entityType === "Issue" ? "Delete" : ""}
           </div>
-        })
       </DialogTrigger>
+      }
       <DialogContent className="bg-[#020613] border border-gray-700 rounded-lg">
         <div className="flex flex-col gap-4">
           <div>

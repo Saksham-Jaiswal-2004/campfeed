@@ -13,6 +13,8 @@ import {
   Timestamp,
   orderBy,
   limit,
+  doc,
+  getDoc,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useEffect, useState } from "react";
@@ -73,8 +75,6 @@ const Dash = ({ setSelectedView }) => {
         setIssues(issuesWithUser);
       } catch (err) {
         console.error("Error fetching issues:", err);
-      } finally {
-        setFetching(false);
       }
     });
 

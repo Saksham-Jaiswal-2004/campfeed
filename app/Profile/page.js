@@ -13,6 +13,7 @@ import { PiStudentFill } from "react-icons/pi";
 import { IoIosLogOut } from "react-icons/io";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { toast } from "sonner"
+import Loader from '@/components/ui/Loader';
 
 const Page = () => {
     const { user, userData, logout, loading } = useUser();
@@ -93,14 +94,7 @@ const Page = () => {
     };
 
     if (loading) {
-        return (
-            <div className='min-h-screen bg-[#020613] text-white'>
-                <Navbar />
-                <div className='mx-auto flex min-h-[70vh] w-full max-w-6xl items-center justify-center px-4'>
-                    <div className='rounded-2xl border border-gray-800 bg-[#08122b] px-6 py-5 text-sm text-gray-300'>Loading profile...</div>
-                </div>
-            </div>
-        );
+        return <Loader />
     }
 
     return (

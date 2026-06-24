@@ -1,4 +1,5 @@
 import { api } from "@/lib/api";
+import { socket } from "@/lib/socket";
 import { useEventStore } from "@/store/eventStore";
 
 export const eventService = {
@@ -24,19 +25,21 @@ export const eventService = {
   },
 
   async createEvent(data: any) {
-    const res = await api("/events", "POST", data);
-
-    useEventStore.getState().addEvent(res.data);
+    const res = await api("/events/create-event", "POST", data);
   },
 
   async editEvent(id: string, updates: any) {
     await api(`/events/${id}`, "PATCH", updates);
+
+    socket.emit("event_edit", {id, updates});
 
     useEventStore.getState().updateEvent(id, updates);
   },
 
   async deleteEvent(id: string) {
     await api(`/events/${id}`, "DELETE", undefined);
+
+    socket.emit("event_delete", id);
 
     useEventStore.getState().deleteEvent(id);
   },

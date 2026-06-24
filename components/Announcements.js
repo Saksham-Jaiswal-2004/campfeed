@@ -2,21 +2,11 @@
 import React, { useState, useEffect } from 'react'
 import { CiSearch } from "react-icons/ci";
 import { IoAddOutline } from "react-icons/io5";
-import { IoIosArrowDown } from "react-icons/io";
 import { CgDanger } from "react-icons/cg";
 import { MdOutlineInfo } from "react-icons/md";
 import { FiCheckCircle } from "react-icons/fi";
-import { FaRegEdit } from "react-icons/fa";
-import { RiDeleteBin6Line } from "react-icons/ri";
-import { db } from "@/lib/firebase";
-import { collection, query, where, getDocs } from "firebase/firestore";
 import { toast } from "sonner"
 import { useUser } from "@/context/userContext";
-import {
-  doc,
-  updateDoc,
-  deleteDoc,
-} from "firebase/firestore";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -26,39 +16,30 @@ import {
 import { GrFormView } from "react-icons/gr";
 import { MdDelete } from "react-icons/md";
 import DataSkeleton from './ui/DataSkeleton';
+import { announcementService } from '@/services/announcements.service';
+import { useAnnouncementStore } from '@/store/announcementStore';
+import DeleteIssueModal from './DeleteIssueModal';
 
-const Announcements = ({ setSelectedView }) => {
+const Announcements = ({ setSelectedView, setSelectedId }) => {
 
   const { user, userData } = useUser();
-  const [announcements, setAnnouncements] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [loading, setLoading] = useState(true);
   const [role, setRole] = useState("Select Role");
   const [priority, setPriority] = useState("Select Priority");
   const [audience, setAudience] = useState("Select Audience");
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deletingId, setDeletingId] = useState(null);
+
+  const announcements = useAnnouncementStore((s) => s.announcements)
+  const loading = useAnnouncementStore((s) => s.loading)
 
   useEffect(() => {
-    const fetchMyAnnouncements = async () => {
-      if (!user) return;
-
-      try {
-        const announcementsRef = collection(db, "announcements");
-        const q = query(announcementsRef, where("createdBy", "==", user.uid));
-        const snapshot = await (userData.role === "Admin" ? getDocs(announcementsRef) : getDocs(q));
-        const data = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-        setAnnouncements(data);
+    try {
+        announcementService.fetchAnnouncements();
       } catch (err) {
         console.error("Error fetching announcements: ", err);
-      } finally {
-        setLoading(false);
       }
-    };
-
-    fetchMyAnnouncements();
-  }, [user]);
+  }, []);
 
   const searchedAnnouncements = announcements.filter((announcement) =>
     announcement.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -66,18 +47,21 @@ const Announcements = ({ setSelectedView }) => {
     announcement.priority?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const deleteAnnouncement = async (id) => {
-    try {
-      const announcementRef = doc(db, "announcements", id);
-      await deleteDoc(announcementRef);
-      toast("Announcement Deleted Successfully, Refresh to update")
-      return { success: true };
-    } catch (error) {
-      toast("Failed To Delete Announcement")
-      console.error("❌ Error deleting announcement:", error);
-      return { success: false, error: error.message };
-    }
-  };
+  // const deleteAnnouncement = async (id) => {
+  //   try {
+  //     setIsDeleting(true);
+  //     setDeletingId(id);
+  //     await announcementService.deleteAnnouncement(id);
+  //     setIsDeleting(false);
+  //     setDeletingId(null);
+  //     toast("Announcement Deleted Successfully")
+  //     return { success: true };
+  //   } catch (error) {
+  //     toast("Failed To Delete Announcement")
+  //     console.error("Error deleting announcement:", error);
+  //     return { success: false, error: error.message };
+  //   }
+  // };
 
   const handleReset = () => {
     setSearchQuery("")
@@ -163,34 +147,46 @@ const Announcements = ({ setSelectedView }) => {
       ) : (
         <div className='grid grid-cols-1 justify items-center gap-2 w-[82vw] my-6'>
           <div className='flex justify-between items-center px-2 w-full font-bold!'>
-            <p className='w-[12%] flex justify-center items-center'>ID</p>
-            <p className='w-[26%] flex justify-center items-center'>Announcement Title</p>
-            <p className='w-[14%] flex justify-center items-center'>Target Audience</p>
-            <p className='w-[9%] flex justify-center items-center'>Priority</p>
-            <p className='w-[12%] flex justify-center items-center'>Issued By</p>
-            <p className='w-[12%] flex justify-center items-center'>Issued On</p>
-            <p className='w-[8%] flex justify-center items-center'>Actions</p>
+            <p className='w-[12%] flex justify-center items-center contentText text-sm'>ID</p>
+            <p className='w-[26%] flex justify-center items-center contentText text-sm'>Announcement Title</p>
+            <p className='w-[14%] flex justify-center items-center contentText text-sm'>Target Audience</p>
+            <p className='w-[11%] flex justify-center items-center contentText text-sm'>Priority</p>
+            <p className='w-[11%] flex justify-center items-center contentText text-sm'>Issued By</p>
+            <p className='w-[11%] flex justify-center items-center contentText text-sm'>Issued On</p>
+            <p className='w-[8%] flex justify-center items-center contentText text-sm'>Actions</p>
           </div>
 
           {searchedAnnouncements.map((announcement) => (
-            <div key={announcement.id} className='w-[100%] h-fit flex justify-between items-center px-4 py-4 bg-[#020613] border border-gray-800 rounded-md overflow-hidden'>
+            <div key={announcement.id} className={`w-[100%] h-fit flex justify-between items-center px-4 py-4 ${isDeleting && deletingId === announcement.id ? " bg-gray-900" : "bg-[#020613]"} border border-gray-800 rounded-md overflow-hidden`}>
               <p className='text-[0.7rem] w-[12%]'>{announcement.id}</p>
 
-              <p className='subtitle w-[26%] flex justify-center items-center text-sm text-wrap'>{announcement.title || "No Title"}</p>
+              <p className='subtitle w-[26%] flex justify-start items-center text-sm text-wrap'>{announcement.title || "No Title"}</p>
 
               <p className='border border-gray-700 contentText flex justify-center items-center py-1 px-2 rounded-lg !text-white bg-blue-400/50 text-xs w-[14%]'>{announcement.targetAudience}</p>
 
-              {announcement.priority === "High" && <p className='w-[9%] text-xs flex justify-center items-center gap-1 text-red-400 bg-red-500/20 p-1 rounded-lg border border-red-800/30'><CgDanger /> High Priority</p>}
-              {announcement.priority === "Medium" && <p className='w-[9%] text-xs flex justify-center items-center gap-1 text-yellow-400 bg-yellow-500/20 p-1 rounded-lg border border-yellow-800/30'><MdOutlineInfo /> Medium Priority</p>}
-              {announcement.priority === "Low" && <p className='w-[9%] text-xs flex justify-center items-center gap-1 text-green-400 bg-green-500/20 p-1 rounded-lg border border-green-800/30'><FiCheckCircle /> Low Priority</p>}
+              {announcement.priority === "High" && <p className='w-[11%] text-xs flex justify-center items-center gap-1 text-red-400 bg-red-500/20 p-1 rounded-lg border border-red-800/30'><CgDanger /> High Priority</p>}
+              {announcement.priority === "Medium" && <p className='w-[11%] text-xs flex justify-center items-center gap-1 text-yellow-400 bg-yellow-500/20 p-1 rounded-lg border border-yellow-800/30'><MdOutlineInfo /> Medium Priority</p>}
+              {announcement.priority === "Low" && <p className='w-[11%] text-xs flex justify-center items-center gap-1 text-green-400 bg-green-500/20 p-1 rounded-lg border border-green-800/30'><FiCheckCircle /> Low Priority</p>}
 
-              <p className='w-[12%] text-xs flex justify-center items-center'>{userData.username}</p>
+              <p className='w-[11%] text-xs flex justify-center items-center'>{announcement.createdBy?.name}</p>
 
-              <p className='w-[12%] text-xs flex justify-center items-center'>{new Date(announcement.createdAt.toDate()).toLocaleString("en-GB", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", hour12: true, })}</p>
+              <p className='w-[11%] text-xs flex justify-center items-center'>{new Date(announcement.createdAt._seconds * 1000).toLocaleString("en-GB", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", hour12: true, })}</p>
 
               <div className='w-[8%] flex justify-center items-center gap-4 text-gray-500'>
-               <div className='bg-gray-300/5 hover:text-gray-300 hover:bg-gray-300/10 px-2 py-2 rounded-sm'><GrFormView className='text-lg' /></div>
-               <div onClick={() => { deleteAnnouncement(announcement.id) }} className='bg-red-500/10 text-red-900 hover:text-red-700 hover:bg-red-500/20 px-2 py-2 rounded-sm'><MdDelete className='text-lg' /></div>
+               <button onClick={() => {setSelectedView("DetailedAnnouncement"); setSelectedId(announcement.id)}} disabled={isDeleting && deletingId === announcement.id} className={`bg-gray-300/5 hover:text-gray-300 hover:bg-gray-300/10 cursor-pointer px-2 py-2 rounded-sm disabled:bg-gray-600/10 disabled:text-gray-600 disabled:cursor-not-allowed`}><GrFormView className='text-lg' /></button>
+               {/* <button onClick={() => { deleteAnnouncement(announcement.id) }} disabled={isDeleting && deletingId === announcement.id} className='bg-red-500/10 text-red-900 hover:text-red-700 hover:bg-red-500/20 px-2 py-2 rounded-sm disabled:bg-red-700/10 disabled:text-red-950 disabled:cursor-not-allowed'><MdDelete className='text-lg' /></button> */}
+               <DeleteIssueModal
+                  entityType={"Announcement"}
+                  entity={announcement}
+                  onSuccess={() => {
+                    toast.success("Announcement Deleted Successfully!")
+                    console.log("Announcement deleted successfully");
+                  }}
+                  onError={(error) => {
+                    console.error("Failed to delete Announcement:", error);
+                    toast.error("Failed to Delete Announcement!")
+                  }}
+                />
               </div>
             </div>
           ))}

@@ -6,6 +6,7 @@ export interface Announcement {
   targetAudience: string;
   tags: string[];
   createdAt: string;
+  updatedAt: string;
   expiryDate: string;
   createdByUser?: {
     id?: string,

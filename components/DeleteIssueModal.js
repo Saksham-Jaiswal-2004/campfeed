@@ -1,24 +1,29 @@
 "use client";
 import React, { useState } from 'react';
 import { Dialog, DialogTrigger, DialogContent } from "@/components/ui/dialog";
-import { MdDeleteOutline } from "react-icons/md";
+import { MdDelete, MdDeleteOutline } from "react-icons/md";
 import { api } from '@/lib/api';
 
-const DeleteIssueModal = ({ issue, onSuccess, onError }) => {
+const DeleteIssueModal = ({ entityType, entity, onSuccess, onError }) => {
   const [isDeleting, setIsDeleting] = useState(false);
   const [open, setOpen] = useState(false);
 
-  const handleDeleteIssue = async () => {
+  const route = entityType === "Issue" ? `/issues/${entity.id}/delete` 
+              : entityType === "Event" ? `/events/${entity.id}` 
+              : entityType === "Announcement" ? `/announcements/${entity.id}/delete` 
+              : "";
+
+  const handleDeleteEntity = async () => {
     setIsDeleting(true);
     try {
-      await api(`/issues/${issue.id}/delete`, "DELETE")
+      await api(route, "DELETE");
       
       setOpen(false);
       if (onSuccess) {
         onSuccess();
       }
     } catch (error) {
-      console.error("Error deleting issue:", error);
+      console.error("Error deleting asset:", error);
       if (onError) {
         onError(error);
       }
@@ -30,25 +35,29 @@ const DeleteIssueModal = ({ issue, onSuccess, onError }) => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild className="bg-red-500/10 w-full">
-        <div className="px-2 py-1.5 text-sm rounded cursor-pointer hover:bg-red-500/20 text-red-500 flex items-center justify-center gap-1 w-full">
-          <MdDeleteOutline className='text-red-500 text-base' /> Delete
-        </div>
+        return({entityType === "Announcement" ? 
+          <button className='bg-red-500/10 text-red-900 hover:text-red-700 hover:bg-red-500/20 px-2 py-2 rounded-sm'><MdDelete className='text-lg' /></button>
+         :
+          <div className="px-2 py-1.5 text-sm rounded cursor-pointer hover:bg-red-500/20 text-red-500 flex items-center justify-center gap-1 w-full">
+            <MdDeleteOutline className='text-red-500 text-base' /> {entityType === "Issue" ? "Delete" : ""}
+          </div>
+        })
       </DialogTrigger>
       <DialogContent className="bg-[#020613] border border-gray-700 rounded-lg">
         <div className="flex flex-col gap-4">
           <div>
-            <h2 className="text-white text-lg font-semibold">Delete Issue</h2>
+            <h2 className="text-white text-lg font-semibold">Delete {entityType}</h2>
             <p className="text-gray-400 text-sm mt-1">
-              Are you sure you want to delete this issue? This action cannot be undone.
+              Are you sure you want to delete this {entityType}? This action cannot be undone.
             </p>
           </div>
           
           <div className="bg-gray-900/50 border border-gray-700 rounded p-3">
             <p className="text-sm text-gray-300">
-              <strong>Issue:</strong> {issue.title}
+              <strong>Issue:</strong> {entityType === "Event" ? entity.name : entity.title}
             </p>
             <p className="text-xs text-gray-500 mt-1">
-              ID: {issue.id}
+              ID: {entity.id}
             </p>
           </div>
 
@@ -60,7 +69,7 @@ const DeleteIssueModal = ({ issue, onSuccess, onError }) => {
               Cancel
             </button>
             <button
-              onClick={handleDeleteIssue}
+              onClick={handleDeleteEntity}
               disabled={isDeleting}
               className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded transition-all duration-200 disabled:opacity-50"
             >

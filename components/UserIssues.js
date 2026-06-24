@@ -316,7 +316,8 @@ const UserIssues = ({setSelectedView, setSelectedId}) => {
                           <DropdownMenuContent className="flex flex-col justify-center items-center gap-1 px-2">
                             <DropdownMenuItem className="flex justify-center items-center w-full bg-white/5 hover:bg-white/10! rounded-sm! gap-2" onClick={() => { setSelectedId(issue.id); setSelectedView("DetailedIssue"); }} ><FaRegEdit className='text-xs!' /> Edit</DropdownMenuItem>
                             <DeleteIssueModal 
-                              issue={issue} 
+                              entityType={"Issue"}
+                              entity={issue}
                               onSuccess={() => {
                                 toast.success("Issue Deleted Successfully!")
                                 console.log("Issue deleted successfully");

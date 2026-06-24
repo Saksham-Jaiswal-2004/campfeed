@@ -7,71 +7,41 @@ import { FaRegCalendar, FaRegEdit } from "react-icons/fa";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { CiSearch } from "react-icons/ci";
 import { Progress } from "@/components/ui/progress";
-import { db } from "@/lib/firebase";
-import { collection, query, where, getDocs } from "firebase/firestore";
 import { toast } from "sonner"
 import { useUser } from "@/context/userContext";
-import {
-  doc,
-  updateDoc,
-  deleteDoc,
-} from "firebase/firestore";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import Link from "next/link";
 import BlockSkeleton from "./ui/BlockSkeleton";
+import { useEventStore } from "@/store/eventStore";
+import { eventService } from "@/services/events.service";
+import DeleteIssueModal from "./DeleteIssueModal";
 
-const Events = ({ setSelectedView }) => {
+const Events = ({ setSelectedView, setSelectedId }) => {
   const { user, userData } = useUser();
-  const [events, setEvents] = useState([]);
   const [audience, setAudience] = useState("Select Audience")
+  const [deleting, setDeleting] = useState(false)
+  const [deleteId, setDeleteId] = useState(null)
   const [searchQuery, setSearchQuery] = useState("");
-  const [loading, setLoading] = useState(true);
+
+  const events = useEventStore((s) => s.events);
+  const loading = useEventStore((s) => s.loading);
 
   useEffect(() => {
-    const fetchMyEvents = async () => {
-      if (!user) return;
-
-      try {
-        const eventsRef = collection(db, "events");
-        const q = query(eventsRef, where("createdBy", "==", user.uid));
-        const snapshot = await (userData.role === "Admin" ? getDocs(eventsRef) : getDocs(q));
-        const data = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-        setEvents(data);
+    try {
+        eventService.fetchEvents();
       } catch (err) {
         console.error("Error fetching events: ", err);
-      } finally {
-        setLoading(false);
       }
-    };
-
-    fetchMyEvents();
-  }, [user]);
+  }, []);
 
   const searchedEvents = events.filter((event) =>
     event.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
     event.targetAudience?.toLowerCase().includes(searchQuery.toLowerCase())
   );
-
-  const deleteEvent = async (id) => {
-    try {
-      const eventRef = doc(db, "events", id);
-      await deleteDoc(eventRef);
-      toast("Event Deleted Successfully, Refresh to update")
-      return { success: true };
-    } catch (error) {
-      toast("Failed To Delete Event")
-      console.error("❌ Error deleting Event:", error);
-      return { success: false, error: error.message };
-    }
-  };
 
   const handleReset = () => {
     setSearchQuery("");
@@ -125,7 +95,7 @@ const Events = ({ setSelectedView }) => {
       ) : (
         <div className='grid grid-cols-3 justify-center items-center gap-8 w-full mb-10'>
           {searchedEvents.map((event, index) => (
-            <div key={index} className='w-full h-[550px] cursor-pointer border border-gray-800 bg-[#020613] rounded-xl overflow-hidden group'>
+            <div key={index} className={`w-full h-[550px] cursor-pointer border border-gray-800 ${deleting && event.id === deleteId ? "bg-gray-800" : "bg-[#020613]"} rounded-xl overflow-hidden group`}>
               <div className='h-[40%] w-full bg-gray-800 overflow-hidden flex justify-center'>
                 <img src="/images/Skeleton.png" alt="" className='h-full w-full group-hover:scale-105 transition-all duration-200 ease-in-out object-cover' />
               </div>
@@ -148,21 +118,30 @@ const Events = ({ setSelectedView }) => {
 
                 <div className="flex justify-center items-center gap-3 contentText absolute top-6 right-4">
                   <button className="bg-gray-300/5 hover:text-gray-300 hover:bg-gray-300/10 pr-2 pl-3 py-2 rounded-sm flex justify-center items-center">
-                    <FaRegEdit className="" />
+                    <FaRegEdit className="text-sm" />
                   </button>
-                  <button onClick={() => { deleteEvent(event.id) }} className="bg-red-500/10 text-red-900 hover:text-red-700 hover:bg-red-500/20 px-2 py-2 rounded-sm">
-                    <RiDeleteBin6Line className="" />
-                  </button>
+                  <DeleteIssueModal
+                    entityType={"Event"}
+                    entity={event}
+                    onSuccess={() => {
+                      toast.success("Event Deleted Successfully!")
+                      console.log("Event deleted successfully");
+                    }}
+                    onError={(error) => {
+                      console.error("Failed to delete Event:", error);
+                      toast.error("Failed to Delete Event!")
+                    }}
+                  />
                 </div>
 
                 <div className='flex flex-col w-full justify-center items-center gap-2'>
                   <div className='flex flex-col items-start w-full px-2 gap-2'>
-                    <p className='flex justify-center items-center gap-2 text-xs navText text-[#8194ad]'><FaRegCalendar className='text-base' /> {new Date(event.startDate.toDate()).toLocaleString("en-GB", {
+                    <p className='flex justify-center items-center gap-2 text-xs navText text-[#8194ad]'><FaRegCalendar className='text-base' /> {new Date(event.startDate._seconds * 1000).toLocaleString("en-GB", {
                       day: "2-digit",
                       month: "short",
                       year: "numeric",
                     })}</p>
-                    <p className='flex justify-center items-center gap-2 text-xs navText text-[#8194ad]'><SlClock className='text-base' /> {new Date(event.startDate.toDate()).toLocaleString("en-GB", {
+                    <p className='flex justify-center items-center gap-2 text-xs navText text-[#8194ad]'><SlClock className='text-base' /> {new Date(event.startDate._seconds * 1000).toLocaleString("en-GB", {
                       hour: "2-digit",
                       minute: "2-digit",
                       hour12: true,
@@ -173,7 +152,7 @@ const Events = ({ setSelectedView }) => {
                   <div className='w-full px-2'>
                     <Progress value={(event.registered / event.capacity) * 100} />
                   </div>
-                  <button className="w-full bg-indigo-600 hover:bg-indigo-700 py-2 rounded-lg text-sm transition-all duration-200 ease-in-out" onClick={() => { setSelectedView("DetailedEvent"); setSelectedId(event.id) }}>
+                  <button className={`w-full ${ deleting && event.id === deleteId ? "bg-gray-600 cursor-not-allowed" : "bg-indigo-600 hover:bg-indigo-700"} py-2 rounded-lg text-sm transition-all duration-200 ease-in-out`} disabled={deleting && event.id === deleteId} onClick={() => { setSelectedView("DetailedEvent"); setSelectedId(event.id) }}>
                     View Event
                   </button>
                 </div>
@@ -182,79 +161,6 @@ const Events = ({ setSelectedView }) => {
           ))}
         </div>
       )}
-      {/* //   <div className="grid grid-cols- md:grid-cols-2 lg:grid-cols-3 gap-4 w-full px-5 my-8 h-fit"> */
-        //     {searchedEvents.map((event) => (
-        //       <div
-        //         key={event.id}
-        //         className="w-full h-[350px] border border-gray-700 rounded-md overflow-hidden relative"
-        //       >
-        //         <div className="h-full w-full flex flex-col justify-between p-5">
-        //           <div>
-        //             <h3 className="subtitle text-lg mb-1">{event.name}</h3>
-        //             <p className="contentText text-sm w-[95%]">
-        //               {event.description}
-        //             </p>
-        //             <div className="flex gap-2 text-xs mt-2 flex-wrap">
-        //               {event.tags?.map((tag, index) => (
-        //                 <p
-        //                   key={index}
-        //                   className="border border-gray-700 contentText py-1 px-2 rounded-lg"
-        //                 >
-        //                   {tag}
-        //                 </p>
-        //               ))}
-        //             </div>
-
-        //             <div className="flex justify-center items-center gap-3 contentText absolute top-6 right-5">
-        //               <button>
-        //                 <FaRegEdit className="hover:text-cyan-600 transition-all duration-200 ease-in-out" />
-        //               </button>
-        //               <button onClick={() => { deleteEvent(event.id) }}>
-        //                 <RiDeleteBin6Line className="hover:text-red-600 transition-all duration-200 ease-in-out" />
-        //               </button>
-        //             </div>
-        //           </div>
-
-        //           <div className="flex flex-col w-full justify-center items-center gap-2">
-        //             <div className="flex flex-col items-start w-full px-2 gap-2">
-        //               <p className="flex items-center gap-2 text-xs navText text-[#8194ad]">
-        //                 <FaRegCalendar className="text-base" />{" "}
-        //                 {new Date(event.startDate.toDate()).toLocaleString("en-GB", { day: "2-digit", month: "short", year: "numeric", })}
-        //               </p>
-        //               <p className="flex items-center gap-2 text-xs navText text-[#8194ad]">
-        //                 <SlClock className="text-base" />{" "}
-        //                 {new Date(event.startDate.toDate()).toLocaleString("en-GB", { hour: "2-digit", minute: "2-digit", hour12: true, })}
-        //               </p>
-        //               <p className="flex items-center gap-2 text-xs navText text-[#8194ad]">
-        //                 <IoLocationOutline className="text-base" /> {event.venue}
-        //               </p>
-        //               <p className="flex items-center gap-2 text-xs navText text-[#8194ad]">
-        //                 <GoPeople className="text-base" />{" "}
-        //                 {event.registered || 0}/{event.capacity} Registered
-        //               </p>
-        //             </div>
-
-        //             <div className="w-full px-2">
-        //               <Progress
-        //                 value={
-        //                   event.capacity
-        //                     ? ((event.registered || 0) / event.capacity) * 100
-        //                     : 0
-        //                 }
-        //               />
-        //             </div>
-        //             <Link href={`/Events/${event.id}`} className="w-full">
-        //               <button className="w-full bg-indigo-600 hover:bg-indigo-700 py-2 rounded-lg text-sm transition-all duration-200 ease-in-out">
-        //                 View Event
-        //               </button>
-        //             </Link>
-        //           </div>
-        //         </div>
-        //       </div>
-        //     ))}
-        //   </div>
-        // )}
-      }
     </div>
   );
 };

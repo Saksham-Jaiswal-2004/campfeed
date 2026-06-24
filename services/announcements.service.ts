@@ -47,21 +47,14 @@ export const announcementService = {
 
   async createAnnouncement(data: any) {
     const res = await api("/announcements/post-announcement", "POST", data);
-
-    useAnnouncementStore.getState().addAnnouncement(res.data);
-
     return res.data;
   },
 
   async editAnnouncement(id: string, data: any) {
     await api(`/announcements/${id}/edit`, "PATCH", data);
-
-    useAnnouncementStore.getState().updateAnnouncement(id, data);
   },
 
   async deleteAnnouncement(id: string) {
     await api(`/announcements/${id}/delete`, "DELETE", undefined);
-
-    useAnnouncementStore.getState().deleteAnnouncement(id);
   },
 };

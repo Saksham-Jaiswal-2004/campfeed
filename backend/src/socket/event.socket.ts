@@ -17,4 +17,20 @@ export function registerChatEvents(io: Server, socket: Socket) {
           console.error(error);
         }
   });
+
+  socket.on("event_create", async (data: any) => {
+      try {
+          io.emit("event_create", {data});
+        } catch (error) {
+          console.error(error);
+        }
+  });
+
+  socket.on("event_delete", async (eventId: any) => {
+      try {
+          io.emit("event_delete", {eventId});
+        } catch (error) {
+          console.error(error);
+        }
+  });
 }

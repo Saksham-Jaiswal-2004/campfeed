@@ -3,6 +3,7 @@ import { db } from '@/lib/firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { useUser } from '@/context/userContext';
 import { toast } from "sonner"
+import { announcementService } from '@/services/announcements.service';
 
 const PostAnnouncement = () => {
     const { user, userData } = useUser();
@@ -30,7 +31,6 @@ const PostAnnouncement = () => {
             const data = {
                 ...formData,
                 tags: formData.tags.split(",").map(tag => tag.trim()).filter(Boolean),
-                createdAt: serverTimestamp(),
                 createdBy: {
                     id: user.uid,
                     name: user.displayName,
@@ -40,7 +40,7 @@ const PostAnnouncement = () => {
                 expiryDate: formData.expiryDate ? new Date(formData.expiryDate) : null,
             };
 
-            await addDoc(collection(db, "announcements"), data);
+            await announcementService.createAnnouncement(data);
 
             toast("Announcement Posted Successfully")
             handleResetForm();

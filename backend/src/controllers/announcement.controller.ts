@@ -2,6 +2,7 @@ import { FieldValue } from "firebase-admin/firestore";
 import { db } from "../config/firebaseAdmin.js";
 import cacheKeys from "../redis/cacheKeys.js";
 import { getCache, setCache, deleteCache } from "../redis/cacheService.js";
+import { getIO } from "../index.js";
 
 export async function getAnnouncements(req: any, res: any) {
   try {
@@ -79,7 +80,11 @@ export async function createAnnouncement(req: any, res: any) {
 
     const docRef = await db.collection("announcements").add(announcement);
 
-    const newAnnouncement = {id: docRef.id, ...announcement,};
+    const doc = await docRef.get();
+
+    const newAnnouncement = {id: doc.id, ...doc.data(),};
+
+    getIO().emit("announcement_create", { announcement: newAnnouncement })
 
     await setCache(cacheKeys.announcement(docRef.id), newAnnouncement, 600);
 
@@ -90,6 +95,7 @@ export async function createAnnouncement(req: any, res: any) {
 
     return res.json({
       success: true,
+      data: newAnnouncement,
     });
   } catch (err: any) {
     return res.status(500).json({ error: err.message });
@@ -114,6 +120,8 @@ export async function editAnnouncement(req: any, res: any) {
       ...req.body,
       updatedAt: FieldValue.serverTimestamp(),
     });
+
+    getIO().emit("announcement_edit", { announcementId: announcementId, update: req.body })
 
     await Promise.all([
       deleteCache(cacheKeys.announcements),
@@ -145,6 +153,8 @@ export async function deleteAnnouncement(req: any, res: any) {
     }
 
     await docRef.delete();
+
+    getIO().emit("announcement_delete", { announcementId: announcementId })
 
     await Promise.all([
       deleteCache(cacheKeys.announcements),

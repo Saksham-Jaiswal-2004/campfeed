@@ -82,15 +82,15 @@ export default function AnnouncementPage({setSelectedView, id}) {
                     <div className="w-[68%] min-h-[75vh] h-fit border border-gray-700 rounded-md p-4">
                         <div className="flex gap-3 justify-start items-center px-2">
                             <div>
-                                <img src={user?.profilePic} alt={user?.name} className="rounded-full w-15 h-15" />
+                                <img src={announcement.createdBy?.profileImage} alt={announcement.createdBy?.name} className="rounded-full w-15 h-15" />
                             </div>
 
                             <div className="w-full">
                                 <div className="flex justify-between items-center w-full">
-                                    <h3>{user?.username}</h3>
-                                    <span className='border border-gray-700 contentText py-[0.15rem] px-2 rounded-lg !text-white !text-xs'>{user?.role}</span>
+                                    <h3>{announcement.createdBy?.name}</h3>
+                                    <span className='border border-gray-700 contentText py-[0.15rem] px-2 rounded-lg !text-white !text-xs'>{announcement.createdBy?.role}</span>
                                 </div>
-                                <p className="text-xs contentText">{user?.email}</p>
+                                <p className="text-xs contentText">{announcement.createdBy?.email}</p>
                             </div>
                         </div>
 

@@ -36,10 +36,11 @@ const PostAnnouncement = ({ setSelectedView }) => {
                 ...formData,
                 tags: formData.tags.split(",").map(tag => tag.trim()).filter(Boolean),
                 createdBy: {
-                    id: user.uid,
-                    name: user.displayName,
-                    email: user.email,
-                    profileImage: user.photoURL,
+                    id: userData.uid,
+                    name: userData.username,
+                    email: userData.email,
+                    role: userData.role,
+                    profileImage: userData.profilePic,
                 },
                 expiryDate: formData.expiryDate ? new Date(formData.expiryDate) : null,
             };

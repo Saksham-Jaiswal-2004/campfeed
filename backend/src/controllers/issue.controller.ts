@@ -2,6 +2,7 @@ import { FieldValue } from "firebase-admin/firestore";
 import { db } from "../config/firebaseAdmin.js";
 import cacheKeys from "../redis/cacheKeys.js";
 import { getCache, setCache, deleteCache } from "../redis/cacheService.js";
+import { getIO } from "../index.js";
 
 export async function getCampusIssues(req: any, res: any) {
   try {
@@ -190,6 +191,54 @@ export async function createIssue(req: any, res: any) {
   }
 }
 
+export async function issueVote(req: any, res: any) {
+  try {
+    const { issueId } = req.params;
+
+    const upvotedBy = req.user.uid;
+
+    const docRef = db.collection("issues").doc(issueId);
+
+    const doc = await docRef.get();
+
+    if (!doc.exists) {
+      return res.status(404).json({
+        error: "Issue not found",
+      });
+    }
+
+    const data = doc.data();
+    const alreadyUpvoted = data?.upvotedBy?.includes(upvotedBy);
+
+    await docRef.update({
+      upvotes: FieldValue.increment(alreadyUpvoted ? -1 : 1),
+      upvotedBy: alreadyUpvoted ? FieldValue.arrayRemove(upvotedBy) : FieldValue.arrayUnion(upvotedBy),
+      updatedAt: FieldValue.serverTimestamp(),
+    });
+
+    const docAfterEdit = await docRef.get();
+
+    const shouldInvalidateCampus = doc.data()?.shareOnFeed === true;
+
+    await Promise.all([
+      deleteCache(cacheKeys.adminIssues),
+      deleteCache(cacheKeys.userIssues(doc.data()?.student_id)),
+      shouldInvalidateCampus ? deleteCache(cacheKeys.campusIssues) : "",
+    ]);
+
+    getIO().emit("issue_upvote", { issue: docAfterEdit.data() })
+
+    return res.json({
+      success: true,
+      data: docAfterEdit.data(),
+    });
+  } catch (err: any) {
+    return res.status(500).json({
+      error: err.message,
+    });
+  }
+}
+
 export async function editIssue(req: any, res: any) {
   try {
     const { issueId } = req.params;
@@ -221,6 +270,7 @@ export async function editIssue(req: any, res: any) {
 
     return res.json({
       success: true,
+      data: doc.data(),
     });
   } catch (err: any) {
     return res.status(500).json({

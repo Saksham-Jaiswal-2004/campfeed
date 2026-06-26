@@ -40,6 +40,7 @@ import { BsBookmarks } from "react-icons/bs";
 import { LuTickets } from "react-icons/lu";
 import Tickets from "@/components/Tickets";
 import Loader from "@/components/ui/Loader";
+import { toast } from "sonner"
 
 const Page = () => {
 
@@ -47,6 +48,15 @@ const Page = () => {
   const [selectedId, setSelectedId] = useState()
   const { user, userData, login, logout, loading } = useUser();
   const router = useRouter();
+
+  useEffect(() => {
+    if (!loading) {
+      if (!user) {
+        router.push("/auth/Login");
+        toast.warning("Login to access Dashboard")
+      }
+    }
+  }, [loading, user, userData, router]);
 
   const handleLogout = async () => {
     await logout();
@@ -63,7 +73,6 @@ const Page = () => {
     { href: "/StudentDash", view: "EventList", label: "Events", icon: <IoIosCalendar /> },
     { href: "/StudentDash", view: "Announcements", label: "Anouncements", icon: <MdOutlineChatBubbleOutline /> },
     { href: "/StudentDash", view: "Tickets", label: "My Tickets", icon: <LuTickets /> },
-    // { href: "/StudentDash", view: "StudentDash", label: "My Bookmarks", icon: <BsBookmarks /> },
     { href: "/StudentDash", view: "Notifications", label: "Notifications", icon: <MdNotificationsNone /> },
     // { href: "/StudentDash", view: "Settings", label: "Settings", icon: <IoSettingsOutline /> },
   ];

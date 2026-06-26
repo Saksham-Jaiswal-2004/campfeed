@@ -47,22 +47,6 @@ const Announcements = ({ setSelectedView, setSelectedId }) => {
     announcement.priority?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  // const deleteAnnouncement = async (id) => {
-  //   try {
-  //     setIsDeleting(true);
-  //     setDeletingId(id);
-  //     await announcementService.deleteAnnouncement(id);
-  //     setIsDeleting(false);
-  //     setDeletingId(null);
-  //     toast("Announcement Deleted Successfully")
-  //     return { success: true };
-  //   } catch (error) {
-  //     toast("Failed To Delete Announcement")
-  //     console.error("Error deleting announcement:", error);
-  //     return { success: false, error: error.message };
-  //   }
-  // };
-
   const handleReset = () => {
     setSearchQuery("")
     setRole("Select Role");
@@ -79,7 +63,8 @@ const Announcements = ({ setSelectedView, setSelectedId }) => {
         </div>
 
         <div className='flex gap-4'>
-          <button onClick={() => { setSelectedView("PostAnnouncement") }} className='cursor-pointer btnText bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-sm text-sm transition-all duration-200 ease-in-out flex justify-center items-center gap-2'><IoAddOutline className='text-lg' /> Post Anouncement</button>
+          {/* <button onClick={() => { setSelectedView("PostAnnouncement") }} className='cursor-pointer btnText bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-sm text-sm transition-all duration-200 ease-in-out flex justify-center items-center gap-2'><IoAddOutline className='text-lg' /> Post Anouncement</button> */}
+          <button onClick={() => { toast.success("Test Toast") }} className='cursor-pointer btnText bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-sm text-sm transition-all duration-200 ease-in-out flex justify-center items-center gap-2'><IoAddOutline className='text-lg' /> Post Anouncement</button>
         </div>
       </div>
 
@@ -174,16 +159,13 @@ const Announcements = ({ setSelectedView, setSelectedId }) => {
 
               <div className='w-[8%] flex justify-center items-center gap-4 text-gray-500'>
                <button onClick={() => {setSelectedView("DetailedAnnouncement"); setSelectedId(announcement.id)}} disabled={isDeleting && deletingId === announcement.id} className={`bg-gray-300/5 hover:text-gray-300 hover:bg-gray-300/10 cursor-pointer px-2 py-2 rounded-sm disabled:bg-gray-600/10 disabled:text-gray-600 disabled:cursor-not-allowed`}><GrFormView className='text-lg' /></button>
-               {/* <button onClick={() => { deleteAnnouncement(announcement.id) }} disabled={isDeleting && deletingId === announcement.id} className='bg-red-500/10 text-red-900 hover:text-red-700 hover:bg-red-500/20 px-2 py-2 rounded-sm disabled:bg-red-700/10 disabled:text-red-950 disabled:cursor-not-allowed'><MdDelete className='text-lg' /></button> */}
                <DeleteIssueModal
                   entityType={"Announcement"}
                   entity={announcement}
                   onSuccess={() => {
                     toast.success("Announcement Deleted Successfully!")
-                    console.log("Announcement deleted successfully");
                   }}
                   onError={(error) => {
-                    console.error("Failed to delete Announcement:", error);
                     toast.error("Failed to Delete Announcement!")
                   }}
                 />

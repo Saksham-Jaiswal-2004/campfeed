@@ -3,10 +3,10 @@ import { PresenceProvider } from "@/context/presenceContext";
 import { useUser } from "@/context/userContext";
 import { useAnnouncements } from "@/hooks/useAnnouncements";
 import { useEventData } from "@/hooks/useEventData";
+import { useIssues } from "@/hooks/useIssues";
 import { useNotifications } from "@/hooks/useNotifications";
 import { useNotificationsSocket } from "@/hooks/useNotificationsSocket";
 import { usePresence } from "@/hooks/usePresence";
-// import { usePresenceListener } from "@/hooks/usePresenceListener";
 import { useTicketData } from "@/hooks/useTicketData";
 import { useTickets } from "@/hooks/useTickets";
 
@@ -17,10 +17,10 @@ export default function SocketProvider({ children }) {
   useNotifications();
   useEventData();
   useAnnouncements();
+  useIssues()
   useTicketData();
   useTickets();
   usePresence(user?.uid);
-  // usePresenceListener();
 
   return (
     <PresenceProvider>

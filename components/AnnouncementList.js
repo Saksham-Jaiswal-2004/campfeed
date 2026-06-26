@@ -60,6 +60,8 @@ const AnnouncementList = ({ setSelectedView, setSelectedId }) => {
     }));
   };
 
+  console.log("Announcements: ", announcements);
+
   return (
     <div className='w-full h-screen overflow-y-scroll flex flex-col justify-start items-center'>
       <div className='flex gap-1 justify-between items-center w-full px-5 mt-6'>
@@ -182,9 +184,9 @@ const AnnouncementList = ({ setSelectedView, setSelectedId }) => {
                     <div className='relative'>
                       <h3 className='subtitle text-lg mb-1 group-hover:text-indigo-500 transition-all duration-200 ease-in-out w-fit'>{announcement.title}</h3>
                       <p className='contentText text-xs w-[95%] flex gap-2 items-center'>
-                        {announcement.createdByUser?.username}
+                        {announcement.createdBy?.name}
                         <span>•</span>
-                        <span className='border border-gray-700 contentText py-[0.15rem] px-2 rounded-lg !text-white'>{announcement.createdByUser?.role}</span>
+                        <span className='border border-gray-700 contentText py-[0.15rem] px-2 rounded-lg !text-white'>{announcement.createdBy?.role}</span>
                         <span>•</span>
                         {new Date(announcement.createdAt._seconds * 1000).toLocaleString("en-GB", {
                           day: "2-digit",

@@ -8,7 +8,6 @@ export const useAnnouncements = (announcementId: any) => {
     announcements,
     loading,
     error,
-    // fetchAnnouncements,
     addAnnouncement,
     deleteAnnouncement,
     updateAnnouncement,
@@ -16,7 +15,6 @@ export const useAnnouncements = (announcementId: any) => {
 
   useEffect(() => {
     socket.on("announcement_create", ({announcement}) => {
-      console.log("Socket Data: ", announcement);
       addAnnouncement(announcement);
     });
 
@@ -42,6 +40,5 @@ export const useAnnouncements = (announcementId: any) => {
     addAnnouncement,
     deleteAnnouncement,
     updateAnnouncement,
-    // refresh: fetchAnnouncements,
   };
 };

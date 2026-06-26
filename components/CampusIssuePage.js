@@ -1,13 +1,5 @@
 "use client";
 import React, { useEffect, useMemo, useState } from "react";
-import {
-  doc,
-  getDoc,
-  updateDoc,
-  arrayUnion,
-  arrayRemove,
-} from "firebase/firestore";
-import { db } from "@/lib/firebase";
 import { IoIosArrowForward } from "react-icons/io";
 import { CgDanger } from "react-icons/cg";
 import { MdOutlineInfo } from "react-icons/md";
@@ -17,8 +9,9 @@ import { useUser } from "@/context/userContext";
 import { CiBookmark } from "react-icons/ci";
 import { PiWarningCircle } from "react-icons/pi";
 import ShareButton from "@/components/ShareButton";
-import { api } from "@/lib/api";
 import DataSkeleton from "./ui/DataSkeleton";
+import { useIssueStore } from "@/store/issueStore";
+import { getIssueById, upvote } from "@/services/issueService";
 
 const categoryLabels = {
   CAT001: "Academic",
@@ -34,44 +27,19 @@ const categoryLabels = {
 
 export default function CampusIssuePage({ setSelectedView, id }) {
   const { user } = useUser();
-  const [issue, setIssue] = useState(null);
-  const [creator, setCreator] = useState(null);
-  const [loading, setLoading] = useState(true);
   const [savingVote, setSavingVote] = useState(false);
 
+  const issue = useIssueStore((s) => s.selectedIssue)
+  const loading = useIssueStore((s) => s.loading)
+
   useEffect(() => {
-    if (!id) return;
-
-    const loadIssue = async () => {
-      setLoading(true);
       try {
-        const i = await api(`/issues/${id}`, "GET");
-
-        if (!i.data) {
-          setIssue(null);
-          return;
-        }
-
-        setIssue(i.data);
-
-        if (i.data.student_id) {
-          const creatorSnap = await getDoc(
-            doc(db, "users", i.data.student_id),
-          );
-          if (creatorSnap.exists()) {
-            setCreator(creatorSnap.data());
-          }
-        }
+        getIssueById(id);
       } catch (error) {
         console.error(error);
         setIssue(null);
-      } finally {
-        setLoading(false);
       }
-    };
-
-    loadIssue();
-  }, [id]);
+  }, []);
 
   const issueImages = Array.isArray(issue?.attachment_urls)
     ? issue.attachment_urls
@@ -80,27 +48,9 @@ export default function CampusIssuePage({ setSelectedView, id }) {
   const hasUpvoted = Boolean(user?.uid && upvotedBy.includes(user.uid));
 
   const handleUpvote = async () => {
-    if (!issue || !user?.uid || savingVote) return;
-
-    setSavingVote(true);
     try {
-      const issueRef = doc(db, "issues", id);
-      const nextUpvotes = hasUpvoted
-        ? Math.max((issue.upvotes || 0) - 1, 0)
-        : (issue.upvotes || 0) + 1;
-
-      await updateDoc(issueRef, {
-        upvotes: nextUpvotes,
-        upvotedBy: hasUpvoted ? arrayRemove(user.uid) : arrayUnion(user.uid),
-      });
-
-      setIssue((current) => ({
-        ...current,
-        upvotes: nextUpvotes,
-        upvotedBy: hasUpvoted
-          ? (current?.upvotedBy || []).filter((uid) => uid !== user.uid)
-          : [...(current?.upvotedBy || []), user.uid],
-      }));
+      setSavingVote(true);
+      await upvote(id);
     } catch (error) {
       console.error(error);
     } finally {
@@ -265,15 +215,14 @@ export default function CampusIssuePage({ setSelectedView, id }) {
                   <h3 className="text-xs text-gray-400">Reported by</h3>
                   <div className="flex items-center gap-3 mt-3">
                     <div className="h-10 w-10 rounded-full bg-gradient-to-r from-indigo-500 to-cyan-400 flex items-center justify-center text-white font-semibold">
-                      {creator?.username?.charAt(0) || "U"}
+                      {issue.createdByUser?.name?.charAt(0) || "U"}
                     </div>
                     <div>
                       <p className="text-sm text-gray-200">
-                        {creator?.username || issue.student_id || "Anonymous"}
+                        {issue.is_anonymous ? "Anonymous" : issue.createdByUser?.name}
                       </p>
                       <p className="text-xs text-gray-500">
-                        {creator?.email ||
-                          (issue.is_anonymous ? "Anonymous submission" : "")}
+                        {(issue.is_anonymous ? "" : issue.createdByUser?.email)}
                       </p>
                     </div>
                   </div>
@@ -297,10 +246,14 @@ export default function CampusIssuePage({ setSelectedView, id }) {
                   <button
                     onClick={handleUpvote}
                     disabled={savingVote}
-                    className={`w-full inline-flex items-center justify-center gap-2 px-4 py-2 rounded-md border transition-colors ${hasUpvoted ? "bg-blue-500/15 text-blue-300 border-blue-500/30" : "border-gray-700 text-gray-200 hover:bg-white/5"}`}
+                    className={`w-full inline-flex items-center justify-center gap-2 px-4 py-2 rounded-md border transition-colors cursor-pointer disabled:cursor-not-allowed ${hasUpvoted ? "bg-blue-500/15 text-blue-300 border-blue-500/30" : "border-gray-700 text-gray-200 hover:bg-white/5"}`}
                   >
-                    <FaRegThumbsUp /> {hasUpvoted ? "Upvoted" : "Upvote"} •{" "}
-                    {issue.upvotes || 0}
+                    {savingVote ? hasUpvoted ? "Removing Vote" : "Voting" : 
+                    (<span className="flex justify-center items-center gap-2">
+                      <FaRegThumbsUp /> 
+                      {hasUpvoted ? "Upvoted" : "Upvote"} •{" "} {issue.upvotes || 0}
+                     </span>
+                    )}
                   </button>
                 </div>
 

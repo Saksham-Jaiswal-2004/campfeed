@@ -7,6 +7,7 @@ import {
   createIssue,
   editIssue,
   deleteIssue,
+  issueVote,
 } from "../controllers/issue.controller.js";
 import { firebaseAuth } from "../middleware/firebaseAuth.js";
 import { notAStudent } from "../middleware/notAStudent.js";
@@ -22,6 +23,8 @@ router.get("/admin", notAStudent, getAdminIssues);
 router.get("/:issueId", firebaseAuth, getIssueById);
 
 router.post("/post-issue", firebaseAuth, createIssue);
+
+router.patch("/:issueId/vote", firebaseAuth, issueVote);
 
 router.patch("/:issueId/edit", firebaseAuth, editIssue);
 

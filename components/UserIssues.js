@@ -16,79 +16,32 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { db } from "@/lib/firebase";
-import { collection, getDocs, getDoc, doc } from "firebase/firestore";
-import { onSnapshot, where, query, orderBy } from "firebase/firestore";
 import { useUser } from "@/context/userContext";
-import { useRouter } from "next/navigation";
 import { FaAngleRight } from 'react-icons/fa';
 import DeleteIssueModal from '@/components/DeleteIssueModal';
 import { toast } from 'sonner';
-import { api } from '@/lib/api';
 import DataSkeleton from './ui/DataSkeleton';
+import { getUserIssues } from '@/services/issueService';
+import { useIssueStore } from '@/store/issueStore';
 
 const UserIssues = ({setSelectedView, setSelectedId}) => {
   const [status, setStatus] = useState("Select Status");
   const [priority, setPriority] = useState("Select Priority");
   const [category, setCategory] = useState("Select Category");
-  const { user, loading } = useUser();
-  const [issues, setIssues] = useState([]);
-  const [fetching, setFetching] = useState(true);
+  const { user } = useUser();
   const [searchQuery, setSearchQuery] = useState("");
   const [expanded, setExpanded] = useState({});
-  const router = useRouter();
+
+  const issues = useIssueStore((s) => s.userIssues)
+  const loading = useIssueStore((s) => s.loading)
 
   useEffect(() => {
-    if (!loading && !user) {
-      router.push("/auth/Login");
-    }
-  }, [loading, user]);
-
-  useEffect(() => {
-  if (!user) return;
-
-  const fetchUserIssues = async () => {
     try {
-      const i = await api(`/issues/userIssues/${user.uid}`, "GET");
-
-      const issuesData = i.data;
-
-      const issuesWithUser = await Promise.all(
-        issuesData.map(async (issue) => {
-          let createdByData = {};
-
-          try {
-            const userRef = doc(db, "users", issue.student_id);
-
-            const userSnap = await getDoc(userRef);
-
-            if (userSnap.exists()) {
-              createdByData = userSnap.data();
-            }
-
-          } catch (error) {
-            console.error("Error fetching user for issue:", error);
-          }
-
-          return {
-            ...issue,
-            createdByUser: createdByData,
-          };
-        })
-      );
-
-      setIssues(issuesWithUser);
-
+      getUserIssues(user.uid);
     } catch (err) {
       console.error("Error fetching issues:", err);
-    } finally {
-      setFetching(false);
     }
-  };
-
-  fetchUserIssues();
-
-}, [user]);
+}, []);
 
   const filteredIssues = useMemo(() => {
     return issues.filter((issue) => {
@@ -227,7 +180,7 @@ const UserIssues = ({setSelectedView, setSelectedId}) => {
       </div>
 
       <div className='w-full h-fit p-4 rounded-lg'>
-        {fetching ? (
+        {loading ? (
           <div className='w-full h-full flex justify-center items-center'>
             <DataSkeleton />
           </div>

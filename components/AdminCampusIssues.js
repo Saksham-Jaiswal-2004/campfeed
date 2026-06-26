@@ -1,96 +1,39 @@
 "use client";
 import React, { useState, useEffect, useMemo } from 'react';
 import { CiSearch } from "react-icons/ci";
-import { IoIosArrowDown } from "react-icons/io";
 import { CgDanger } from "react-icons/cg";
 import { MdOutlineInfo } from "react-icons/md";
 import { FiCheckCircle } from "react-icons/fi";
-import { IoAddOutline } from "react-icons/io5";
-import { FaAngleUp } from "react-icons/fa6";
-import { FaAngleRight } from 'react-icons/fa';
-import { FaRegThumbsUp } from "react-icons/fa";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import Navbar from '@/components/Navbar';
-import { db } from "@/lib/firebase";
-import { collection, getDocs, getDoc, doc } from "firebase/firestore";
-import { onSnapshot, query, orderBy } from "firebase/firestore";
-import { useUser } from "@/context/userContext";
-import { useRouter } from "next/navigation";
-import ShareButton from './ShareButton';
 import { GrFormView } from "react-icons/gr";
 import { MdDelete } from "react-icons/md";
 import { TbMessage2Cancel } from "react-icons/tb";
 import { CiExport } from "react-icons/ci";
 import DataSkeleton from './ui/DataSkeleton';
+import { getAdminIssues } from '@/services/issueService';
+import { useIssueStore } from '@/store/issueStore';
 
 const AdminCampusIssues = ({setSelectedView, setSelectedId}) => {
   const [status, setStatus] = useState("Select Status");
   const [priority, setPriority] = useState("Select Priority");
   const [category, setCategory] = useState("Select Category");
-  const { user, loading } = useUser();
-  const [issues, setIssues] = useState([]);
-  const [fetching, setFetching] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
-  const [expanded, setExpanded] = useState({});
-  const router = useRouter();
+
+  const issues = useIssueStore((s) => s.adminIssues)
+  const loading = useIssueStore((s) => s.loading)
 
   useEffect(() => {
-    if (!loading && !user) {
-      router.push("/auth/Login");
-    }
-  }, [loading, user]);
-
-  useEffect(() => {
-  if (!user) return;
-
-  const issuesRef = collection(db, "issues");
-
-  const q = query(
-    issuesRef,
-    orderBy("created_at", "desc")
-  );
-
-  const unsubscribe = onSnapshot(q, async (snapshot) => {
     try {
-      const issuesWithUser = await Promise.all(
-        snapshot.docs.map(async (docSnap) => {
-          const issueData = docSnap.data();
-          let createdByData = {};
-
-          try {
-            const userRef = doc(db, "users", issueData.student_id);
-            const userSnap = await getDoc(userRef);
-
-            if (userSnap.exists()) {
-              createdByData = userSnap.data();
-            }
-          } catch (error) {
-            console.error("Error fetching user for issue:", error);
-          }
-
-          return {
-            id: docSnap.id,
-            ...issueData,
-            createdByUser: createdByData,
-          };
-        })
-      );
-
-      setIssues(issuesWithUser);
+      getAdminIssues();
     } catch (err) {
       console.error("Error fetching issues:", err);
-    } finally {
-      setFetching(false);
     }
-  });
-
-  return () => unsubscribe();
-}, [user]);
+}, []);
 
   const filteredIssues = useMemo(() => {
     return issues.filter((issue) => {
@@ -107,13 +50,6 @@ const AdminCampusIssues = ({setSelectedView, setSelectedId}) => {
     setStatus("Select Status");
     setPriority("Select Priority");
     setCategory("Select Category");
-  };
-
-  const toggleExpand = (id) => {
-    setExpanded((prev) => ({
-      ...prev,
-      [id]: !prev[id],
-    }));
   };
 
   return (
@@ -184,7 +120,7 @@ const AdminCampusIssues = ({setSelectedView, setSelectedId}) => {
       </div>
 
       <div className='w-full h-fit p-4 rounded-lg'>
-        {fetching ? (
+        {loading ? (
           <div className='w-full h-full flex flex-col justify-center items-center gap-8'>
             <DataSkeleton />
             <DataSkeleton />
@@ -254,7 +190,7 @@ const AdminCampusIssues = ({setSelectedView, setSelectedId}) => {
                   </p>
 
                   <p className='text-xs w-[13%] flex justify-center items-center'>
-                  {issue.created_at?.toDate().toLocaleDateString("en-IN", {
+                  {new Date(issue.created_at._seconds * 1000).toLocaleDateString("en-IN", {
                      day: "2-digit",
                      month: "short",
                      year: "numeric",

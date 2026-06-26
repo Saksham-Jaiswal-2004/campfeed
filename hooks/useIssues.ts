@@ -30,7 +30,9 @@ export const useIssues = () => {
       updateRealtimeIssue(issue);
       setSelectedIssue(issue);
     });
-    socket.on("issue_updated", updateRealtimeIssue);
+    socket.on("issue_updated", ({ issue }) => {
+      updateIssue(issue);
+    });
     socket.on("issue_deleted", removeRealtimeIssue);
 
     return () => {

@@ -15,7 +15,7 @@ import { MdDelete } from "react-icons/md";
 import { TbMessage2Cancel } from "react-icons/tb";
 import { CiExport } from "react-icons/ci";
 import DataSkeleton from './ui/DataSkeleton';
-import { getAdminIssues } from '@/services/issueService';
+import { changeStatus, getAdminIssues } from '@/services/issueService';
 import { useIssueStore } from '@/store/issueStore';
 
 const AdminCampusIssues = ({setSelectedView, setSelectedId}) => {
@@ -23,6 +23,7 @@ const AdminCampusIssues = ({setSelectedView, setSelectedId}) => {
   const [priority, setPriority] = useState("Select Priority");
   const [category, setCategory] = useState("Select Category");
   const [searchQuery, setSearchQuery] = useState("");
+  const [updating, setUpdating] = useState(false);
 
   const issues = useIssueStore((s) => s.adminIssues)
   const loading = useIssueStore((s) => s.loading)
@@ -50,6 +51,17 @@ const AdminCampusIssues = ({setSelectedView, setSelectedId}) => {
     setStatus("Select Status");
     setPriority("Select Priority");
     setCategory("Select Category");
+  };
+
+  const handleChangeStatus = async (id, newStatus) => {
+    setUpdating(id);
+    try {
+      const newIssue = await changeStatus(id, newStatus);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setUpdating(false);
+    }
   };
 
   return (
@@ -201,9 +213,9 @@ const AdminCampusIssues = ({setSelectedView, setSelectedId}) => {
                    </p>
 
                    <div className='w-[10%] flex justify-center items-center gap-4 text-gray-500'>
-                    <div className='bg-gray-300/5 hover:text-gray-300 hover:bg-gray-300/10 px-2 py-2 rounded-sm' onClick={() => { setSelectedId(issue.id); setSelectedView("DetailedIssue"); }}><GrFormView className='text-lg' /></div>
-                    <div className='bg-gray-300/5 hover:text-gray-300 hover:bg-gray-300/10 px-2 py-2 rounded-sm'><TbMessage2Cancel className='text-lg' /></div>
-                    <div className='bg-red-500/10 text-red-900 hover:text-red-700 hover:bg-red-500/20 px-2 py-2 rounded-sm'><MdDelete className='text-lg' /></div>
+                    <button className='bg-gray-300/5 hover:text-gray-300 hover:bg-gray-300/10 px-2 py-2 rounded-sm' onClick={() => { setSelectedId(issue.id); setSelectedView("DetailedIssue"); }}><GrFormView className='text-lg' /></button>
+                    <button disabled={updating === issue.id} onClick={() => {handleChangeStatus(issue.id, "resolved")}} className='bg-gray-300/5 hover:text-gray-300 hover:bg-gray-300/10 px-2 py-2 rounded-sm disabled:cursor-not-allowed disabled:opacity-60'><TbMessage2Cancel className='text-lg' /></button>
+                    <button className='bg-red-500/10 text-red-900 hover:text-red-700 hover:bg-red-500/20 px-2 py-2 rounded-sm'><MdDelete className='text-lg' /></button>
                    </div>
 
                 {/* <button onClick={() => { setSelectedId(issue.id); setSelectedView("DetailedCampusIssue"); }} className='mr-4 mb-4 contentText py-2 px-2 rounded-lg !text-blue-400 text-xs hover:!text-blue-500 transition-all duration-300 ease-in-out flex justify-center items-center gap-1'>View Full Report <FaAngleRight /></button> */}

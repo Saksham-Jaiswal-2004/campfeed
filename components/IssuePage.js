@@ -1,5 +1,5 @@
 "use client"
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useLayoutEffect } from "react";
 import { doc, getDoc, updateDoc, arrayUnion } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { IoIosArrowForward } from "react-icons/io";
@@ -15,8 +15,9 @@ import { FaArrowUp } from "react-icons/fa6";
 import { useIssueChat } from "@/hooks/useIssueChat";
 import { sendMessage } from "@/services/chat.service";
 import { api } from "@/lib/api";
-import { changeStatus, editIssue } from "@/services/issueService";
+import { changeStatus, editIssue, getIssueById } from "@/services/issueService";
 import DataSkeleton from "./ui/DataSkeleton";
+import { useIssueStore } from "@/store/issueStore";
 
 const categoryOptions = [
   { id: "CAT001", label: "Academic" },
@@ -34,8 +35,6 @@ const priorityOptions = ["low", "medium", "high", "critical"];
 
 export default function IssuePage({ setSelectedView, id, mode = "public" }) {
   const [data, setData] = useState(null);
-  const [creator, setCreator] = useState(null);
-  const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
   const [noteUpdating, setNoteUpdating] = useState(false);
   const [note, setNote] = useState("");
@@ -54,50 +53,30 @@ export default function IssuePage({ setSelectedView, id, mode = "public" }) {
 
   const effectiveMode = (mode === "creator" || (user && data && user.uid === data.student_id)) ? "creator" : "public";
 
+  const issue = useIssueStore((s) => s.selectedIssue);
+  const loading = useIssueStore((s) => s.loading);
+
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+  }, [issue, messages]);
 
   useEffect(() => {
     if (!id) return;
-
-    const fetch = async () => {
-      setLoading(true);
       try {
-        const i = await api(`/issues/${id}`, "GET");
+        getIssueById(id)
 
-        if (!i.data) {
-          setData(null);
-          return;
-        }
-
-        setData(i.data);
+        setData(issue);
         setEditForm({
-          title: i.data.title || "",
-          description: i.data.description || "",
-          category_id: i.data.category_id || "",
-          priority: i.data.priority || "medium",
+          title: issue.title || "",
+          description: issue.description || "",
+          category_id: issue.category_id || "",
+          priority: issue.priority || "medium",
         });
-        setShareOnFeed(i.data.shareOnFeed || false);
-
-        if (i.data.student_id) {
-          try {
-            const creatorRef = doc(db, "users", i.data.student_id);
-            const crSnap = await getDoc(creatorRef);
-            if (crSnap.exists()) setCreator(crSnap.data());
-          } catch (err) {
-            console.error(err);
-          }
-        }
+        setShareOnFeed(issue.shareOnFeed || false);
       } catch (err) {
         console.error(err);
         setData(null);
-      } finally {
-        setLoading(false);
       }
-    };
-
-    fetch();
   }, [id]);
 
   if (!id) return <div className="h-screen w-screen flex justify-center items-center text-xl">Issue ID not provided</div>;
@@ -374,7 +353,8 @@ export default function IssuePage({ setSelectedView, id, mode = "public" }) {
                 <div className="mt-5">
                   <h3 className="text-sm text-gray-300 mb-3">Updates & Comments</h3>
                   <div className="relative flex flex-col min-h-[55vh] h-fit bg-[#041025] rounded-xl w-full overflow-y-hidden justify-between">
-                    <div className="mt-1 px-2 space-y-3 overflow-y-scroll h-[46vh]">
+                    <div className="h-[50vh] overflow-y-scroll mt-1">
+                      <div className="px-2 space-y-3 min-h-[46vh] h-fit flex flex-col justify-end">
                       {(messages || []).slice().map((c, i) => (
                         <div key={i} className={`w-full my-1 flex items-center ${user.uid === c.senderId ? "justify-end" : "justify-start"}`}> 
                           <div className={`border border-gray-800 rounded-t-lg px-3 py-1 w-fit h-fit max-w-[65%] ${user.uid === c.senderId ? "bg-indigo-700/80 rounded-bl-lg" : "bg-blue-950/60 rounded-br-lg"}`}>
@@ -386,6 +366,7 @@ export default function IssuePage({ setSelectedView, id, mode = "public" }) {
                       ))}
 
                       <div ref={bottomRef} ></div>
+                    </div>
                     </div>
 
 
@@ -411,10 +392,10 @@ export default function IssuePage({ setSelectedView, id, mode = "public" }) {
                 <div>
                   <h4 className="text-xs text-gray-400">Reported By</h4>
                   <div className="flex items-center gap-3 mt-3">
-                    <div className="h-10 w-10 rounded-full bg-gradient-to-r from-indigo-500 to-cyan-400 flex items-center justify-center text-white font-semibold">{creator ? (creator.username?.charAt(0) || 'U') : 'U'}</div>
+                    <div className="h-10 w-10 rounded-full bg-gradient-to-r from-indigo-500 to-cyan-400 flex items-center justify-center text-white font-semibold">{issue.createdByUser ? (issue.createdByUser.name?.charAt(0) || 'U') : 'U'}</div>
                     <div>
-                      <p className="text-sm text-gray-200">{creator?.username || data.student_id}</p>
-                      <p className="text-xs text-gray-400">{creator?.email}</p>
+                      <p className="text-sm text-gray-200">{issue.createdByUser?.name || data.student_id}</p>
+                      <p className="text-xs text-gray-400">{issue.createdByUser?.email}</p>
                     </div>
                   </div>
                 </div>
@@ -434,10 +415,9 @@ export default function IssuePage({ setSelectedView, id, mode = "public" }) {
                         {!isEditing ? <><FaRegEdit className="text-sm" /> Edit</> : <><RxCross1 className="text-sm" /> Cancel</>}
                       </button>
 
-                      <DeleteIssueModal issue={{ id, title: data.title }} onSuccess={() => { setSelectedView('UserIssues'); }} />
+                      <DeleteIssueModal entityType={"Issue"} entity={issue} onSuccess={() => { setSelectedView('UserIssues'); }} />
                     </div>
                   ) : (
-                    // <button onClick={() => setSelectedView('UserIssues')} className="w-full inline-flex justify-center items-center gap-2 px-4 py-2 rounded-md border border-gray-700 text-gray-200 hover:bg-white/3">Track Issue</button>
                     ""
                   )}
                 </div>

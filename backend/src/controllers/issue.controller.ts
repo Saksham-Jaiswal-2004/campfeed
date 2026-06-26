@@ -216,7 +216,8 @@ export async function issueVote(req: any, res: any) {
       updatedAt: FieldValue.serverTimestamp(),
     });
 
-    const docAfterEdit = await docRef.get();
+    const updatedDoc = await docRef.get();
+    const updatedIssue = { id: updatedDoc.id, ...updatedDoc.data(), };
 
     const shouldInvalidateCampus = doc.data()?.shareOnFeed === true;
 
@@ -226,11 +227,11 @@ export async function issueVote(req: any, res: any) {
       shouldInvalidateCampus ? deleteCache(cacheKeys.campusIssues) : "",
     ]);
 
-    getIO().emit("issue_upvote", { issue: docAfterEdit.data() })
+    getIO().emit("issue_upvote", { issue: updatedIssue })
 
     return res.json({
       success: true,
-      data: docAfterEdit.data(),
+      data: updatedIssue,
     });
   } catch (err: any) {
     return res.status(500).json({
@@ -258,6 +259,9 @@ export async function editIssue(req: any, res: any) {
       updatedAt: FieldValue.serverTimestamp(),
     });
 
+    const updatedDoc = await docRef.get();
+    const updatedIssue = { id: updatedDoc.id, ...updatedDoc.data(), };
+
     const shouldInvalidateCampus =
       doc.data()?.shareOnFeed !== req.body.shareOnFeed ||
       doc.data()?.shareOnFeed === true;
@@ -268,9 +272,11 @@ export async function editIssue(req: any, res: any) {
       shouldInvalidateCampus ? deleteCache(cacheKeys.campusIssues) : "",
     ]);
 
+    getIO().emit("issue_updated", { issue: updatedIssue })
+
     return res.json({
       success: true,
-      data: doc.data(),
+      data: updatedIssue,
     });
   } catch (err: any) {
     return res.status(500).json({

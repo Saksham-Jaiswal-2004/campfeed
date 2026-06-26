@@ -2,6 +2,7 @@ import { serverTimestamp } from "firebase/firestore";
 import { createNotification } from "./notification.service";
 import { api } from "@/lib/api";
 import { useIssueStore } from "@/store/issueStore";
+import { toast } from "sonner";
 
 export async function getCampusIssues(force = false) {
   const { campusFeed, setLoading, setError, setCampusFeed } = useIssueStore.getState();
@@ -140,11 +141,9 @@ export async function logIssue(data, user) {
 }
 
 export async function changeStatus(id, newStatus) {
-  const { setLoading, setError, updateIssue } = useIssueStore.getState();
+  const { setError, updateIssue } = useIssueStore.getState();
 
   try {
-    setLoading(true);
-
     const response = await api(`/issues/${id}/edit`, "PATCH", {
       status: newStatus,
     });
@@ -158,8 +157,6 @@ export async function changeStatus(id, newStatus) {
     setError(error.message);
 
     throw error;
-  } finally {
-    setLoading(false);
   }
 }
 
@@ -181,13 +178,13 @@ export async function editIssue(id, payload, user) {
   const { setLoading, setError, updateIssue } = useIssueStore.getState();
 
   try {
-    setLoading(true);
-
     const response = await api(`/issues/${id}/edit`, "PATCH", payload);
 
     const issue = response.data;
 
     updateIssue(issue);
+    
+    toast.success("Issue Updated Successfully")
 
     const notification = {
       userId: user.uid,
@@ -207,9 +204,9 @@ export async function editIssue(id, payload, user) {
   } catch (error) {
     setError(error.message);
 
+    toast.error(`Failed to Update Issue - ${error.message}`)
+
     throw error;
-  } finally {
-    setLoading(false);
   }
 }
 

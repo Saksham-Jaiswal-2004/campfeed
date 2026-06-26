@@ -55,7 +55,7 @@ const DeleteIssueModal = ({ entityType, entity, onSuccess, onError }) => {
           
           <div className="bg-gray-900/50 border border-gray-700 rounded p-3">
             <p className="text-sm text-gray-300">
-              <strong>Issue:</strong> {entityType === "Event" ? entity.name : entity.title}
+              <strong>{entityType}:</strong> {entityType === "Event" ? entity.name : entity.title}
             </p>
             <p className="text-xs text-gray-500 mt-1">
               ID: {entity.id}

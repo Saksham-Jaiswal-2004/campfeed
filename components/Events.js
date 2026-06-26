@@ -19,6 +19,7 @@ import BlockSkeleton from "./ui/BlockSkeleton";
 import { useEventStore } from "@/store/eventStore";
 import { eventService } from "@/services/events.service";
 import DeleteIssueModal from "./DeleteIssueModal";
+import { CiEdit } from "react-icons/ci";
 
 const Events = ({ setSelectedView, setSelectedId }) => {
   const { user, userData } = useUser();
@@ -117,8 +118,8 @@ const Events = ({ setSelectedView, setSelectedId }) => {
                 </div>
 
                 <div className="flex justify-center items-center gap-3 contentText absolute top-6 right-4">
-                  <button className="bg-gray-300/5 hover:text-gray-300 hover:bg-gray-300/10 pr-2 pl-3 py-2 rounded-sm flex justify-center items-center">
-                    <FaRegEdit className="text-sm" />
+                  <button className="bg-gray-300/5 hover:text-gray-300 hover:bg-gray-300/10 px-2 py-2 rounded-sm flex justify-center items-center">
+                    <CiEdit className="text-sm" />
                   </button>
                   <DeleteIssueModal
                     entityType={"Event"}

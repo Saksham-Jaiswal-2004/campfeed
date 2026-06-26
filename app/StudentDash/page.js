@@ -121,7 +121,7 @@ const Page = () => {
         </div>
       </SidebarBody>
 
-      <div className="min-h-screen h-fit overflow-y-scroll w-[84vw] overflow-x-hidden fixed right-0 flex justify-center items-center">
+      <div className="min-h-screen h-fit overflow-y-scroll w-[86%] overflow-x-hidden fixed right-0 flex justify-center items-center">
         {selectedView === "StudentDash" && <StudentDash setSelectedView={setSelectedView} />}
         {selectedView === "UserIssues" && <UserIssues setSelectedView={setSelectedView} setSelectedId={setSelectedId} />}
         {selectedView === "AllIssues" && <CampusIssues setSelectedView={setSelectedView} setSelectedId={setSelectedId} />}

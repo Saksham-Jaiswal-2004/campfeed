@@ -16,6 +16,9 @@ import DataSkeleton from './ui/DataSkeleton';
 import { useAnnouncements } from '@/hooks/useAnnouncements';
 import { announcementService } from '@/services/announcements.service';
 import { useAnnouncementStore } from '@/store/announcementStore';
+import PieChart from './ui/PieChart';
+import * as am5 from "@amcharts/amcharts5";
+import { GoDotFill } from 'react-icons/go';
 
 const AnnouncementList = ({ setSelectedView, setSelectedId }) => {
   const [role, setRole] = useState("Select Role");
@@ -60,11 +63,27 @@ const AnnouncementList = ({ setSelectedView, setSelectedId }) => {
     }));
   };
 
-  console.log("Announcements: ", announcements);
+  const data = [
+  {
+    category: "High",
+    value: 45,
+    color: am5.color(0xdc2626),
+  },
+  {
+    category: "Medium",
+    value: 25,
+    color: am5.color(0xca8a04),
+  },
+  {
+    category: "Low",
+    value: 20,
+    color: am5.color(0x16a34a),
+  },
+];
 
   return (
-    <div className='w-full h-screen overflow-y-scroll flex flex-col justify-start items-center'>
-      <div className='flex gap-1 justify-between items-center w-full px-5 mt-6'>
+    <div className='relative w-full h-screen overflow-y-scroll flex flex-col justify-start items-center'>
+      <div className='relative flex gap-1 justify-between items-center w-full px-5 mt-6'>
         <div className='flex flex-col'>
           <h2 className='subtitle text-3xl'>Latest Announcements</h2>
           <p className='contentText'>Stay updated with important campus news</p>
@@ -72,36 +91,36 @@ const AnnouncementList = ({ setSelectedView, setSelectedId }) => {
       </div>
 
       <div className='flex gap-5 justify-center items-center w-full mt-5'>
-        <div className='w-[23%] h-[135px] flex flex-col justify-center border border-gray-800 bg-[#020613] rounded-lg p-3'>
-          <div className='mb-5 flex justify-between pr-3'>
-            <p className='contentText text-sm'>Total Announcements </p>
+        <div className="w-[23%] h-fit flex flex-col justify-center border border-gray-800 bg-[#020613] rounded-2xl p-3">
+          <div className="mb-3 flex justify-between pr-3">
+            <p className="contentText text-slate-500! text-xs uppercase tracking-[0.15rem]">Total Announcements </p>
           </div>
 
           <p className='subtitle text-3xl pl-2 mb-1 flex items-center gap-1'><span className='text-white text-4xl ml-1 mr-2'>•</span> {announcements.length}</p>
           <p className='text-[#64748b] text-xs'><span className='text-green-500'>+12%</span> from last month</p>
         </div>
 
-        <div className='w-[23%] h-[135px] flex flex-col justify-center border border-gray-800 bg-[#020613] rounded-lg p-3'>
-          <div className='mb-5 flex justify-between pr-3'>
-            <p className='contentText text-sm'>High Priority</p>
+        <div className="w-[23%] h-fit flex flex-col justify-center border border-gray-800 bg-[#020613] rounded-2xl p-3">
+          <div className="mb-3 flex justify-between pr-3">
+            <p className="contentText text-slate-500! text-xs uppercase tracking-[0.15rem]">High Priority</p>
           </div>
 
           <p className='subtitle text-3xl pl-2 mb-1 flex items-center gap-1'><span className='text-red-500 text-4xl ml-1 mr-2'>•</span> {announcements.filter(announcement => announcement.priority==="High").length}</p>
           <p className='text-[#64748b] text-xs'><span className='text-green-500'>+3%</span> from last month</p>
         </div>
 
-        <div className='w-[23%] h-[135px] flex flex-col justify-center border border-gray-800 bg-[#020613] rounded-lg p-3'>
-          <div className='mb-5 flex justify-between pr-3'>
-            <p className='contentText text-sm'>Medium Priority</p>
+        <div className="w-[23%] h-fit flex flex-col justify-center border border-gray-800 bg-[#020613] rounded-2xl p-3">
+          <div className="mb-3 flex justify-between pr-3">
+            <p className="contentText text-slate-500! text-xs uppercase tracking-[0.15rem]">Medium Priority</p>
           </div>
 
           <p className='subtitle text-3xl pl-2 mb-1 flex items-center gap-1'><span className='text-yellow-500 text-4xl ml-1 mr-2'>•</span> {announcements.filter(announcement => announcement.priority==="Medium").length}</p>
           <p className='text-[#64748b] text-xs'><span className='text-green-500'>+5%</span> from last month</p>
         </div>
 
-        <div className='w-[23%] h-[135px] flex flex-col justify-center border border-gray-800 bg-[#020613] rounded-lg p-3'>
-          <div className='mb-5 flex justify-between pr-3'>
-            <p className='contentText text-sm'>Low Priority</p>
+        <div className="w-[23%] h-fit flex flex-col justify-center border border-gray-800 bg-[#020613] rounded-2xl p-3">
+          <div className="mb-3 flex justify-between pr-3">
+            <p className="contentText text-slate-500! text-xs uppercase tracking-[0.15rem]">Low Priority</p>
           </div>
 
           <p className='subtitle text-3xl pl-2 mb-1 flex items-center gap-1'><span className='text-green-500 text-4xl ml-1 mr-2'>•</span> {announcements.filter(announcement => announcement.priority==="Low").length}</p>
@@ -109,7 +128,9 @@ const AnnouncementList = ({ setSelectedView, setSelectedId }) => {
         </div>
       </div>
 
-      <div className='flex justify-start w-full my-6 pl-3 relative'>
+      <div className='flex w-full justify-start'>
+      <div className='flex flex-col w-[75%]'>
+      <div className='flex justify-start w-full my-4 pl-3 relative'>
         <CiSearch className='absolute contentText top-[28%] left-[2.5%]' />
         <input
           type="search"
@@ -118,7 +139,7 @@ const AnnouncementList = ({ setSelectedView, setSelectedId }) => {
           onChange={(e) => setSearchQuery(e.target.value)}
           id="announcements"
           placeholder='Search Announcements...'
-          className='w-[40%] text-sm mx-2 contentText !text-white rounded-sm pl-8 pr-4 py-2 border border-gray-700 focus:!border-gray-500 outline-none'
+          className='w-[50%] text-sm mx-2 contentText !text-white rounded-sm pl-8 pr-4 py-2 border border-gray-700 focus:!border-gray-500 outline-none'
         />
 
         <DropdownMenu>
@@ -164,9 +185,6 @@ const AnnouncementList = ({ setSelectedView, setSelectedId }) => {
       </div>
 
       <div className='w-full h-fit p-4 rounded-lg'>
-        <div className='mb-4'>
-        </div>
-
         {loading ? (
           <div className='w-full h-full flex justify-center items-center'>
             <DataSkeleton />
@@ -176,9 +194,9 @@ const AnnouncementList = ({ setSelectedView, setSelectedId }) => {
             No Present Announcements
           </div>
         ) : (
-          <div className='grid grid-cols-1 justify-center items-center gap-2 w-full mb-10'>
+          <div className='grid grid-cols-1 justify-center items-center gap-2 w-full mb-4'>
             {filteredAnnouncements.map((announcement) => (
-              <div key={announcement.id} className='w-full h-[30vh] border border-gray-800 bg-[#020613] rounded-lg overflow-hidden group'>
+              <div key={announcement.id} className='w-full h-fit border border-gray-800 bg-[#020613] rounded-lg overflow-hidden group'>
                 <button onClick={() => { setSelectedView("DetailedAnnouncement"); setSelectedId(announcement.id) }} className='cursor-pointer w-full h-full justify-start'>
                   <div className='w-full h-full flex flex-col justify-between p-5 hover:bg-gray-900/30 transition-all duration-200 ease-in-out'>
                     <div className='relative'>
@@ -225,30 +243,32 @@ const AnnouncementList = ({ setSelectedView, setSelectedId }) => {
                       </div>
                     </div>
 
-                    <div className='flex w-full h-fit justify-start mt-3'>
+                    <div className='flex w-[70%] h-fit justify-start mt-5'>
                       <p className="contentText text-sm">
-                        {expanded[announcement.id]
-                          ? announcement.description
-                          : announcement.description?.slice(0, 160) + (announcement.description?.length > 160 ? "..." : "")}
+                        {announcement.description?.split(" ").slice(0, 10).join(" ") + (announcement.description?.split(" ").length > 10 ? "..." : "")}
                       </p>
                     </div>
-
-                    {announcement.description?.length > 160 && (
-                      <div className='flex w-full h-fit justify-start'>
-                        <button
-                          onClick={() => toggleExpand(announcement.id)}
-                          className='text-xs flex items-center gap-2 text-indigo-500 hover:text-indigo-700 mt-2'
-                        >
-                          {expanded[announcement.id] ? "Show Less" : "Read More"} <IoIosArrowDown />
-                        </button>
-                      </div>
-                    )}
                   </div>
                 </button>
               </div>
             ))}
           </div>
         )}
+      </div>
+      </div>
+      <div className='sticky -top-4 w-[23%] h-fit flex flex-col gap-3 justify-start items-center py-6'>
+        <div className='w-full flex-col justify-start items-center bg-[#020613]! rounded-2xl px-3 py-5 border border-gray-800'>
+          <h2 className='contentText text-slate-500! text-xs uppercase tracking-[0.15rem] mb-5'>Announcements By Priority</h2>
+          {/* <SemiPieChart data={priorityData} /> */}
+          <PieChart data={data} />
+
+          <div className='mt-4 text-xs text-gray-400 flex flex-col items-center justify-center gap-1'>
+            <p className='flex items-center gap-1 w-[70%] justify-between'><span className='flex justify-center items-center gap-1'><GoDotFill className='text-lg text-red-500' /> High Priority</span> <span className='text-base text-gray-200'>{data[2].value}</span></p>
+            <p className='flex items-center gap-1 w-[70%] justify-between'><span className='flex justify-center items-center gap-1'><GoDotFill className='text-lg text-yellow-500' /> Medium Priority</span> <span className='text-base text-gray-200'>{data[1].value}</span></p>
+            <p className='flex items-center gap-1 w-[70%] justify-between'><span className='flex justify-center items-center gap-1'><GoDotFill className='text-lg text-green-500' /> Low Priority</span> <span className='text-base text-gray-200'>{data[0].value}</span></p>
+          </div>
+        </div>
+      </div>
       </div>
     </div>
   );

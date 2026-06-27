@@ -53,36 +53,36 @@ const Tickets = () => {
       </div>
 
       <div className='flex gap-5 justify-between items-center w-full my-5'>
-        <div className='w-[24%] h-[135px] flex flex-col justify-center border border-gray-800 bg-[#020613] rounded-lg p-3'>
-          <div className='mb-5 flex justify-between pr-3'>
-            <p className='contentText text-sm'>Total Tickets</p>
+        <div className="w-[23%] h-fit flex flex-col justify-center border border-gray-800 bg-[#020613] rounded-2xl p-3">
+          <div className="mb-3 flex justify-between pr-3">
+            <p className="contentText text-slate-500! text-xs uppercase tracking-[0.15rem]">Total Tickets</p>
           </div>
 
           <p className='subtitle text-3xl pl-2 mb-1 flex items-center gap-1'><span className='text-white text-4xl ml-1 mr-2'>•</span> {tickets.length}</p>
           <p className='text-[#64748b] text-xs'><span className='text-green-500'>+12%</span> from last month</p>
         </div>
 
-        <div className='w-[24%] h-[135px] flex flex-col justify-center border border-gray-800 bg-[#020613] rounded-lg p-3'>
-          <div className='mb-5 flex justify-between pr-3'>
-            <p className='contentText text-sm'>Active Tickets</p>
+        <div className="w-[23%] h-fit flex flex-col justify-center border border-gray-800 bg-[#020613] rounded-2xl p-3">
+          <div className="mb-3 flex justify-between pr-3">
+            <p className="contentText text-slate-500! text-xs uppercase tracking-[0.15rem]">Active Tickets</p>
           </div>
 
           <p className='subtitle text-3xl pl-2 mb-1 flex items-center gap-1'><span className='text-green-500 text-4xl ml-1 mr-2'>•</span> {tickets.filter(ticket => !ticket.used && new Date(ticket.event.endDate._seconds * 1000) > Timestamp.now().toDate()).length}</p>
           <p className='text-[#64748b] text-xs'><span className='text-green-500'>+3%</span> from last month</p>
         </div>
 
-        <div className='w-[24%] h-[135px] flex flex-col justify-center border border-gray-800 bg-[#020613] rounded-lg p-3'>
-          <div className='mb-5 flex justify-between pr-3'>
-            <p className='contentText text-sm'>Used Tickets</p>
+        <div className="w-[23%] h-fit flex flex-col justify-center border border-gray-800 bg-[#020613] rounded-2xl p-3">
+          <div className="mb-3 flex justify-between pr-3">
+            <p className="contentText text-slate-500! text-xs uppercase tracking-[0.15rem]">Used Tickets</p>
           </div>
 
           <p className='subtitle text-3xl pl-2 mb-1 flex items-center gap-1'><span className='text-blue-500 text-4xl ml-1 mr-2'>•</span> {tickets.filter(ticket => ticket.used).length}</p>
           <p className='text-[#64748b] text-xs'><span className='text-green-500'>+5%</span> from last month</p>
         </div>
 
-        <div className='w-[24%] h-[135px] flex flex-col justify-center border border-gray-800 bg-[#020613] rounded-lg p-3'>
-          <div className='mb-5 flex justify-between pr-3'>
-            <p className='contentText text-sm'>Cancelled / Expired Tickets</p>
+        <div className="w-[23%] h-fit flex flex-col justify-center border border-gray-800 bg-[#020613] rounded-2xl p-3">
+          <div className="mb-3 flex justify-between pr-3">
+            <p className="contentText text-slate-500! text-xs uppercase tracking-[0.15rem]">Cancelled / Expired Tickets</p>
           </div>
 
           <p className='subtitle text-3xl pl-2 mb-1 flex items-center gap-1'><span className='text-red-500 text-4xl ml-1 mr-2'>•</span> {tickets.filter(ticket =>  new Date(ticket.event.endDate._seconds * 1000) < Timestamp.now().toDate()).length}</p>
@@ -91,12 +91,11 @@ const Tickets = () => {
       </div>
 
       <div className='flex justify-between w-full relative'>
-        <div className='flex justify-between items-center w-[30%] bg-indigo-900/20 rounded-sm px-2 py-1'>
-          <p className={`${view === "ALL" ? "bg-indigo-800/80" : "hover:bg-indigo-800/20"} w-[24%] flex justify-center items-center px-2 py-1 rounded-sm cursor-pointer`} onClick={() => setView("ALL")}>All</p>
-          <p className={`${view === "ACTIVE" ? "bg-indigo-800/80" : "hover:bg-indigo-800/20"} w-[24%] flex justify-center items-center px-2 py-1 rounded-sm cursor-pointer`} onClick={() => setView("ACTIVE")}>Active</p>
-          <p className={`${view === "USED" ? "bg-indigo-800/80" : "hover:bg-indigo-800/20"} w-[24%] flex justify-center items-center px-2 py-1 rounded-sm cursor-pointer`} onClick={() => setView("USED")}>Used</p>
-          {/* <p className={`${view === "CANCELLED" ? "bg-indigo-800/80" : "hover:bg-indigo-800/20"} w-[19%] flex justify-center items-center px-2 py-1 rounded-sm cursor-pointer`} onClick={() => setView("CANCELLED")}>Cancelled</p> */}
-          <p className={`${view === "EXPIRED" ? "bg-indigo-800/80" : "hover:bg-indigo-800/20"} w-[24%] flex justify-center items-center px-2 py-1 rounded-sm cursor-pointer`} onClick={() => setView("EXPIRED")}>Expired</p>
+        <div className='flex justify-between items-center w-[30%] rounded-sm px-2 py-1 text-slate-400'>
+          <p className={`${view === "ALL" ? "border-b-3 border-indigo-500 text-white" : "hover:border-b hover:border-indigo-500/50"} w-[24%] flex justify-center items-center px-2 py-1 pb-3 cursor-pointer`} onClick={() => setView("ALL")}>All</p>
+          <p className={`${view === "ACTIVE" ? "border-b-3 border-indigo-500 text-white" : "hover:border-b hover:border-indigo-500/50"} w-[24%] flex justify-center items-center px-2 py-1 pb-3 cursor-pointer`} onClick={() => setView("ACTIVE")}>Active</p>
+          <p className={`${view === "USED" ? "border-b-3 border-indigo-500 text-white" : "hover:border-b hover:border-indigo-500/50"} w-[24%] flex justify-center items-center px-2 py-1 pb-3 cursor-pointer`} onClick={() => setView("USED")}>Used</p>
+          <p className={`${view === "EXPIRED" ? "border-b-3 border-indigo-500 text-white" : "hover:border-b hover:border-indigo-500/50"} w-[24%] flex justify-center items-center px-2 py-1 pb-3 cursor-pointer`} onClick={() => setView("EXPIRED")}>Expired</p>
         </div>
       </div>
 

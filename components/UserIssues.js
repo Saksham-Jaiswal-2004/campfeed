@@ -304,9 +304,7 @@ const UserIssues = ({setSelectedView, setSelectedId}) => {
 
                     <div className='flex w-[70%] h-fit justify-start mt-5'>
                       <p className="contentText text-sm">
-                        {expanded[issue.id]
-                          ? issue.description
-                          : issue.description?.split(" ").slice(0, 10).join(" ") + (issue.description?.split(" ").length > 10 ? "..." : "")}
+                        {issue.description?.split(" ").slice(0, 10).join(" ") + (issue.description?.split(" ").length > 10 ? "..." : "")}
                       </p>
                     </div>
 

@@ -340,7 +340,7 @@ const StudentDash = ({ setSelectedView }) => {
           </div>
 
           <div className='grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-4'>
-            <div className='h-fit rounded-2xl border border-slate-800 bg-slate-950/60 px-4 py-6 shadow-lg shadow-sky-950/10'>
+            <div className='h-fit rounded-2xl border border-slate-800 bg-[#020613] px-4 py-6 shadow-lg shadow-sky-950/10'>
               <div className='flex items-center justify-between gap-3'>
                 <div>
                   <p className='text-xs uppercase tracking-[0.2em] text-slate-500'>Issues awaiting updates</p>
@@ -355,7 +355,7 @@ const StudentDash = ({ setSelectedView }) => {
               </div>
             </div>
 
-            <div className='h-fit rounded-2xl border border-slate-800 bg-slate-950/60 px-4 py-6 shadow-lg shadow-emerald-950/10'>
+            <div className='h-fit rounded-2xl border border-slate-800 bg-[#020613] px-4 py-6 shadow-lg shadow-emerald-950/10'>
               <div className='flex items-center justify-between gap-3'>
                 <div>
                   <p className='text-xs uppercase tracking-[0.2em] text-slate-500'>Events this week</p>
@@ -370,7 +370,7 @@ const StudentDash = ({ setSelectedView }) => {
               </div>
             </div>
 
-            <div className='h-fit rounded-2xl border border-slate-800 bg-slate-950/60 px-4 py-6 shadow-lg shadow-amber-950/10'>
+            <div className='h-fit rounded-2xl border border-slate-800 bg-[#020613] px-4 py-6 shadow-lg shadow-amber-950/10'>
               <div className='flex items-center justify-between gap-3'>
                 <div>
                   <p className='text-xs uppercase tracking-[0.2em] text-slate-500'>New announcement</p>
@@ -385,7 +385,7 @@ const StudentDash = ({ setSelectedView }) => {
               </div>
             </div>
 
-            <div className='h-fit rounded-2xl border border-slate-800 bg-slate-950/60 px-4 py-6 shadow-lg shadow-violet-950/10'>
+            <div className='h-fit rounded-2xl border border-slate-800 bg-[#020613] px-4 py-6 shadow-lg shadow-violet-950/10'>
               <div className='flex items-center justify-between gap-3'>
                 <div>
                   <p className='text-xs uppercase tracking-[0.2em] text-slate-500'>Issues resolved</p>
@@ -403,7 +403,7 @@ const StudentDash = ({ setSelectedView }) => {
 
           <div className='grid grid-cols-1 gap-4 xl:grid-cols-[1.45fr_0.95fr]'>
             <div className='space-y-4'>
-              <section className='rounded-2xl border border-slate-800 bg-slate-950/60 p-5'>
+              <section className='rounded-2xl border border-slate-800 bg-[#020613] p-5'>
                 <div className='flex items-center justify-between gap-3'>
                   <div>
                     <h3 className='subtitle text-xl'>My Open Requests</h3>
@@ -470,7 +470,7 @@ const StudentDash = ({ setSelectedView }) => {
               </section>
 
               <section className='grid grid-cols-1 w-full'>
-                <div className='w-full! rounded-2xl border border-slate-800 bg-slate-950/60 p-5'>
+                <div className='w-full! rounded-2xl border border-slate-800 bg-[#020613] p-5'>
                   <div className='flex items-center justify-between'>
                     <div>
                       <h3 className='subtitle text-xl'>Latest Announcements</h3>
@@ -504,7 +504,7 @@ const StudentDash = ({ setSelectedView }) => {
             </div>
 
             <div className='space-y-4'>
-              <div className='rounded-2xl border border-slate-800 bg-slate-950/60 p-5'>
+              <div className='rounded-2xl border border-slate-800 bg-[#020613] p-5'>
                   <div className='flex items-center justify-between'>
                     <div>
                       <h3 className='subtitle text-xl'>Campus Pulse</h3>
@@ -537,7 +537,7 @@ const StudentDash = ({ setSelectedView }) => {
                   </div>
                 </div>
 
-              <section className='rounded-2xl border border-slate-800 bg-slate-950/60 p-5'>
+              <section className='rounded-2xl border border-slate-800 bg-[#020613] p-5'>
                 <div className='flex items-center justify-between'>
                   <div>
                     <h3 className='subtitle text-xl'>Upcoming Events</h3>

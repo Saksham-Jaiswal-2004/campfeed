@@ -17,6 +17,8 @@ import { api } from "@/lib/api";
 import BlockSkeleton from "./ui/BlockSkeleton";
 import { useEventStore } from "@/store/eventStore";
 import { eventService } from "@/services/events.service";
+import { FaRegHeart } from "react-icons/fa6";
+import { FaHeart } from "react-icons/fa";
 
 const EventsList = ({ setSelectedView, setSelectedId }) => {
   const [audience, setAudience] = useState("Select Audience");
@@ -75,9 +77,9 @@ const EventsList = ({ setSelectedView, setSelectedId }) => {
       </div>
 
       <div className="flex gap-5 justify-center items-center w-full mt-5">
-        <div className="w-[23%] h-[135px] flex flex-col justify-center border border-gray-800 bg-[#020613] rounded-lg p-3">
-          <div className="mb-5 flex justify-between pr-3">
-            <p className="contentText text-sm">Total Events</p>
+        <div className="w-[23%] h-fit flex flex-col justify-center border border-gray-800 bg-[#020613] rounded-2xl p-3">
+          <div className="mb-3 flex justify-between pr-3">
+            <p className="contentText text-slate-500! text-xs uppercase tracking-[0.15rem]">Total Events</p>
           </div>
 
           <p className="subtitle text-3xl pl-2 mb-1 flex items-center gap-1">
@@ -89,9 +91,9 @@ const EventsList = ({ setSelectedView, setSelectedId }) => {
           </p>
         </div>
 
-        <div className="w-[23%] h-[135px] flex flex-col justify-center border border-gray-800 bg-[#020613] rounded-lg p-3">
-          <div className="mb-5 flex justify-between pr-3">
-            <p className="contentText text-sm">Ongoing Events</p>
+        <div className="w-[23%] h-fit flex flex-col justify-center border border-gray-800 bg-[#020613] rounded-2xl p-3">
+          <div className="mb-3 flex justify-between pr-3">
+            <p className="contentText text-slate-500! text-xs uppercase tracking-[0.15rem]">Ongoing Events</p>
           </div>
 
           <p className="subtitle text-3xl pl-2 mb-1 flex items-center gap-1">
@@ -109,9 +111,9 @@ const EventsList = ({ setSelectedView, setSelectedId }) => {
           </p>
         </div>
 
-        <div className="w-[23%] h-[135px] flex flex-col justify-center border border-gray-800 bg-[#020613] rounded-lg p-3">
-          <div className="mb-5 flex justify-between pr-3">
-            <p className="contentText text-sm">Upcoming Events</p>
+        <div className="w-[23%] h-fit flex flex-col justify-center border border-gray-800 bg-[#020613] rounded-2xl p-3">
+          <div className="mb-3 flex justify-between pr-3">
+            <p className="contentText text-slate-500! text-xs uppercase tracking-[0.15rem]">Upcoming Events</p>
           </div>
 
           <p className="subtitle text-3xl pl-2 mb-1 flex items-center gap-1">
@@ -126,9 +128,9 @@ const EventsList = ({ setSelectedView, setSelectedId }) => {
           </p>
         </div>
 
-        <div className="w-[23%] h-[135px] flex flex-col justify-center border border-gray-800 bg-[#020613] rounded-lg p-3">
-          <div className="mb-5 flex justify-between pr-3">
-            <p className="contentText text-sm">Events Completed</p>
+        <div className="w-[23%] h-fit flex flex-col justify-center border border-gray-800 bg-[#020613] rounded-2xl p-3">
+          <div className="mb-3 flex justify-between pr-3">
+            <p className="contentText text-slate-500! text-xs uppercase tracking-[0.15rem]">Events Completed</p>
           </div>
 
           <p className="subtitle text-3xl pl-2 mb-1 flex items-center gap-1">
@@ -141,7 +143,7 @@ const EventsList = ({ setSelectedView, setSelectedId }) => {
         </div>
       </div>
 
-      <div className="flex justify-start w-full 400 my-6 pl-3 relative">
+      <div className="flex justify-start w-full 400 my-4 pl-3 relative">
         <CiSearch className="absolute contentText top-[29%] left-[2.5%]" />
         <input
           type="search"
@@ -207,10 +209,6 @@ const EventsList = ({ setSelectedView, setSelectedId }) => {
       </div>
 
       <div className="w-full h-fit p-4 rounded-lg">
-        <div className="mb-4">
-          {/* <h2 className="navText text-xl">Total Events - {events.length}</h2> */}
-        </div>
-
         {fetching ? (
           <div className="w-full h-full flex flex-wrap gap-10 justify-center items-center">
             <BlockSkeleton />
@@ -222,18 +220,23 @@ const EventsList = ({ setSelectedView, setSelectedId }) => {
             No Upcoming Events
           </div>
         ) : (
-          <div className="grid grid-cols-3 justify-center items-center gap-8 w-full mb-10">
+          <div className="grid grid-cols-3 justify-center items-center gap-3 w-full mb-10">
             {searchedEvents.map((event, index) => (
               <div
                 key={index}
                 className="w-full h-[550px] cursor-pointer border border-gray-800 bg-[#020613] rounded-xl overflow-hidden group"
               >
-                <div className="h-[40%] w-full bg-gray-800 overflow-hidden flex justify-center">
+                <div className="relative h-[40%] w-full bg-gray-800 overflow-hidden flex justify-center">
                   <img
                     src="/images/Skeleton.png"
                     alt=""
                     className="h-full w-full group-hover:scale-105 transition-all duration-200 ease-in-out object-cover"
                   />
+
+                  <div className="absolute top-3 right-3">
+                    <FaRegHeart className="text-2xl hover:text-pink-600 transition-all ease-in-out duration-200" />
+                    {/* <FaHeart className="text-2xl text-pink-600 hover:scale-125 transition-all ease-in-out duration-200" /> */}
+                  </div>
                 </div>
 
                 <div className="h-[60%] w-full flex flex-col justify-between p-5">

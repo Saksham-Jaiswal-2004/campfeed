@@ -90,22 +90,22 @@ const CampusIssues = ({setSelectedView, setSelectedId}) => {
       {
         category: "Low",
         value: 47,
-        color: am5.color(0x16a34a), // green
+        color: am5.color(0x16a34a),
       },
       {
         category: "Medium",
         value: 15,
-        color: am5.color(0xca8a04), // yellow
+        color: am5.color(0xca8a04),
       },
       {
         category: "High",
         value: 15,
-        color: am5.color(0xea580c), // yellow
+        color: am5.color(0xea580c),
       },
       {
         category: "Critical",
         value: 25,
-        color: am5.color(0xdc2626), // red
+        color: am5.color(0xdc2626),
       },
     ];
 
@@ -113,47 +113,47 @@ const CampusIssues = ({setSelectedView, setSelectedId}) => {
     {
       category: categories[0].name,
       value: 100,
-      color: am5.color(0x3b82f6), // blue
+      color: am5.color(0x2563eb)
     },
     {
       category: categories[1].name,
       value: 90,
-      color: am5.color(0xef4444), // red
+      color: am5.color(0x0891b2)
     },
     {
       category: categories[2].name,
       value: 80,
-      color: am5.color(0x22c55e), // green
+      color: am5.color(0xd97706)
     },
     {
       category: categories[3].name,
       value: 60,
-      color: am5.color(0xf59e0b), // yellow
+      color: am5.color(0x059669)
     },
     {
       category: categories[4].name,
       value: 100,
-      color: am5.color(0x3b82f6), // blue
+      color: am5.color(0xdc2626)
     },
     {
       category: categories[5].name,
       value: 90,
-      color: am5.color(0xef4444), // red
+      color: am5.color(0x0d9488)
     },
     {
       category: categories[6].name,
       value: 80,
-      color: am5.color(0x22c55e), // green
+      color: am5.color(0x9333ea)
     },
     {
       category: categories[7].name,
       value: 60,
-      color: am5.color(0xf59e0b), // yellow
+      color: am5.color(0xdb2777)
     },
     {
       category: categories[8].name,
       value: 60,
-      color: am5.color(0xf59e0b), // yellow
+      color: am5.color(0x4f46e5)
     },
   ];
 
@@ -355,9 +355,7 @@ const CampusIssues = ({setSelectedView, setSelectedId}) => {
 
                     <div className='flex w-[70%] h-fit justify-start mt-5'>
                       <p className="contentText text-sm">
-                        {expanded[issue.id]
-                          ? issue.description
-                          : issue.description?.split(" ").slice(0, 10).join(" ") + (issue.description?.split(" ").length > 10 ? "..." : "")}
+                        {issue.description?.split(" ").slice(0, 10).join(" ") + (issue.description?.split(" ").length > 10 ? "..." : "")}
                       </p>
                     </div>
 

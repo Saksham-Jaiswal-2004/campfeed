@@ -33,7 +33,7 @@
     "**/*.mts",
     "**/*.ts",
     "**/*.tsx"
-, "backend/src/services/uploadBuffer.service.js"  ],
+, "backend/src/services/uploadBuffer.service.js", "components/ui/SemiPieChart.jsx"  ],
   "exclude": [
     "node_modules"
   ]

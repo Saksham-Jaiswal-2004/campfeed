@@ -8,7 +8,7 @@ export interface Announcement {
   createdAt: string;
   updatedAt: string;
   expiryDate: string;
-  createdByUser?: {
+  createdBy?: {
     id?: string,
     name?: string;
     email?: string;

@@ -29,6 +29,7 @@ import { PiNetworkFill } from "react-icons/pi";
 import { MdOutlineMiscellaneousServices } from "react-icons/md";
 import { MdOutlineSecurity } from "react-icons/md";
 import { AiOutlineIssuesClose } from "react-icons/ai";
+import { GoDotFill } from "react-icons/go";
 import { cn } from '@/lib/utils';
 
 const StudentDash = ({ setSelectedView }) => {
@@ -412,20 +413,20 @@ const StudentDash = ({ setSelectedView }) => {
                 </div>
 
                 <div className='mt-4 space-y-2'>
-                  {issues.length ? issues.slice(0, 2).map((issue) => {
+                  {issues.length ? issues.slice(0, 3).map((issue) => {
                     const category = categories.find((cat) => cat.id === issue.category_id) ?? categories[categories.length - 1];
                     return (
                     <div key={issue.id} className='rounded-2xl border border-slate-800 bg-slate-900/60 px-4 py-2 transition-all hover:border-slate-700 hover:bg-slate-900'>
-                      <div className='flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between'>
+                      <div className='flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between'>
                         <div
                           className={cn(
-                            "h-16 w-16 rounded-xl flex items-center justify-center mb-4",
+                            "h-16 w-16 rounded-xl flex items-center justify-center",
                             category.bg,
                           )}
                         >
                           <category.icon className={cn("h-8 w-8", category.color)} />
                         </div>
-                        <div className='space-y-2'>
+                        <div className='space-y-2 w-[70%]'>
                           <div className='flex flex-wrap items-center gap-2'>
                             <span className='text-base font-semibold'>{issue.title}</span>
                             <span className={`rounded-full border px-2.5 py-1 text-[11px] font-medium ${priorityTone[issue.priority] || 'text-slate-300 border-slate-700 bg-slate-800/70'}`}>
@@ -445,7 +446,8 @@ const StudentDash = ({ setSelectedView }) => {
                             <FiClock />
                             In progress
                           </div>
-                          <p className='mt-1'>Last update: Today, 09:15 AM</p>
+                          <p className='mt-1'>Last update</p>
+                          <p className='mt-1'>Today, 09:15 AM</p>
                         </div>
                       </div>
                     </div>
@@ -478,14 +480,17 @@ const StudentDash = ({ setSelectedView }) => {
                   </div>
 
                   <div className='mt-4 space-y-3'>
-                    {announcements.length ? announcements.slice(0, 2).map((announcement) => (
-                      <div key={announcement.id} className='rounded-2xl border border-slate-800 bg-slate-900/60 p-4'>
+                    {announcements.length ? announcements.slice(0, 3).map((announcement) => (
+                      <div key={announcement.id} className=' relative rounded-2xl border border-slate-800 bg-slate-900/60 p-4'>
                         <div className='flex flex-wrap items-center gap-2'>
                           <h4 className='font-medium'>{announcement.title}</h4>
-                          {announcement.priority ? <span className={`rounded-full border px-2 py-0.5 text-[11px] ${announcementTone[announcement.priority] || 'text-slate-300 border-slate-700 bg-slate-800/70'}`}>{announcement.priority} Priority</span> : null}
+                          <div className='absolute top-1 right-2 flex justify-center items-center gap-1'>
+                            <span className='border border-gray-700 contentText py-0.5 px-2 rounded-lg !text-[11px] bg-indigo-600/70'>{announcement.targetAudience || 'All students'}</span>
+                            {announcement.priority ? <span className={`rounded-full flex justify-center items-center border px-2 py-0.5 text-[11px] ${announcementTone[announcement.priority] || 'text-slate-300 border-slate-700 bg-slate-800/70'}`}>{announcement.priority} Priority</span> : null}
+                          </div>
                         </div>
-                        <p className='mt-2 text-xs text-slate-400'>
-                          {announcement.targetAudience || 'All students'} • {formatDate(announcement.createdAt)}
+                        <p className='mt-2 text-xs text-slate-400 flex gap-1 justify-start items-center'>
+                          {announcement.createdBy?.name} <GoDotFill /> <span className='border border-gray-700 py-[0.15rem] px-2 rounded-lg'>{announcement.createdBy?.role}</span> <GoDotFill /> {formatDate(announcement.createdAt)}
                         </p>
                       </div>
                     )) : (
@@ -510,23 +515,23 @@ const StudentDash = ({ setSelectedView }) => {
 
                   <div className='mt-4 grid grid-cols-2 gap-3'>
                     <div className='rounded-2xl border border-slate-800 bg-slate-900/60 p-4'>
-                      <p className='text-xs uppercase tracking-[0.2em] text-slate-500'>Trending now</p>
-                      <p className='mt-2 text-2xl font-semibold'>InnovateX</p>
+                      <p className='text-xs uppercase tracking-[0.2em] text-slate-500'>Trending Issue</p>
+                      <p className='mt-2 text-xl font-semibold'>InnovateX</p>
                       <p className='mt-1 text-xs text-slate-400'>120+ interested</p>
                     </div>
                     <div className='rounded-2xl border border-slate-800 bg-slate-900/60 p-4'>
-                      <p className='text-xs uppercase tracking-[0.2em] text-slate-500'>Top club</p>
-                      <p className='mt-2 text-2xl font-semibold'>Robotics</p>
+                      <p className='text-xs uppercase tracking-[0.2em] text-slate-500'>Top Event</p>
+                      <p className='mt-2 text-xl font-semibold'>Robotics</p>
                       <p className='mt-1 text-xs text-slate-400'>24 new members</p>
                     </div>
                     <div className='rounded-2xl border border-slate-800 bg-slate-900/60 p-4'>
                       <p className='text-xs uppercase tracking-[0.2em] text-slate-500'>Issues resolved</p>
-                      <p className='mt-2 text-2xl font-semibold'>{stats.totalIssuesResolved}</p>
+                      <p className='mt-2 text-xl font-semibold'>{stats.totalIssuesResolved}</p>
                       <p className='mt-1 text-xs text-emerald-300'>+12% from yesterday</p>
                     </div>
                     <div className='rounded-2xl border border-slate-800 bg-slate-900/60 p-4'>
-                      <p className='text-xs uppercase tracking-[0.2em] text-slate-500'>Hot discussion</p>
-                      <p className='mt-2 text-2xl font-semibold'>Hackathon</p>
+                      <p className='text-xs uppercase tracking-[0.2em] text-slate-500'>Latest Announcement</p>
+                      <p className='mt-2 text-xl font-semibold'>Hackathon</p>
                       <p className='mt-1 text-xs text-slate-400'>34 new replies</p>
                     </div>
                   </div>
@@ -542,7 +547,7 @@ const StudentDash = ({ setSelectedView }) => {
                 </div>
 
                 <div className='mt-4 space-y-3'>
-                  {events.length ? events.slice(0, 2).map((event) => (
+                  {events.length ? events.slice(0, 3).map((event) => (
                     <div key={event.id} className='rounded-2xl border border-slate-800 bg-slate-900/60 p-4'>
                       <div className='flex items-between justify-start gap-3'>
                         <div className='flex flex-col justify-center items-center text-xs border border-gray-700 bg-slate-950/60 px-3 py-1 rounded-lg'>
@@ -558,7 +563,7 @@ const StudentDash = ({ setSelectedView }) => {
 
                       <div className='mt-3 flex items-center justify-between'>
                         <div className='text-xs text-slate-400'>120 going</div>
-                        <button className='rounded-xl bg-linear-to-r from-indigo-600 to-violet-600 px-4 py-2 text-xs font-medium text-white'>RSVP</button>
+                        <button className='rounded-lg bg-linear-to-r from-indigo-600 to-cyan-600 px-4 py-2 text-xs font-medium text-white'>RSVP</button>
                       </div>
                     </div>
                   )) : (

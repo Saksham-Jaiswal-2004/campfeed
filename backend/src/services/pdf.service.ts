@@ -190,10 +190,10 @@ export const generateTicketPDF = async (data: {
    */
 
   page.drawRectangle({
-    x: 85,
-    y: 255,
-    width: 250,
-    height: 220,
+    x: 75,
+    y: 245,
+    width: 270,
+    height: 240,
     color: lightGray,
     borderColor: border,
     borderWidth: 1,
@@ -203,18 +203,18 @@ export const generateTicketPDF = async (data: {
 
   const qrImage = await pdfDoc.embedPng(Buffer.from(qrBytes, "base64"));
 
-  const qrSize = 150;
+  const qrSize = 200;
 
   page.drawImage(qrImage, {
     x: (pageWidth - qrSize) / 2,
-    y: 295,
+    y: 280,
     width: qrSize,
     height: qrSize,
   });
 
   page.drawText("SCAN FOR ENTRY", {
-    x: 156,
-    y: 275,
+    x: 165,
+    y: 260,
     size: 10,
     font: bold,
     color: gray,
@@ -334,7 +334,7 @@ export const generateTicketPDF = async (data: {
    */
 
   page.drawText("This ticket is unique and valid for one entry only.", {
-    x: 70,
+    x: 110,
     y: 45,
     size: 9,
     font,

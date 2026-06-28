@@ -10,7 +10,7 @@ import { IoIosCalendar } from "react-icons/io";
 import { TbMessageReport } from "react-icons/tb";
 import { MdOutlineChatBubbleOutline } from "react-icons/md";
 import { GoPeople } from "react-icons/go";
-import { IoSettingsOutline } from "react-icons/io5";
+import { IoSettingsOutline, IoSparklesSharp } from "react-icons/io5";
 import { RiHome3Line } from "react-icons/ri";
 import { MdNotificationsNone } from "react-icons/md";
 import { IoIosLogOut } from "react-icons/io";
@@ -38,6 +38,7 @@ import IssuePage from "@/components/IssuePage";
 import CampusIssuePage from "@/components/CampusIssuePage";
 import { BsBookmarks } from "react-icons/bs";
 import { LuTickets } from "react-icons/lu";
+import { BiExpandVertical } from "react-icons/bi";
 import Tickets from "@/components/Tickets";
 import Loader from "@/components/ui/Loader";
 import { toast } from "sonner"
@@ -69,12 +70,19 @@ const Page = () => {
   const links = [
     { href: "/StudentDash", view: "StudentDash", label: "Dashboard", icon: <MdOutlineDashboard /> },
     { href: "/StudentDash", view: "UserIssues", label: "My Issues", icon: <TbMessageReport /> },
-    { href: "/StudentDash", view: "AllIssues", label: "All Campus Issues", icon: <LiaUniversitySolid /> },
-    { href: "/StudentDash", view: "EventList", label: "Events", icon: <IoIosCalendar /> },
-    { href: "/StudentDash", view: "Announcements", label: "Anouncements", icon: <MdOutlineChatBubbleOutline /> },
     { href: "/StudentDash", view: "Tickets", label: "My Tickets", icon: <LuTickets /> },
     { href: "/StudentDash", view: "Notifications", label: "Notifications", icon: <MdNotificationsNone /> },
     // { href: "/StudentDash", view: "Settings", label: "Settings", icon: <IoSettingsOutline /> },
+  ];
+
+  const links2 = [
+    { href: "/StudentDash", view: "AllIssues", label: "Campus Issues", icon: <LiaUniversitySolid /> },
+    { href: "/StudentDash", view: "EventList", label: "Events", icon: <IoIosCalendar /> },
+    { href: "/StudentDash", view: "Announcements", label: "Anouncements", icon: <MdOutlineChatBubbleOutline /> },
+  ];
+
+  const links3 = [
+    { href: "/Chatbot", view: "", label: "Campus AI", icon: <IoSparklesSharp /> },
   ];
 
   const home = { href: "/", label: "Back to Campus", icon: <RiHome3Line /> };
@@ -83,7 +91,7 @@ const Page = () => {
   return (
     <Sidebar>
       <SidebarBody className="flex flex-col justify-between">
-        <div>
+        <div className="px-5">
           <div className="logo cursor-pointer mb-5">
             <Link href={"/"} className='flex justify-center items-center gap-2'>
               <div className='h-8 w-8 rounded-lg bg-gradient-to-r from-indigo-500 to-cyan-400 flex justify-center items-center'>
@@ -101,23 +109,37 @@ const Page = () => {
 
           <hr className="my-4 border-gray-800" />
 
+          <div className="flex flex-col gap-1">
+            {links2.map((link) => (
+              <SidebarLink key={link.view} link={link} onClick={() => { setSelectedView(link.view) }} />
+            ))}
+          </div>
+
+          <hr className="my-4 border-gray-800" />
+
+          <div className="flex flex-col gap-1">
+            {links3.map((link) => (
+              <SidebarLink key={link.view} href={link.href} link={link} onClick={() => { link.view !== "" ? setSelectedView(link.view) : "" }} />
+            ))}
+          </div>
+
+          <hr className="my-4 border-gray-800" />
+
           <Link href={"/"}><SidebarLink key={home.href} link={home} /></Link>
           <SidebarLink key={Logout.href} link={Logout} onClick={handleLogout} />
         </div>
 
-        <div className="relative bg-cyan-800/40 border border-cyan-800 hover:bg-cyan-700/40 hover:border-cyan-600 rounded-md px-0 py-2 flex flex-col justify-center items-center gap-1 cursor-pointer">
-          <Link href="/Profile" className="flex flex-col justify-center items-center w-full">
-          <img src={userData?.profilePic} alt={userData?.name} className="rounded-full w-20 h-20" />
-
-          <div className="flex flex-col gap-0 justify-center items-center w-full h-fit">
-            <p className="text-base navText">{userData?.name}</p>
-            <p className="text-xs contentText text-wrap w-[100%] h-fit text-center">{userData?.email.length>20 ? userData?.email.slice(0, 22)+"..." : userData?.email}</p>
+        <div className="relative w-full border-t border-t-gray-700 hover:bg-slate-900/40 transition-all ease-in-out duration-200 px-2 py-3 flex justify-between items-center gap-2 cursor-pointer">
+          <div className="flex justify-center items-center gap-2">
+            <img src={userData?.profilePic} alt={userData?.name} className="rounded-full w-10 h-10" />
+            <p className="text-sm navText">{userData?.name.split(" ")[0].length <= 16 ? userData?.name.split(" ")[0] : userData.name.split(" ")[0].slice(0,14)+"..."}</p>
           </div>
+
+          <BiExpandVertical className="w-[8%]" />
 
           {userData?.role === "Admin" && <p className="absolute top-[-30px] left-2 text-xs text-purple-600 bg-purple-600/20 border border-purple-800 px-2 py-1 rounded-full navText">Admin</p>}
           {userData?.role === "Faculty" && <p className="absolute top-[-30px] left-2 text-xs text-indigo-600 bg-indigo-600/20 border border-indigo-800 px-2 py-1 rounded-full navText">Faculty</p>}
           {userData?.role === "Student Club" && <p className="absolute top-[-30px] left-2 text-xs text-yellow-600 bg-yellow-600/20 border border-yellow-800 px-2 py-1 rounded-full navText">Student Club</p>}
-          </Link>
         </div>
       </SidebarBody>
 

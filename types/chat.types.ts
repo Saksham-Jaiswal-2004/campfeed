@@ -4,6 +4,7 @@ export interface ChatMessage {
   senderId: string;
   senderName: string;
   senderRole: string;
+  senderAvatar: string;
   content: string;
   createdAt: number;
 }

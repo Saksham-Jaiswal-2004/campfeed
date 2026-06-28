@@ -30,6 +30,7 @@ export async function sendMessage(message:any, user:any) {
         senderId: user.uid,
         senderName: user.username,
         senderRole: user.role,
+        senderAvatar: user.profilePic,
         content: message.note,
         createdAt: currentTime,
     };
@@ -42,6 +43,7 @@ export async function sendMessage(message:any, user:any) {
         senderId: user.uid,
         senderName: user.username,
         senderRole: user.role,
+        senderAvatar: user.profilePic,
         content: message.note,
         createdAt: currentTime,
     };

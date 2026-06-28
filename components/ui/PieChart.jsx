@@ -96,7 +96,7 @@ export default function PieChart({ data }) {
       ref={chartRef}
       style={{
         width: "100%",
-        height: "150px",
+        height: "180px",
       }}
     />
   );

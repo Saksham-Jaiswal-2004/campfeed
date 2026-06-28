@@ -19,11 +19,13 @@ import { useEventStore } from "@/store/eventStore";
 import { eventService } from "@/services/events.service";
 import { FaRegHeart } from "react-icons/fa6";
 import { FaHeart } from "react-icons/fa";
+import LikeButton from "./ui/LikeButton";
 
 const EventsList = ({ setSelectedView, setSelectedId }) => {
   const [audience, setAudience] = useState("Select Audience");
   const { user, userData, loading } = useUser();
   const [searchQuery, setSearchQuery] = useState("");
+  const [likedId, setLikedId] = useState("");
   const router = useRouter();
 
   useEffect(() => {
@@ -234,8 +236,10 @@ const EventsList = ({ setSelectedView, setSelectedId }) => {
                   />
 
                   <div className="absolute top-3 right-3">
-                    <FaRegHeart className="text-2xl hover:text-pink-600 transition-all ease-in-out duration-200" />
-                    {/* <FaHeart className="text-2xl text-pink-600 hover:scale-125 transition-all ease-in-out duration-200" /> */}
+                    {likedId !== event.id ? <FaRegHeart className="text-2xl text-gray-300 hover:text-red-600 transition-all ease-in-out duration-200" onClick={() => {setLikedId(event.id)}} />
+                    :
+                    <FaHeart className="text-2xl text-red-600 hover:scale-125 transition-all ease-in-out duration-200" onClick={() => {setLikedId(null)}} />
+                    }
                   </div>
                 </div>
 

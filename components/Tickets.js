@@ -129,10 +129,10 @@ const Tickets = () => {
       <div className='flex flex-col w-[75%]'>
       <div className='flex justify-between w-full relative'>
         <div className='flex justify-between items-center w-[40%] rounded-sm px-2 py-1 text-slate-400'>
-          <p className={`${view === "ALL" ? "border-b-3 border-indigo-500 text-white" : "hover:border-b hover:border-indigo-500/50"} w-[24%] flex justify-center items-center px-2 py-1 pb-3 cursor-pointer`} onClick={() => setView("ALL")}>All</p>
-          <p className={`${view === "ACTIVE" ? "border-b-3 border-indigo-500 text-white" : "hover:border-b hover:border-indigo-500/50"} w-[24%] flex justify-center items-center px-2 py-1 pb-3 cursor-pointer`} onClick={() => setView("ACTIVE")}>Active</p>
-          <p className={`${view === "USED" ? "border-b-3 border-indigo-500 text-white" : "hover:border-b hover:border-indigo-500/50"} w-[24%] flex justify-center items-center px-2 py-1 pb-3 cursor-pointer`} onClick={() => setView("USED")}>Used</p>
-          <p className={`${view === "EXPIRED" ? "border-b-3 border-indigo-500 text-white" : "hover:border-b hover:border-indigo-500/50"} w-[24%] flex justify-center items-center px-2 py-1 pb-3 cursor-pointer`} onClick={() => setView("EXPIRED")}>Expired</p>
+          <p className={`${view === "ALL" ? "border-b-3 border-indigo-500 text-indigo-400" : "hover:border-b hover:border-indigo-500/50"} w-[24%] flex justify-center items-center px-2 py-1 pb-3 cursor-pointer`} onClick={() => setView("ALL")}>All</p>
+          <p className={`${view === "ACTIVE" ? "border-b-3 border-indigo-500 text-indigo-400" : "hover:border-b hover:border-indigo-500/50"} w-[24%] flex justify-center items-center px-2 py-1 pb-3 cursor-pointer`} onClick={() => setView("ACTIVE")}>Active</p>
+          <p className={`${view === "USED" ? "border-b-3 border-indigo-500 text-indigo-400" : "hover:border-b hover:border-indigo-500/50"} w-[24%] flex justify-center items-center px-2 py-1 pb-3 cursor-pointer`} onClick={() => setView("USED")}>Used</p>
+          <p className={`${view === "EXPIRED" ? "border-b-3 border-indigo-500 text-indigo-400" : "hover:border-b hover:border-indigo-500/50"} w-[24%] flex justify-center items-center px-2 py-1 pb-3 cursor-pointer`} onClick={() => setView("EXPIRED")}>Expired</p>
         </div>
       </div>
 

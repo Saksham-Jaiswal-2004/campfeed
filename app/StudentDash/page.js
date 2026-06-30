@@ -42,11 +42,13 @@ import { BiExpandVertical } from "react-icons/bi";
 import Tickets from "@/components/Tickets";
 import Loader from "@/components/ui/Loader";
 import { toast } from "sonner"
+import { CiUser } from "react-icons/ci";
 
 const Page = () => {
 
   const [selectedView, setSelectedView] = useState("StudentDash")
   const [selectedId, setSelectedId] = useState()
+  const [show, setShow] = useState(false)
   const { user, userData, login, logout, loading } = useUser();
   const router = useRouter();
 
@@ -90,7 +92,7 @@ const Page = () => {
 
   return (
     <Sidebar>
-      <SidebarBody className="flex flex-col justify-between">
+      <SidebarBody className="flex flex-col justify-between z-[9999]">
         <div className="px-5">
           <div className="logo cursor-pointer mb-5">
             <Link href={"/"} className='flex justify-center items-center gap-2'>
@@ -126,10 +128,10 @@ const Page = () => {
           <hr className="my-4 border-gray-800" />
 
           <Link href={"/"}><SidebarLink key={home.href} link={home} /></Link>
-          <SidebarLink key={Logout.href} link={Logout} onClick={handleLogout} />
+          {/* <SidebarLink key={Logout.href} link={Logout} onClick={handleLogout} /> */}
         </div>
 
-        <div className="relative w-full border-t border-t-gray-700 hover:bg-slate-900/40 transition-all ease-in-out duration-200 px-2 py-3 flex justify-between items-center gap-2 cursor-pointer">
+        <div onClick={() => {setShow(!show)}} className="relative w-full border-t border-t-gray-700 hover:bg-slate-900/40 transition-all ease-in-out duration-200 px-3 py-3 flex justify-between items-center gap-2 cursor-pointer">
           <div className="flex justify-center items-center gap-2">
             <img src={userData?.profilePic} alt={userData?.name} className="rounded-full w-10 h-10" />
             <p className="text-sm navText">{userData?.name.split(" ")[0].length <= 16 ? userData?.name.split(" ")[0] : userData.name.split(" ")[0].slice(0,14)+"..."}</p>
@@ -140,6 +142,15 @@ const Page = () => {
           {userData?.role === "Admin" && <p className="absolute top-[-30px] left-2 text-xs text-purple-600 bg-purple-600/20 border border-purple-800 px-2 py-1 rounded-full navText">Admin</p>}
           {userData?.role === "Faculty" && <p className="absolute top-[-30px] left-2 text-xs text-indigo-600 bg-indigo-600/20 border border-indigo-800 px-2 py-1 rounded-full navText">Faculty</p>}
           {userData?.role === "Student Club" && <p className="absolute top-[-30px] left-2 text-xs text-yellow-600 bg-yellow-600/20 border border-yellow-800 px-2 py-1 rounded-full navText">Student Club</p>}
+        </div>
+        <div className={`${show ? "animate-in zoom-in-90 duration-50" : "animate-out zoom-out-90 duration-50 hidden"} absolute bottom-2 -right-[95%] bg-[#000713] border border-gray-800 px-3 py-3 rounded-xl`}>
+          <div className='border-b border-gray-700 pt-1 pb-2 mb-2'>
+              <p className='text-sm text-gray-300'>{userData.name}</p>
+              <p className='text-xs text-gray-400'>{userData.email}</p>
+          </div>
+
+          <Link href={"/Profile"} className='w-full'><button className='navText w-full hover:bg-indigo-900/15 hover:text-gray-300 text-gray-400 text-sm rounded-sm px-3 py-2 flex justify-start items-center gap-2'><CiUser className='text-lg' /> Profile</button></Link>
+          <button onClick={handleLogout} className='navText w-full hover:bg-red-600/10 hover:text-red-500/90 text-red-500/80 text-sm rounded-sm px-3 py-2 flex justify-start items-center gap-2'><IoIosLogOut className='text-base' /> Logout</button>
         </div>
       </SidebarBody>
 

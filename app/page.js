@@ -41,10 +41,10 @@ export default function Home() {
       </div>
 
       <div className="flex justify-center items-center gap-8 px-8 py-10 mt-10 contentText bg-[#000512]">
-          <div className="flex flex-col gap-2 justify-center items-center mx-20 my-4 text-5xl text-gray-200">15k+ <span className="text-base! text-gray-400">Issues Resolved</span></div>
-          <div className="flex flex-col gap-2 justify-center items-center mx-20 my-4 text-5xl text-gray-200">500+ <span className="text-base! text-gray-400">Campus Events</span></div>
-          <div className="flex flex-col gap-2 justify-center items-center mx-20 my-4 text-5xl text-gray-200">24/7 <span className="text-base! text-gray-400">Announcements & Updates</span></div>
-          <div className="flex flex-col gap-2 justify-center items-center mx-20 my-4 text-5xl text-gray-200">3k+ <span className="text-base! text-gray-400">Students Connected</span></div>
+          <div className="flex flex-col gap-2 justify-center items-center mx-20 my-4 text-5xl text-gray-200">15k+ <span className="text-sm! text-gray-400">Issues Resolved</span></div>
+          <div className="flex flex-col gap-2 justify-center items-center mx-20 my-4 text-5xl text-gray-200">500+ <span className="text-sm! text-gray-400">Campus Events</span></div>
+          <div className="flex flex-col gap-2 justify-center items-center mx-20 my-4 text-5xl text-gray-200">24/7 <span className="text-sm! text-gray-400">Announcements & Updates</span></div>
+          <div className="flex flex-col gap-2 justify-center items-center mx-20 my-4 text-5xl text-gray-200">3k+ <span className="text-sm! text-gray-400">Students Connected</span></div>
       </div>
 
       <div className="w-full h-fit flex flex-col justify-center items-center mt-52">

@@ -1,7 +1,5 @@
 "use client"
-import React, { useEffect, useState, useRef, useLayoutEffect } from "react";
-import { doc, getDoc, updateDoc, arrayUnion } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import React, { useEffect, useState, useRef } from "react";
 import { IoIosArrowForward } from "react-icons/io";
 import { FaRegEdit } from "react-icons/fa";
 import DeleteIssueModal from "@/components/DeleteIssueModal";
@@ -14,10 +12,20 @@ import { Switch } from "./ui/switch";
 import { FaArrowUp } from "react-icons/fa6";
 import { useIssueChat } from "@/hooks/useIssueChat";
 import { sendMessage } from "@/services/chat.service";
-import { api } from "@/lib/api";
 import { changeStatus, editIssue, getIssueById } from "@/services/issueService";
 import DataSkeleton from "./ui/DataSkeleton";
 import { useIssueStore } from "@/store/issueStore";
+import { HiOutlineAcademicCap } from "react-icons/hi";
+import { FaChalkboardTeacher } from "react-icons/fa";
+import { PiExam } from "react-icons/pi";
+import { MdOutlineAdminPanelSettings } from "react-icons/md";
+import { MdOutlineHotel } from "react-icons/md";
+import { PiNetworkFill } from "react-icons/pi";
+import { MdOutlineMiscellaneousServices } from "react-icons/md";
+import { MdOutlineSecurity } from "react-icons/md";
+import { AiOutlineIssuesClose } from "react-icons/ai";
+import { cn } from '@/lib/utils';
+import Image from "next/image";
 
 const categoryOptions = [
   { id: "CAT001", label: "Academic" },
@@ -47,6 +55,7 @@ export default function IssuePage({ setSelectedView, id, mode = "public" }) {
   });
   const [shareOnFeed, setShareOnFeed] = useState(false);
   const [saveMessage, setSaveMessage] = useState("");
+  const [view, setView] = useState("DETAILS");
   const bottomRef = useRef(null);
   const { user, userData } = useUser();
   const { messages } = useIssueChat(id);
@@ -187,9 +196,23 @@ export default function IssuePage({ setSelectedView, id, mode = "public" }) {
     }
   }
 
+  const categories = [
+        { id: "CAT001", name: "Academic", icon: HiOutlineAcademicCap, color: "text-blue-200", bg: "bg-blue-800" },
+        { id: "CAT002", name: "Faculty / Department", icon: FaChalkboardTeacher, color: "text-cyan-200", bg: "bg-cyan-800" },
+        { id: "CAT003", name: "Examination & Assessment", icon: PiExam, color: "text-amber-200", bg: "bg-amber-800" },
+        { id: "CAT004", name: "Administrative / Office", icon: MdOutlineAdminPanelSettings, color: "text-emerald-200", bg: "bg-emerald-800" },
+        { id: "CAT005", name: "Hostel & Accomodation", icon: MdOutlineHotel, color: "text-red-200", bg: "bg-red-800" },
+        { id: "CAT006", name: "IT & Digital", icon: PiNetworkFill, color: "text-teal-200", bg: "bg-teal-800" },
+        { id: "CAT007", name: "Campus Facilities / Transport", icon: MdOutlineMiscellaneousServices, color: "text-purple-200", bg: "bg-purple-800" },
+        { id: "CAT008", name: "Safety, Security & Discipline", icon: MdOutlineSecurity, color: "text-pink-200", bg: "bg-pink-800" },
+        { id: "CAT009", name: "Others", icon: AiOutlineIssuesClose, color: "text-indigo-200", bg: "bg-indigo-800" },
+      ];
+
+  const category = categories.find((cat) => cat.id === data.category_id) ?? categories[categories.length - 1];
+
   return (
     <div className="w-full h-screen overflow-y-auto flex flex-col items-center bg-transparent">
-      <div className="max-w-6xl w-full mt-8 px-6 pb-12">
+      <div className="w-full mt-8 px-6 pb-12">
         <div className="flex items-center gap-3 text-xs text-gray-400 mb-3">
           <button onClick={() => { setSelectedView("StudentDash"); }} className="hover:text-white">Dashboard</button>
           <IoIosArrowForward />
@@ -198,50 +221,48 @@ export default function IssuePage({ setSelectedView, id, mode = "public" }) {
           <span className="text-white/90 truncate max-w-[40ch]">{data.title || "Issue"}</span>
         </div>
 
-        <div className="bg-gradient-to-b from-[#041227] to-[#020612] rounded-2xl shadow-xl overflow-hidden border border-gray-800">
-          <div className="relative w-full h-56 sm:h-64 md:h-72 lg:h-80">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={primaryImage} alt="" className="w-full h-full object-cover filter brightness-90" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
-            <div className="absolute left-6 bottom-6 text-white">
+        <div className="relative bg-[#020612] h-full rounded-2xl shadow-xl overflow-hidden flex justify-center items-start border border-gray-800">
+          <div className="w-[70%] h-fit p-6 flex flex-col gap-6">
+            <div className="relative bg-slate-900 border-gray-800 text-white px-6 py-3 rounded-2xl">
               <h1 className="text-2xl sm:text-3xl font-semibold leading-tight">{data.title}</h1>
-              <div className="flex flex-wrap gap-2 mt-2">
-                {data.tags?.map((t, i) => (
-                  <span key={i} className="text-xs bg-white/6 backdrop-blur px-3 py-1 rounded-full border border-white/6">{t}</span>
-                ))}
+              <p className="text-sm text-gray-400 mt-1">ID • {id}</p>
+
+              <div className="absolute right-4 top-4 h-fit w-fit flex items-center gap-2">
+                <ShareButton title={data.title} text={`Issue: ${data.title}`} />
+  
+                <button className="text-lg px-3 py-2 border border-gray-700 hover:bg-gray-700/20 rounded-md contentText transition-all duration-200 ease-in-out">
+                  <CiBookmark />
+                </button>
+  
+                <button className="text-lg px-3 py-2 border border-gray-700 hover:bg-gray-700/20 rounded-md contentText transition-all duration-200 ease-in-out">
+                  <PiWarningCircle />
+                </button>
               </div>
-            </div>
-            <div className="absolute right-6 top-6 h-fit w-fit flex items-center gap-2">
-              <ShareButton title={data.title} text={`Issue: ${data.title}`} />
 
-              <button className="text-lg px-3 py-2 border border-gray-700 hover:bg-gray-700/20 rounded-md contentText transition-all duration-200 ease-in-out">
-                <CiBookmark />
-              </button>
-
-              <button className="text-lg px-3 py-2 border border-gray-700 hover:bg-gray-700/20 rounded-md contentText transition-all duration-200 ease-in-out">
-                <PiWarningCircle />
-              </button>
-            </div>
-          </div>
-
-          <div className="p-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-2">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h2 className="text-lg text-gray-300">{categoryLabel}</h2>
-                  <p className="text-sm text-gray-400 mt-1">ID • {id}</p>
+              <div className="flex items-center justify-between mt-10">
+                <div className="flex justify-center items-center gap-2">
+                  <category.icon className={cn("h-6 w-6")} />
+                  <h2 className="text-base text-gray-300!">{categoryLabel}</h2>
                 </div>
+  
                 <div className="flex items-center gap-2">
                   <span className={`px-3 py-1 rounded-full text-sm font-medium bg-indigo-500/40! text-black"}`}>{data.upvotes} Upvote(s)</span>
                   <span className={`px-3 py-1 rounded-full text-sm font-medium ${data.status === "resolved" ? "bg-green-500/10 text-green-400" : data.status === "rejected" ? "bg-red-500/10 text-red-400" : data.status === "in_progress" ? "bg-yellow-500/10 text-yellow-400" : "bg-gray-800 text-gray-300"}`}>
                   {data.status === "resolved" ? "Resolved" : data.status === "rejected" ? "Rejected" : data.status === "in_progress" ? "In Progress" : "Unknown Status"}
                   </span>
-                  <span className={`px-3 py-1 rounded-full text-sm font-medium ${data.priority === "high" ? "bg-orange-500/10 text-orange-400" : data.priority === "critical" ? "bg-red-500/10 text-red-400" : data.priority === "medium" ? "bg-yellow-500/10 text-yellow-400" : "bg-green-500/10 text-green-400"}`}>{(data.priority.charAt(0).toUpperCase() + data.priority.slice(1)) || 'Normal'}</span>
+                  <span className={`px-3 py-1 rounded-full text-sm font-medium ${data.priority === "high" ? "bg-orange-500/10 text-orange-400" : data.priority === "critical" ? "bg-red-500/10 text-red-500" : data.priority === "medium" ? "bg-yellow-500/10 text-yellow-400" : "bg-green-500/10 text-green-400"}`}>{(data.priority.charAt(0).toUpperCase() + data.priority.slice(1)) || 'Normal'}</span>
                 </div>
               </div>
+            </div>
 
-              <div className="mt-4 bg-transparent rounded-lg p-4 border border-gray-800">
-                <div className="flex items-center justify-between gap-3 mb-2">
+            <div className='flex justify-between items-center gap-6 w-fit rounded-sm px-2 py-1 text-slate-400'>
+              <p className={`${view === "DETAILS" ? "border-b-3 border-indigo-500 text-indigo-400" : "hover:border-b hover:border-indigo-500/50"} w-fit flex justify-center items-center px-2 py-1 pb-3 cursor-pointer`} onClick={() => setView("DETAILS")}>Details</p>
+              <p className={`${view === "ATTACHMENTS" ? "border-b-3 border-indigo-500 text-indigo-400" : "hover:border-b hover:border-indigo-500/50"} w-fit flex justify-center items-center px-2 py-1 pb-3 cursor-pointer`} onClick={() => setView("ATTACHMENTS")}>Attachments</p>
+            </div>
+
+            {view === "DETAILS" &&
+            <div className="rounded-lg p-4 border border-gray-800 bg-slate-900">
+                <div className="flex items-center justify-between gap-3 mb-3">
                   <h3 className="text-sm text-gray-300">Description</h3>
                 </div>
 
@@ -318,8 +339,48 @@ export default function IssuePage({ setSelectedView, id, mode = "public" }) {
                   <p className="text-sm text-gray-200 leading-relaxed whitespace-pre-line">{data.description}</p>
                 )}
               </div>
+              }
 
-              <div className="mt-4 bg-[#031025] border border-gray-800 rounded-xl p-4">
+              {view === "DETAILS" && 
+                <div className="mt-3">
+                  <h3 className="text-sm text-gray-300 mb-3">Updates & Comments</h3>
+                  <div className="relative flex flex-col min-h-[55vh] h-fit bg-[#041025] rounded-xl w-full overflow-y-hidden justify-between">
+                    <div className="h-[50vh] overflow-y-scroll mt-1">
+                      <div className="px-2 space-y-3 min-h-[46vh] h-fit flex flex-col justify-end">
+                      {(messages || []).slice().map((c, i) => (
+                        <div key={i} className={`w-full my-1 flex items-start ${user.uid === c.senderId ? "justify-end" : "justify-start"}`}> 
+                          { user.uid !== c.senderId && <img src={c?.senderAvatar} alt={c.senderName} className="rounded-full w-12 mr-2" /> }
+                          <div className={`border border-gray-800 rounded-lg px-3 py-1 w-fit h-fit max-w-[65%] ${user.uid === c.senderId ? "bg-indigo-700/80" : "bg-blue-950/60"}`}>
+                            <p className={`text-xs text-gray-400 ${user.uid === c.senderId ? "hidden" : ""}`}>{c.senderName?.split(' ')[0] + " - " + c.senderRole}</p>
+                            <p className="my-1 text-sm text-gray-200 text-wrap w-full h-fit overflow-x-hidden">{c.content}</p>
+                            <p className="text-[0.7rem] text-slate-400 flex justify-end">{new Date(c.createdAt).toLocaleString("en-IN", {day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit",})}</p>
+                          </div>
+                        </div>
+                      ))}
+
+                      <div ref={bottomRef} ></div>
+                    </div>
+                    </div>
+
+
+                    <div className="flex gap-2 justify-center items-center w-full h-fit px-2 py-1">
+                    <textarea
+                      value={note}
+                      onChange={(e) => setNote(e.target.value)}
+                      onKeyDown={(e) => handleKeyDown(e, id)}
+                      placeholder="Add a Comment..."
+                      className="flex-1 relative min-h-[100%] max-h-[20vh] w-full p-3 z-10 rounded-md resize-none bg-[#020612] text-sm text-gray-200 outline-none field-sizing-content"
+                    />
+                      <button onClick={() => handleAddNote(id)} disabled={noteUpdating} className="z-20 absolute bottom-[0.6rem] right-4 items-center justify-center gap-2 h-fit p-2 cursor-pointer rounded-full bg-gradient-to-r from-indigo-500 to-cyan-400 text-white hover:text-white! text-gray-300! transition-all ease-in-out duration-150 disabled:bg-gray-500">
+                        <FaArrowUp />
+                      </button>
+                      </div>
+                  </div>
+                </div>
+              }
+
+              {view === "ATTACHMENTS" &&
+              <div className="bg-slate-900 border border-gray-800 rounded-xl p-4">
                 <div className="flex items-center justify-between mb-3">
                   <h3 className="text-sm text-gray-300">Issue Images</h3>
                   <span className="text-xs text-gray-500">{issueImages.length} attachment{issueImages.length === 1 ? "" : "s"}</span>
@@ -348,47 +409,11 @@ export default function IssuePage({ setSelectedView, id, mode = "public" }) {
                   <p className="text-sm text-gray-500">No additional images uploaded.</p>
                 )}
               </div>
+              }
+          </div>
 
-              {(effectiveMode === "creator" || effectiveMode === "public") && (
-                <div className="mt-5">
-                  <h3 className="text-sm text-gray-300 mb-3">Updates & Comments</h3>
-                  <div className="relative flex flex-col min-h-[55vh] h-fit bg-[#041025] rounded-xl w-full overflow-y-hidden justify-between">
-                    <div className="h-[50vh] overflow-y-scroll mt-1">
-                      <div className="px-2 space-y-3 min-h-[46vh] h-fit flex flex-col justify-end">
-                      {(messages || []).slice().map((c, i) => (
-                        <div key={i} className={`w-full my-1 flex items-center ${user.uid === c.senderId ? "justify-end" : "justify-start"}`}> 
-                          <div className={`border border-gray-800 rounded-t-lg px-3 py-1 w-fit h-fit max-w-[65%] ${user.uid === c.senderId ? "bg-indigo-700/80 rounded-bl-lg" : "bg-blue-950/60 rounded-br-lg"}`}>
-                            <p className="text-xs text-gray-400">{c.senderName?.split(' ')[0]}</p>
-                            <p className="my-1 text-sm text-gray-200 text-wrap w-full h-fit overflow-x-hidden">{c.content}</p>
-                            <p className="text-xs text-slate-400 flex justify-end">{new Date(c.createdAt).toLocaleString("en-IN", {day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit",})}</p>
-                          </div>
-                        </div>
-                      ))}
-
-                      <div ref={bottomRef} ></div>
-                    </div>
-                    </div>
-
-
-                    <div className="flex gap-2 justify-center items-center w-full h-fit px-2 py-1">
-                    <textarea
-                      value={note}
-                      onChange={(e) => setNote(e.target.value)}
-                      onKeyDown={(e) => handleKeyDown(e, id)}
-                      placeholder="Add a Comment..."
-                      className="flex-1 relative min-h-[100%] max-h-[20vh] w-full p-3 z-10 rounded-md resize-none bg-[#020612] text-sm text-gray-200 outline-none field-sizing-content"
-                    />
-                      <button onClick={() => handleAddNote(id)} disabled={noteUpdating} className="z-20 absolute bottom-[0.6rem] right-4 items-center justify-center gap-2 h-fit p-2 cursor-pointer rounded-full bg-gradient-to-r from-indigo-500 to-cyan-400 text-white hover:text-white! text-gray-300! transition-all ease-in-out duration-150 disabled:bg-gray-500">
-                        <FaArrowUp />
-                      </button>
-                      </div>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            <aside className="lg:col-span-1">
-              <div className="bg-[#031323] border border-gray-800 rounded-xl p-4 space-y-4">
+          <div className="relative px-4 py-6 flex flex-col justify-start items-center gap-4 w-[30%] h-full">
+              <div className="bg-[#031323] border border-gray-800 rounded-xl p-4 w-full space-y-4">
                 <div>
                   <h4 className="text-xs text-gray-400">Reported By</h4>
                   <div className="flex items-center gap-3 mt-3">
@@ -409,7 +434,7 @@ export default function IssuePage({ setSelectedView, id, mode = "public" }) {
                   {effectiveMode === 'creator' ? (
                     <div className="flex justify-center items-center gap-4 w-full">
                       <button
-                      onClick={() => setIsEditing(!isEditing)}
+                      onClick={() => {setIsEditing(!isEditing); setView("DETAILS")}}
                       className=" w-full inline-flex justify-center items-center gap-1 px-2 py-2 rounded text-xs text-gray-200 bg-white/10 hover:bg-white/15 transition-colors"
                       >
                         {!isEditing ? <><FaRegEdit className="text-sm" /> Edit</> : <><RxCross1 className="text-sm" /> Cancel</>}
@@ -463,7 +488,82 @@ export default function IssuePage({ setSelectedView, id, mode = "public" }) {
                   <Switch checked={shareOnFeed} onCheckedChange={(checked) => {setShareOnFeed(checked);}} />
                 </div>}
               </div>
-            </aside>
+
+              <div className="bg-[#031323] border border-gray-800 rounded-xl p-4 w-full space-y-4">
+                <div>
+                  <h4 className="text-xs text-gray-400">Timeline</h4>
+                  <div className="flex items-center gap-3 mt-3">
+                    <div className="h-10 w-10 rounded-full bg-gradient-to-r from-indigo-500 to-cyan-400 flex items-center justify-center text-white font-semibold">{issue.createdByUser ? (issue.createdByUser.name?.charAt(0) || 'U') : 'U'}</div>
+                    <div>
+                      <p className="text-sm text-gray-200">{issue.createdByUser?.name || data.student_id}</p>
+                      <p className="text-xs text-gray-400">{issue.createdByUser?.email}</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <h4 className="text-xs text-gray-400">Submitted On</h4>
+                  <p className="text-sm text-gray-200 mt-2">{createdAt ? createdAt.toLocaleString('en-GB', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' }) : '-'}</p>
+                </div>
+
+                <div className="mt-8 w-full">
+                  {effectiveMode === 'creator' ? (
+                    <div className="flex justify-center items-center gap-4 w-full">
+                      <button
+                      onClick={() => {setIsEditing(!isEditing); setView("DETAILS")}}
+                      className=" w-full inline-flex justify-center items-center gap-1 px-2 py-2 rounded text-xs text-gray-200 bg-white/10 hover:bg-white/15 transition-colors"
+                      >
+                        {!isEditing ? <><FaRegEdit className="text-sm" /> Edit</> : <><RxCross1 className="text-sm" /> Cancel</>}
+                      </button>
+
+                      <DeleteIssueModal entityType={"Issue"} entity={issue} onSuccess={() => { setSelectedView('UserIssues'); }} />
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                </div>
+
+                <div className="mt-8">
+                  <h4 className="text-xs text-gray-400 mb-2">Mark As</h4>
+
+                  {effectiveMode === 'creator' || effectiveMode === "public" ? (
+                    <div className="flex justify-center items-center gap-4 w-full">
+                      <button
+                      onClick={() => handleChangeStatus("in_progress")} 
+                      disabled={updating}
+                      className=" w-[48%] inline-flex justify-center items-center gap-1 px-2 py-2 rounded text-xs text-yellow-500 bg-yellow-500/15 hover:bg-yellow-500/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        In Progress
+                      </button>
+
+                      <button
+                      onClick={() => handleChangeStatus("resolved")} 
+                      disabled={updating}
+                      className=" w-[45%] inline-flex justify-center items-center gap-1 px-2 py-2 rounded text-xs text-green-500 bg-green-500/15 hover:bg-green-500/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        Resolved
+                      </button>
+                    </div>
+                  ) : ("")}
+
+                  {effectiveMode === "public" ? (
+                    <div className="flex justify-center items-center gap-4 w-full mt-2">
+                      <button
+                      onClick={() => handleChangeStatus("rejected")} 
+                      disabled={updating}
+                      className=" w-[98%] inline-flex justify-center items-center gap-1 px-2 py-2 rounded text-xs text-red-500 bg-red-500/15 hover:bg-red-500/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        Rejected
+                      </button>
+                    </div>
+                  ) : ("")}
+                </div>
+
+                {isEditing &&<div className="mt-8 flex justify-between items-center px-2">
+                  <h4 className="text-sm text-gray-400 mb-2">Show Issue on Campus Feed</h4>
+                  <Switch checked={shareOnFeed} onCheckedChange={(checked) => {setShareOnFeed(checked);}} />
+                </div>}
+              </div>
           </div>
         </div>
       </div>

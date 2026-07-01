@@ -347,19 +347,19 @@ export default function IssuePage({ setSelectedView, id, mode = "public" }) {
                   <div className="relative flex flex-col min-h-[55vh] h-fit bg-[#041025] rounded-xl w-full overflow-y-hidden justify-between">
                     <div className="h-[50vh] overflow-y-scroll mt-1">
                       <div className="px-2 space-y-3 min-h-[46vh] h-fit flex flex-col justify-end">
-                      {(messages || []).slice().map((c, i) => (
-                        <div key={i} className={`w-full my-1 flex items-start ${user.uid === c.senderId ? "justify-end" : "justify-start"}`}> 
-                          { user.uid !== c.senderId && <img src={c?.senderAvatar} alt={c.senderName} className="rounded-full w-12 mr-2" /> }
-                          <div className={`border border-gray-800 rounded-lg px-3 py-1 w-fit h-fit max-w-[65%] ${user.uid === c.senderId ? "bg-indigo-700/80" : "bg-blue-950/60"}`}>
-                            <p className={`text-xs text-gray-400 ${user.uid === c.senderId ? "hidden" : ""}`}>{c.senderName?.split(' ')[0] + " - " + c.senderRole}</p>
-                            <p className="my-1 text-sm text-gray-200 text-wrap w-full h-fit overflow-x-hidden">{c.content}</p>
-                            <p className="text-[0.7rem] text-slate-400 flex justify-end">{new Date(c.createdAt).toLocaleString("en-IN", {day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit",})}</p>
+                        {(messages || []).slice().map((c, i) => (
+                          <div key={i} className={`w-full my-1 flex items-start ${user.uid === c.senderId ? "justify-end" : "justify-start"}`}> 
+                            { user.uid !== c.senderId && <img src={c?.senderAvatar} alt={c.senderName} className="rounded-full w-12 mr-2" /> }
+                            <div className={`border border-gray-800 rounded-lg px-3 py-1 w-fit h-fit max-w-[65%] ${user.uid === c.senderId ? "bg-indigo-700/80" : "bg-blue-950/60"}`}>
+                              <p className={`text-xs text-gray-400 ${user.uid === c.senderId ? "hidden" : ""}`}>{c.senderName?.split(' ')[0] + " - " + c.senderRole}</p>
+                              <p className="my-1 text-sm text-gray-200 text-wrap w-full h-fit overflow-x-hidden">{c.content}</p>
+                              <p className="text-[0.7rem] text-slate-400 flex justify-end">{new Date(c.createdAt).toLocaleString("en-IN", {day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit",})}</p>
+                            </div>
                           </div>
-                        </div>
-                      ))}
-
-                      <div ref={bottomRef} ></div>
-                    </div>
+                        ))}
+  
+                        <div ref={bottomRef} ></div>
+                      </div>
                     </div>
 
 

@@ -9,6 +9,7 @@ import { useNotificationsSocket } from "@/hooks/useNotificationsSocket";
 import { usePresence } from "@/hooks/usePresence";
 import { useTicketData } from "@/hooks/useTicketData";
 import { useTickets } from "@/hooks/useTickets";
+import { TooltipProvider } from "./ui/tooltip";
 
 export default function SocketProvider({ children }) {
   const {user} = useUser();
@@ -23,8 +24,10 @@ export default function SocketProvider({ children }) {
   usePresence(user?.uid);
 
   return (
-    <PresenceProvider>
-      {children}
-    </PresenceProvider>
+    <TooltipProvider>
+      <PresenceProvider>
+        {children}
+      </PresenceProvider>
+    </TooltipProvider>
   );
 }

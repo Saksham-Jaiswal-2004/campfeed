@@ -5,8 +5,8 @@ import { api } from "@/lib/api";
 import { useUser } from "@/context/userContext";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import { socket } from "@/lib/socket";
 import { useEventStore } from "@/store/eventStore";
+import { Tooltip, TooltipContent, TooltipTrigger, } from "@/components/ui/tooltip"
 
 export default function RSVPButton({ eventId, registered }) {
   const { user, token } = useUser();
@@ -76,13 +76,21 @@ export default function RSVPButton({ eventId, registered }) {
 
   return (
     <div className="mt-0 w-full">
-      <button
-        onClick={handleClick}
-        disabled={loading}
-        className="px-4 py-2 w-full bg-gradient-to-r from-indigo-500 to-cyan-500 text-white btnText text-sm rounded-sm hover:bg-gradient-to-br disabled:opacity-50"
-      >
-        {loading ? "Processing..." : isRsvped ? "Un-RSVP" : "RSVP"}
-      </button>
+      <Tooltip>
+        <TooltipTrigger className="w-full!" >
+          <button
+            onClick={handleClick}
+            disabled={loading}
+            className="px-4 py-2 w-full bg-gradient-to-r from-indigo-500 to-cyan-500 text-white btnText text-sm rounded-sm hover:bg-gradient-to-br disabled:opacity-50"
+          >
+            {loading ? "Processing..." : isRsvped ? "Un-RSVP" : "RSVP"}
+          </button>
+        </TooltipTrigger>
+
+        <TooltipContent>
+          <p>{isRsvped ? "Un-RSVP from event" : "RSVP to event"}</p>
+        </TooltipContent>
+      </Tooltip>
     </div>
   );
 }

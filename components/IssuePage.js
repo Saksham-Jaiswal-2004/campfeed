@@ -25,7 +25,9 @@ import { MdOutlineMiscellaneousServices } from "react-icons/md";
 import { MdOutlineSecurity } from "react-icons/md";
 import { AiOutlineIssuesClose } from "react-icons/ai";
 import { cn } from '@/lib/utils';
-import Image from "next/image";
+import { TbSend } from "react-icons/tb";
+import { MdOutlineAttachment } from "react-icons/md";
+import { Tooltip, TooltipContent, TooltipTrigger, } from "@/components/ui/tooltip"
 
 const categoryOptions = [
   { id: "CAT001", label: "Academic" },
@@ -228,15 +230,39 @@ export default function IssuePage({ setSelectedView, id, mode = "public" }) {
               <p className="text-sm text-gray-400 mt-1">ID • {id}</p>
 
               <div className="absolute right-4 top-4 h-fit w-fit flex items-center gap-2">
-                <ShareButton title={data.title} text={`Issue: ${data.title}`} />
-  
-                <button className="text-lg px-3 py-2 border border-gray-700 hover:bg-gray-700/20 rounded-md contentText transition-all duration-200 ease-in-out">
-                  <CiBookmark />
-                </button>
-  
-                <button className="text-lg px-3 py-2 border border-gray-700 hover:bg-gray-700/20 rounded-md contentText transition-all duration-200 ease-in-out">
-                  <PiWarningCircle />
-                </button>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <ShareButton title={data.title} text={`Issue: ${data.title}`} />
+                  </TooltipTrigger>
+
+                  <TooltipContent>
+                    <p>Share</p>
+                  </TooltipContent>
+                </Tooltip>
+                
+                <Tooltip>
+                  <TooltipTrigger>
+                    <button className="text-lg px-3 py-2 border border-gray-700 hover:bg-gray-700/20 rounded-md contentText transition-all duration-200 ease-in-out">
+                      <CiBookmark />
+                    </button>
+                  </TooltipTrigger>
+
+                  <TooltipContent>
+                    <p>Bookmark</p>
+                  </TooltipContent>
+                </Tooltip>
+
+                <Tooltip>
+                  <TooltipTrigger>
+                    <button className="text-lg px-3 py-2 border border-gray-700 hover:bg-gray-700/20 rounded-md contentText transition-all duration-200 ease-in-out">
+                      <PiWarningCircle />
+                    </button>
+                  </TooltipTrigger>
+
+                  <TooltipContent>
+                    <p>Report</p>
+                  </TooltipContent>
+                </Tooltip>
               </div>
 
               <div className="flex items-center justify-between mt-10">
@@ -351,7 +377,7 @@ export default function IssuePage({ setSelectedView, id, mode = "public" }) {
                           <div key={i} className={`w-full my-1 flex items-start ${user.uid === c.senderId ? "justify-end" : "justify-start"}`}> 
                             { user.uid !== c.senderId && <img src={c?.senderAvatar} alt={c.senderName} className="rounded-full w-12 mr-2" /> }
                             <div className={`border border-gray-800 rounded-lg px-3 py-1 w-fit h-fit max-w-[65%] ${user.uid === c.senderId ? "bg-indigo-700/80" : "bg-blue-950/60"}`}>
-                              <p className={`text-xs text-gray-400 ${user.uid === c.senderId ? "hidden" : ""}`}>{c.senderName?.split(' ')[0] + " - " + c.senderRole}</p>
+                              <p className={`text-xs text-gray-400 flex justify-start items-center gap-1 ${user.uid === c.senderId ? "hidden" : ""}`}>{c.senderName?.split(' ')[0]} <span className="text-[0.65rem] text-gray-300 bg-gray-400/20! rounded-full px-1 py-[0.125rem]">{c.senderRole}</span></p>
                               <p className="my-1 text-sm text-gray-200 text-wrap w-full h-fit overflow-x-hidden">{c.content}</p>
                               <p className="text-[0.7rem] text-slate-400 flex justify-end">{new Date(c.createdAt).toLocaleString("en-IN", {day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit",})}</p>
                             </div>
@@ -363,18 +389,40 @@ export default function IssuePage({ setSelectedView, id, mode = "public" }) {
                     </div>
 
 
-                    <div className="flex gap-2 justify-center items-center w-full h-fit px-2 py-1">
-                    <textarea
-                      value={note}
-                      onChange={(e) => setNote(e.target.value)}
-                      onKeyDown={(e) => handleKeyDown(e, id)}
-                      placeholder="Add a Comment..."
-                      className="flex-1 relative min-h-[100%] max-h-[20vh] w-full p-3 z-10 rounded-md resize-none bg-[#020612] text-sm text-gray-200 outline-none field-sizing-content"
-                    />
-                      <button onClick={() => handleAddNote(id)} disabled={noteUpdating} className="z-20 absolute bottom-[0.6rem] right-4 items-center justify-center gap-2 h-fit p-2 cursor-pointer rounded-full bg-gradient-to-r from-indigo-500 to-cyan-400 text-white hover:text-white! text-gray-300! transition-all ease-in-out duration-150 disabled:bg-gray-500">
-                        <FaArrowUp />
-                      </button>
-                      </div>
+                    <div className="flex gap-2 bg-[#020612] justify-center items-center w-full h-fit px-2 py-1">
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <button className="z-20 items-center justify-center gap-2 h-fit cursor-pointer rounded-lg px-4 py-3 bg-indigo-700/40 hover:bg-indigo-700/50 hover:text-white! text-gray-300! transition-all ease-in-out duration-150 disabled:bg-gray-500">
+                            <MdOutlineAttachment className="text-lg" />
+                          </button>
+                        </TooltipTrigger>
+      
+                        <TooltipContent>
+                          <p>Add Attachments</p>
+                        </TooltipContent>
+                      </Tooltip>
+
+                      <textarea
+                        value={note}
+                        onChange={(e) => setNote(e.target.value)}
+                        onKeyDown={(e) => handleKeyDown(e, id)}
+                        placeholder="Add a Comment..."
+                        // className="flex-1 relative min-h-[100%] max-h-[20vh] w-full p-3 z-10 rounded-md resize-none bg-[#020612] text-sm text-gray-200 outline-none field-sizing-content"
+                        className="flex-1 relative min-h-[100%] max-h-[20vh] w-full p-3 z-10 rounded-md resize-none bg-[#041025] text-sm text-gray-200 outline-none field-sizing-content"
+                      />
+
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <button onClick={() => handleAddNote(id)} disabled={noteUpdating} className="z-20 items-center justify-center gap-2 h-fit cursor-pointer rounded-lg px-5 py-3 bg-indigo-700 hover:bg-indigo-700/80 hover:text-white! text-gray-300! transition-all ease-in-out duration-150 disabled:bg-gray-500">
+                            <TbSend className="text-lg" />
+                          </button>
+                        </TooltipTrigger>
+      
+                        <TooltipContent>
+                          <p>Send Message</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </div>
                   </div>
                 </div>
               }
@@ -489,7 +537,7 @@ export default function IssuePage({ setSelectedView, id, mode = "public" }) {
                 </div>}
               </div>
 
-              <div className="bg-[#031323] border border-gray-800 rounded-xl p-4 w-full space-y-4">
+              {/* <div className="bg-[#031323] border border-gray-800 rounded-xl p-4 w-full space-y-4">
                 <div>
                   <h4 className="text-xs text-gray-400">Timeline</h4>
                   <div className="flex items-center gap-3 mt-3">
@@ -563,7 +611,7 @@ export default function IssuePage({ setSelectedView, id, mode = "public" }) {
                   <h4 className="text-sm text-gray-400 mb-2">Show Issue on Campus Feed</h4>
                   <Switch checked={shareOnFeed} onCheckedChange={(checked) => {setShareOnFeed(checked);}} />
                 </div>}
-              </div>
+              </div> */}
           </div>
         </div>
       </div>
